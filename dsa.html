@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WW7TJ68D');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Placely — DSA Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --card: #1a1a1a;
+    --card-2: #202028;
+    --accent: #6c63ff;
+    --accent-2: #8b84ff;
+    --accent-dim: rgba(108,99,255,0.14);
+    --text: #ececf1;
+    --muted: #9a9aa8;
+    --muted-2: #6b6b78;
+    --line: #2a2a31;
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.12);
+    --red: #ef4444;
+    --red-dim: rgba(239,68,68,0.12);
+    --fire: #ff7a18;
+    --radius: 16px;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.55; -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  h1,h2,h3,h4,.display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.02em; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+  .wrap { width: 100%; max-width: 980px; margin: 0 auto; padding: 0 20px; }
+
+  /* ---------- header ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: 'Space Grotesk'; font-weight: 700; font-size: 19px; }
+  .brand .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
+  .top-right { display: flex; align-items: center; gap: 14px; }
+  .hi { font-size: 14px; color: var(--muted); }
+  .hi b { color: var(--text); font-weight: 600; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line);
+    background: var(--card); color: var(--text); padding: 9px 16px; border-radius: 10px;
+    font-size: 14px; font-weight: 600; transition: all .2s var(--ease);
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent-2); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-2); border-color: var(--accent-2); color: #fff; }
+  .btn-sm { padding: 7px 13px; font-size: 13px; }
+  .btn:disabled { opacity: .55; cursor: not-allowed; }
+
+  /* ---------- layout ---------- */
+  .layout { display: flex; gap: 24px; margin-top: 24px; align-items: flex-start; }
+  .sidebar { width: 300px; flex-shrink: 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .sidebar-header { padding: 16px; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .problem-list { max-height: calc(100vh - 150px); overflow-y: auto; }
+  .problem-item { padding: 14px 16px; border-bottom: 1px solid var(--line); border-left: 3px solid transparent; cursor: pointer; transition: background .2s var(--ease); }
+  .problem-item:hover { background: var(--card-2); }
+  .problem-item.active { background: var(--accent-dim); border-left: 3px solid var(--accent); }
+  .problem-item .title { font-weight: 600; font-size: 14.5px; }
+  .problem-item .diff { font-size: 11px; margin-top: 4px; display: inline-block; padding: 2px 8px; border-radius: 100px; font-weight: 600; }
+  .diff.easy { background: var(--green-dim); color: var(--green); }
+  .diff.medium { background: rgba(255,193,7,0.12); color: #ffc107; }
+  .diff.hard { background: var(--red-dim); color: var(--red); }
+
+  .main-content { flex: 1; min-width: 0; }
+  
+  /* Loading/Empty State */
+  #state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; text-align: center; }
+  .spinner { width: 42px; height: 42px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--accent); animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  /* Problem View */
+  #problem-view { display: none; }
+  .problem-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; }
+  
+  /* Split View Headers */
+  .view-tabs { display: flex; border-bottom: 1px solid var(--line); background: #141418; }
+  .view-tab { flex: 1; padding: 16px; text-align: center; font-weight: 600; font-size: 14px; cursor: pointer; color: var(--muted); transition: all .2s var(--ease); border-bottom: 2px solid transparent; }
+  .view-tab.active { color: var(--accent-2); border-bottom-color: var(--accent); background: var(--card); }
+  .view-tab:hover:not(.active) { color: var(--text); background: var(--card-2); }
+  
+  .desc-body { padding: 24px; font-size: 15px; line-height: 1.6; color: var(--text); white-space: pre-wrap; }
+  #tech-desc { display: none; }
+  
+  /* Code Editor */
+  .editor-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .editor-head { padding: 12px 16px; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 13px; color: var(--muted); background: #141418; display: flex; justify-content: space-between; align-items: center; }
+  textarea.code-input {
+    width: 100%; height: 350px; background: #0d0d11; border: none; padding: 16px;
+    color: var(--text); font-family: 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace;
+    font-size: 14px; line-height: 1.6; resize: vertical;
+  }
+  textarea.code-input:focus { outline: none; }
+  
+  .editor-foot { padding: 16px; border-top: 1px solid var(--line); background: var(--card); display: flex; justify-content: space-between; align-items: center; }
+  
+  /* Feedback */
+  .ai-feedback { margin-top: 24px; background: linear-gradient(180deg, var(--accent-dim), rgba(108,99,255,0.04)); border: 1px solid var(--accent); border-radius: 12px; padding: 24px; display: none; }
+  .ai-feedback.show { display: block; animation: fadeUp .4s var(--ease); }
+  .ai-feedback .ai-head { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--accent-2); margin-bottom: 12px; font-family: 'Space Grotesk'; }
+  .ai-feedback .ai-body { font-size: 14.5px; color: var(--text); white-space: pre-wrap; line-height: 1.6; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  
+  .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 100px; font-size: 13px; font-weight: 600; }
+  .status-badge.passed { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+  .status-badge.failed { background: var(--red-dim); color: var(--red); border: 1px solid var(--red); }
+</style>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WW7TJ68D"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a href="dashboard.html" class="brand"><span class="dot"></span>Placely</a>
+    <div class="top-right">
+      <a href="dashboard.html" class="btn btn-sm">← Back to Dashboard</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="layout">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">Problems</div>
+      <div class="problem-list" id="problem-list">
+        <div style="padding:20px; text-align:center; color:var(--muted);">Loading...</div>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+      
+      <div id="state">
+        <div class="spinner"></div>
+        <div class="muted" style="margin-top:16px;">Loading problem...</div>
+      </div>
+      
+      <div id="problem-view">
+        <div class="problem-card">
+          <div class="view-tabs">
+            <div class="view-tab active" id="tab-plain" onclick="switchTab('plain')">Plain English (Start Here)</div>
+            <div class="view-tab" id="tab-tech" onclick="switchTab('tech')">Technical Description (The Real Question)</div>
+          </div>
+          
+          <div class="desc-body" id="plain-desc"></div>
+          <div class="desc-body" id="tech-desc"></div>
+        </div>
+        
+        <div class="editor-card">
+          <div class="editor-head">
+            <span>Your Code Solution (Python)</span>
+          </div>
+          <textarea class="code-input" id="code-input" placeholder="# Write your python code here...&#10;def solve():&#10;    pass" spellcheck="false"></textarea>
+          <div class="editor-foot">
+            <span class="muted" style="font-size:12px;">Powered by OpenRouter & DeepSeek AI</span>
+            <button class="btn btn-primary" id="submit-btn" onclick="submitCode()">
+              Submit for AI Review
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="ai-feedback" id="ai-feedback">
+          <div class="ai-head">
+            <span id="feedback-icon">✨</span> <span id="feedback-title">AI Review Results</span>
+            <span id="feedback-badge" class="status-badge" style="margin-left:auto;"></span>
+          </div>
+          <div class="ai-body" id="feedback-body"></div>
+        </div>
+        
+      </div>
+      
+    </div>
+  </div>
+</main>
+
+<script>
+  const API = "https://placely-backend-production.up.railway.app";
+  const studentId = localStorage.getItem("placely_student_id");
+  let currentProblemId = null;
+
+  if (!studentId) {
+    window.location.replace("index.html");
+  }
+
+  async function api(path, opts) {
+    const res = await fetch(API + path, { credentials: "include", ...(opts || {}) });
+    let body = null;
+    try { body = await res.json(); } catch (e) {}
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403) {
+        window.location.replace("index.html");
+      }
+      throw new Error((body && body.error) || "HTTP " + res.status);
+    }
+    return body;
+  }
+
+  async function loadProblems() {
+    try {
+      const data = await api("/api/dsa/problems");
+      const list = document.getElementById("problem-list");
+      if (!data.problems || data.problems.length === 0) {
+        list.innerHTML = '<div style="padding:20px; text-align:center; color:var(--muted);">No problems found.</div>';
+        document.getElementById("state").innerHTML = '<div class="muted">No problems available.</div>';
+        return;
+      }
+      
+      list.innerHTML = data.problems.map(p => `
+        <div class="problem-item" id="nav-${p.id}" onclick="loadProblem('${p.id}')">
+          <div class="title">${p.title}</div>
+          <div class="diff ${p.difficulty.toLowerCase()}">${p.difficulty}</div>
+        </div>
+      `).join('');
+      
+      // Load the first problem by default
+      loadProblem(data.problems[0].id);
+      
+    } catch (err) {
+      console.error(err);
+      document.getElementById("problem-list").innerHTML = `<div style="padding:20px; color:var(--red);">${err.message}</div>`;
+    }
+  }
+
+  async function loadProblem(id) {
+    currentProblemId = id;
+    
+    // Update active state in sidebar
+    document.querySelectorAll(".problem-item").forEach(el => el.classList.remove("active"));
+    const nav = document.getElementById(`nav-${id}`);
+    if (nav) nav.classList.add("active");
+    
+    document.getElementById("state").style.display = "flex";
+    document.getElementById("problem-view").style.display = "none";
+    document.getElementById("ai-feedback").classList.remove("show");
+    
+    try {
+      const data = await api(`/api/dsa/problems/${id}`);
+      const p = data.problem;
+      
+      document.getElementById("plain-desc").textContent = p.plain_english_desc;
+      document.getElementById("tech-desc").textContent = p.technical_desc;
+      document.getElementById("code-input").value = "";
+      
+      switchTab('plain');
+      
+      document.getElementById("state").style.display = "none";
+      document.getElementById("problem-view").style.display = "block";
+      
+    } catch (err) {
+      console.error(err);
+      document.getElementById("state").innerHTML = '<div style="color:var(--red); text-align:center;">Failed to load problem.<br><button class="btn btn-sm" onclick="location.reload()" style="margin-top:12px;">Retry</button></div>';
+      alert("Failed to load problem: " + err.message);
+    }
+  }
+
+  function switchTab(tab) {
+    if (tab === 'plain') {
+      document.getElementById("tab-plain").classList.add("active");
+      document.getElementById("tab-tech").classList.remove("active");
+      document.getElementById("plain-desc").style.display = "block";
+      document.getElementById("tech-desc").style.display = "none";
+    } else {
+      document.getElementById("tab-tech").classList.add("active");
+      document.getElementById("tab-plain").classList.remove("active");
+      document.getElementById("tech-desc").style.display = "block";
+      document.getElementById("plain-desc").style.display = "none";
+    }
+  }
+
+  async function submitCode() {
+    const code = document.getElementById("code-input").value.trim();
+    if (!code) {
+      alert("Please write some code before submitting.");
+      return;
+    }
+    
+    const btn = document.getElementById("submit-btn");
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = "Reviewing... <div class='spinner' style='width:16px;height:16px;border-width:2px;display:inline-block;vertical-align:middle;margin-left:8px;'></div>";
+    
+    const fb = document.getElementById("ai-feedback");
+    fb.classList.remove("show");
+    
+    try {
+      const data = await api("/api/dsa/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ problem_id: currentProblemId, code: code })
+      });
+      
+      document.getElementById("feedback-body").textContent = data.feedback;
+      const badge = document.getElementById("feedback-badge");
+      
+      if (data.passed) {
+        badge.className = "status-badge passed";
+        badge.textContent = "PASSED";
+        document.getElementById("feedback-icon").textContent = "🏆";
+      } else {
+        badge.className = "status-badge failed";
+        badge.textContent = "NEEDS WORK";
+        document.getElementById("feedback-icon").textContent = "🧐";
+      }
+      
+      fb.classList.add("show");
+      
+    } catch (err) {
+      console.error(err);
+      alert("Review failed: " + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+
+  loadProblems();
+</script>
+</body>
+</html>

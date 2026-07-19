@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WW7TJ68D');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Placely — Student Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --card: #1a1a1a;
+    --card-2: #202028;
+    --accent: #6c63ff;
+    --accent-2: #8b84ff;
+    --accent-dim: rgba(108,99,255,0.14);
+    --text: #ececf1;
+    --muted: #9a9aa8;
+    --muted-2: #6b6b78;
+    --line: #2a2a31;
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.12);
+    --red: #ef4444;
+    --red-dim: rgba(239,68,68,0.12);
+    --fire: #ff7a18;
+    --radius: 16px;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.55; -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  h1,h2,h3,h4,.display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.02em; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+  .wrap { width: 100%; max-width: 980px; margin: 0 auto; padding: 0 20px; }
+
+  /* ---------- header ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: 'Space Grotesk'; font-weight: 700; font-size: 19px; }
+  .brand .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
+  .top-right { display: flex; align-items: center; gap: 14px; }
+  .hi { font-size: 14px; color: var(--muted); }
+  .hi b { color: var(--text); font-weight: 600; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line);
+    background: var(--card); color: var(--text); padding: 9px 16px; border-radius: 10px;
+    font-size: 14px; font-weight: 600; transition: all .2s var(--ease);
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent-2); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-2); border-color: var(--accent-2); color: #fff; }
+  .btn-sm { padding: 7px 13px; font-size: 13px; }
+  .btn:disabled { opacity: .55; cursor: not-allowed; }
+
+  /* ---------- generic ---------- */
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); }
+  .section { margin-top: 28px; }
+  .section-title { font-size: 14px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 14px; font-weight: 600; }
+  .muted { color: var(--muted); }
+
+  /* loading / error states */
+  #state { min-height: 70vh; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; text-align: center; padding: 40px 20px; }
+  .spinner { width: 42px; height: 42px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--accent); animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 30px; margin-top: 28px; position: relative; overflow: hidden; }
+  .hero::after { content: ""; position: absolute; top: -60%; right: -10%; width: 380px; height: 380px; background: radial-gradient(circle, var(--accent-dim), transparent 65%); pointer-events: none; }
+  .hero-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; position: relative; }
+  .day-big { font-size: clamp(34px, 7vw, 56px); font-weight: 700; line-height: 1; }
+  .day-big span { color: var(--accent); }
+  .day-sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .streak { display: inline-flex; align-items: center; gap: 8px; font-family: 'Space Grotesk'; font-weight: 700; font-size: 17px; color: var(--fire); background: rgba(255,122,24,0.1); border: 1px solid rgba(255,122,24,0.3); padding: 8px 14px; border-radius: 100px; }
+  .progress-wrap { margin-top: 24px; position: relative; }
+  .progress-track { height: 12px; background: #101014; border: 1px solid var(--line); border-radius: 100px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0; border-radius: 100px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width 1s var(--ease); }
+  .progress-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; gap: 14px; flex-wrap: wrap; }
+  .ascii { font-family: 'Space Grotesk', monospace; letter-spacing: 2px; font-size: 15px; color: var(--accent-2); }
+  .ascii .pct { color: var(--text); font-weight: 700; }
+  .next-ms { font-size: 13px; color: var(--muted); }
+  .next-ms b { color: var(--text); }
+
+  /* ---------- badges ---------- */
+  .badge-shelf { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .badge { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 8px; text-align: center; transition: transform .25s var(--ease), border-color .25s var(--ease); position: relative; }
+  .badge .emoji { font-size: 30px; line-height: 1; display: block; }
+  .badge .bname { font-size: 11.5px; margin-top: 9px; color: var(--muted); font-weight: 500; line-height: 1.3; }
+  .badge.earned { border-color: var(--accent); background: linear-gradient(180deg, var(--accent-dim), var(--card)); }
+  .badge.earned .bname { color: var(--text); font-weight: 600; }
+  .badge.earned .emoji { filter: drop-shadow(0 0 10px var(--accent-dim)); }
+  .badge.locked .emoji { filter: grayscale(1); opacity: 0.32; }
+  .badge .lock { position: absolute; top: 8px; right: 8px; font-size: 12px; opacity: 0.5; }
+  @media (max-width: 560px) {
+    .badge-shelf { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .badge { padding: 12px 4px; }
+    .badge .emoji { font-size: 22px; }
+    .badge .bname { font-size: 9.5px; }
+  }
+
+  /* ---------- roadmap ---------- */
+  .phase { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 12px; overflow: hidden; }
+  .phase-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 18px 20px; cursor: pointer; user-select: none; }
+  .phase-head:hover { background: var(--card-2); }
+  .phase-head .pt { display: flex; align-items: center; gap: 12px; }
+  .phase-num { width: 30px; height: 30px; flex: 0 0 auto; border-radius: 9px; background: var(--accent-dim); color: var(--accent-2); display: grid; place-items: center; font-weight: 700; font-size: 14px; font-family: 'Space Grotesk'; }
+  .phase-title { font-weight: 600; font-size: 16px; }
+  .phase-meta { font-size: 12.5px; color: var(--muted); }
+  .chev { transition: transform .35s var(--ease); color: var(--muted); flex: 0 0 auto; }
+  .phase.open .chev { transform: rotate(180deg); }
+  .phase-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s var(--ease); }
+  .phase.open .phase-body { grid-template-rows: 1fr; }
+  .phase-body-inner { overflow: hidden; }
+  .phase-tasks { padding: 4px 14px 14px; }
+
+  /* task */
+  .task { border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 11px; margin-top: 10px; background: #141418; overflow: hidden; }
+  .task.done { border-left-color: var(--green); }
+  .task.stuck { border-left-color: var(--red); }
+  .task-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; }
+  .task-head:hover { background: #17171c; }
+  .task-status { width: 22px; height: 22px; flex: 0 0 auto; border-radius: 50%; display: grid; place-items: center; font-size: 13px; border: 1px solid var(--line); color: var(--muted); }
+  .task.done .task-status { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+  .task.stuck .task-status { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+  .task-day { font-size: 11px; font-weight: 700; color: var(--accent-2); text-transform: uppercase; letter-spacing: 0.06em; }
+  .task-title { font-weight: 600; font-size: 14.5px; }
+  .task-head .grow { flex: 1; min-width: 0; }
+  .task-head .grow .task-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .badge-pill { font-size: 11px; padding: 3px 9px; border-radius: 100px; font-weight: 600; }
+  .pill-done { background: var(--green-dim); color: var(--green); }
+  .pill-stuck { background: var(--red-dim); color: var(--red); }
+
+  .task-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .35s var(--ease); }
+  .task.open .task-body { grid-template-rows: 1fr; }
+  .task-body-inner { overflow: hidden; }
+  .task-content { padding: 4px 16px 18px; border-top: 1px solid var(--line); margin-top: -1px; }
+  .field-block { margin-top: 16px; }
+  .field-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-2); font-weight: 700; margin-bottom: 6px; }
+  .field-text { font-size: 14px; color: var(--text); white-space: pre-wrap; }
+  .field-text.ctx { color: var(--muted); }
+  .chal { background: #101014; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+  .chal b { color: var(--text); }
+  .btn-watch { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; background: #ffcb2b; color: #1a1200; border: 1px solid #ffcb2b; border-radius: 10px; padding: 11px 18px; font-weight: 700; font-size: 14px; transition: transform .18s var(--ease), box-shadow .18s var(--ease), background .18s var(--ease); }
+  .btn-watch:hover { background: #ffd84d; transform: translateY(-1px); box-shadow: 0 10px 26px -10px rgba(255,203,43,0.55); }
+  .task-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .btn-done { background: var(--green); border-color: var(--green); color: #04210f; }
+  .btn-done:hover { filter: brightness(1.08); }
+  .btn-stuck { background: transparent; border-color: var(--red); color: var(--red); }
+  .btn-stuck:hover { background: var(--red-dim); }
+  .code-area { margin-top: 18px; }
+  textarea.code {
+    width: 100%; min-height: 130px; resize: vertical; background: #0d0d11; border: 1px solid var(--line);
+    border-radius: 10px; padding: 13px; color: var(--text); font-family: 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace;
+    font-size: 13px; line-height: 1.5; transition: border-color .2s var(--ease);
+  }
+  textarea.code:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+  .ai-feedback { margin-top: 14px; background: linear-gradient(180deg, var(--accent-dim), rgba(108,99,255,0.04)); border: 1px solid var(--accent); border-radius: 12px; padding: 16px; display: none; }
+  .ai-feedback.show { display: block; animation: fadeUp .4s var(--ease); }
+  .ai-feedback .ai-head { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; color: var(--accent-2); margin-bottom: 8px; font-family: 'Space Grotesk'; }
+  .ai-feedback .ai-body { font-size: 13.5px; color: var(--text); white-space: pre-wrap; line-height: 1.6; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- next-part unlock banner ---------- */
+  #unlock-sec { display: none; }
+  .unlock-card { padding: 26px; border: 1px solid var(--accent); background: linear-gradient(180deg, var(--accent-dim), var(--card)); display: flex; align-items: center; gap: 18px; flex-wrap: wrap; justify-content: space-between; }
+  .unlock-card .ut { flex: 1; min-width: 220px; }
+  .unlock-card h3 { font-size: 19px; margin-bottom: 4px; }
+  .unlock-card p { color: var(--muted); font-size: 14px; }
+
+  /* ---------- recommended projects (shown once a skill is complete) ---------- */
+  #projects-sec { display: none; }
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .project-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .project-card h4 { font-size: 15px; margin-bottom: 8px; }
+  .project-card .pmeta { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .project-card .pmeta span { font-size: 11px; padding: 3px 9px; border-radius: 100px; font-weight: 600; background: var(--accent-dim); color: var(--accent-2); text-transform: capitalize; }
+  .project-card p { font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+
+  /* ---------- checkpoint ---------- */
+  #checkpoint-sec { display: none; }
+  .checkpoint { padding: 26px; border: 1px solid var(--accent); background: linear-gradient(180deg, var(--accent-dim), var(--card)); }
+  .checkpoint h3 { font-size: 20px; }
+  .cp-q { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--text); margin-top: 10px; }
+  .cp-q .qn { color: var(--accent-2); font-weight: 700; flex: 0 0 auto; }
+  .cp-score { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .cp-score .opt { width: 52px; height: 52px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); font-size: 18px; font-weight: 700; font-family: 'Space Grotesk'; transition: all .18s var(--ease); }
+  .cp-score .opt:hover { border-color: var(--accent); }
+  .cp-score .opt.sel { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .cp-result { margin-top: 18px; padding: 14px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: none; }
+  .cp-result.show { display: block; }
+  .cp-result.pass { background: var(--green-dim); border: 1px solid var(--green); color: var(--green); }
+  .cp-result.revise { background: rgba(255,122,24,0.12); border: 1px solid var(--fire); color: var(--fire); }
+
+  /* ---------- milestone popup ---------- */
+  #milestone-overlay {
+    position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center;
+    padding: 24px; background: rgba(5,5,8,0.82); backdrop-filter: blur(8px);
+  }
+  #milestone-overlay.show { display: flex; animation: fadeUp .35s var(--ease); }
+  .ms-card { max-width: 460px; width: 100%; text-align: center; padding: 40px 30px; border: 1px solid var(--accent); border-radius: 24px; background: radial-gradient(circle at 50% 0%, var(--accent-dim), var(--card) 70%); box-shadow: 0 40px 120px -20px rgba(108,99,255,0.5); }
+  .ms-emoji { font-size: 64px; line-height: 1; }
+  .ms-card h2 { font-size: 26px; margin-top: 16px; }
+  .ms-card p { color: var(--muted); margin-top: 12px; font-size: 15px; }
+  .ms-card .btn { margin-top: 26px; }
+
+  /* ---------- settings modal (switch active skill) ---------- */
+  #settings-overlay {
+    position: fixed; inset: 0; z-index: 210; display: none; align-items: center; justify-content: center;
+    padding: 24px; background: rgba(5,5,8,0.82); backdrop-filter: blur(8px);
+  }
+  #settings-overlay.show { display: flex; animation: fadeUp .3s var(--ease); }
+  .settings-card { max-width: 480px; width: 100%; padding: 30px; border: 1px solid var(--line); border-radius: 20px; background: var(--card); box-shadow: 0 40px 120px -20px rgba(0,0,0,0.7); }
+  .settings-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .settings-head h3 { font-size: 19px; }
+  .settings-close { background: none; border: 1px solid var(--line); border-radius: 8px; width: 32px; height: 32px; color: var(--text); display: grid; place-items: center; }
+  .settings-sub { color: var(--muted); font-size: 13.5px; margin-bottom: 18px; }
+  .skill-row { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; margin-top: 10px; }
+  .skill-row.is-active { border-color: var(--accent); background: var(--accent-dim); }
+  .skill-row .sr-info { flex: 1; min-width: 0; }
+  .skill-row .sr-name { font-weight: 600; font-size: 14.5px; }
+  .skill-row .sr-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .skill-row .sr-badge { font-size: 11px; font-weight: 700; color: var(--accent-2); background: var(--accent-dim); padding: 4px 9px; border-radius: 100px; text-transform: uppercase; letter-spacing: .04em; }
+  .skill-row .btn { flex: 0 0 auto; }
+
+  /* toast */
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(120%); z-index: 300; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 13px 20px; font-size: 14px; font-weight: 600; transition: transform .4s var(--ease); box-shadow: 0 20px 50px -10px rgba(0,0,0,0.6); }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.err { border-color: var(--red); color: var(--red); }
+  #toast.ok { border-color: var(--green); color: var(--green); }
+
+  #app { display: none; padding-bottom: 80px; }
+</style>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WW7TJ68D"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- ============ HEADER ============ -->
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a href="index.html" class="brand"><span class="dot"></span>Placely</a>
+    <div class="top-right">
+      <span class="hi">Hi, <b id="student-name">…</b></span>
+      <a href="dsa.html" class="btn btn-sm" id="dsa-link" style="display:none; background:var(--accent); color:white; border:1px solid var(--accent); gap:6px;">DSA Platform <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <button class="btn btn-sm" id="settings-btn">Settings</button>
+      <button class="btn btn-sm" id="logout-btn">Logout</button>
+    </div>
+  </div>
+</header>
+
+<!-- loading / error -->
+<div id="state">
+  <div class="spinner"></div>
+  <div class="muted">Loading your dashboard…</div>
+</div>
+
+<!-- ============ APP ============ -->
+<main id="app" class="wrap">
+
+  <!-- HERO -->
+  <section class="card hero">
+    <div class="hero-top">
+      <div>
+        <div class="day-big">Day <span id="hero-day">0</span> <span style="color:var(--muted)">of</span> <span id="hero-total">22</span></div>
+        <div class="day-sub" id="skill-name">Your learning sprint</div>
+      </div>
+      <div class="streak">🔥 <span id="streak-count">0</span> day streak</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-meta">
+        <div class="ascii"><span id="ascii-bar">░░░░░░░░░░</span> <span class="pct" id="ascii-pct">0%</span> Complete</div>
+        <div class="next-ms" id="next-ms"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEXT PART UNLOCKED -->
+  <section class="section" id="unlock-sec">
+    <div class="card unlock-card">
+      <div class="ut">
+        <h3 id="unlock-title">🎉 Next part unlocked!</h3>
+        <p id="unlock-msg"></p>
+      </div>
+      <a href="#" class="btn btn-primary" id="unlock-cta">Start now</a>
+    </div>
+  </section>
+
+  <!-- RECOMMENDED PROJECTS (shown once the active skill is complete) -->
+  <section class="section" id="projects-sec">
+    <div class="section-title">Recommended projects</div>
+    <div class="projects-grid" id="projects-grid"></div>
+  </section>
+
+  <!-- BADGES -->
+  <section class="section">
+    <div class="section-title">Badges</div>
+    <div class="badge-shelf" id="badge-shelf"></div>
+  </section>
+
+  <!-- CHECKPOINT -->
+  <section class="section" id="checkpoint-sec">
+    <div class="section-title">AI Checkpoint</div>
+    <div class="card checkpoint">
+      <h3 id="cp-title">Checkpoint</h3>
+      <p class="muted" style="margin-top:6px; font-size:14px;">Answer these 3 questions honestly, then tell us how many you got right.</p>
+      <div id="cp-questions" style="margin-top:14px;"></div>
+      <div style="margin-top:18px; font-size:13px; font-weight:600; color:var(--muted);">How many did you get right?</div>
+      <div class="cp-score" id="cp-score">
+        <button class="opt" data-score="0">0</button>
+        <button class="opt" data-score="1">1</button>
+        <button class="opt" data-score="2">2</button>
+        <button class="opt" data-score="3">3</button>
+      </div>
+      <button class="btn btn-primary" id="cp-submit" style="margin-top:18px;" disabled>Submit checkpoint</button>
+      <div class="cp-result" id="cp-result"></div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section class="section">
+    <div class="section-title">Roadmap</div>
+    <div id="roadmap"></div>
+  </section>
+
+</main>
+
+<!-- ============ SETTINGS (switch active skill) ============ -->
+<div id="settings-overlay">
+  <div class="settings-card">
+    <div class="settings-head">
+      <h3>Your tracks</h3>
+      <button type="button" class="settings-close" id="settings-close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <p class="settings-sub">Only one track is active at a time — it's the one shown on your dashboard and messaged on WhatsApp. Switching never touches your progress; pick up exactly where you left off.</p>
+    <div id="skill-list"></div>
+  </div>
+</div>
+
+<!-- ============ MILESTONE POPUP ============ -->
+<div id="milestone-overlay">
+  <div class="ms-card">
+    <div class="ms-emoji" id="ms-emoji">🎉</div>
+    <h2 id="ms-title">Milestone unlocked!</h2>
+    <p id="ms-message"></p>
+    <button class="btn btn-primary" id="ms-dismiss">Awesome, continue</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  const API = "https://placely-backend-production.up.railway.app";
+  const TOTAL_DAYS_DEFAULT = 22;
+
+  /* ---------- 3. AUTH GUARD ----------
+     Real, server-verified session (httpOnly cookie), not a bare localStorage
+     flag -- localStorage.placely_student_id is kept only as a same-tab UI
+     convenience (e.g. so a page reload doesn't flash a loading spinner
+     before the session check resolves) and is never trusted on its own.
+     Every API call below sends credentials:'include' so the cookie goes
+     with it, and the backend independently verifies student_id against the
+     session on every request -- a forged/guessed id in the URL or a copied
+     localStorage value from someone else's browser grants nothing. */
+  let studentId = null;
+
+  /* ---------- canonical badges (5 slots) ---------- */
+  const BADGES = [
+    { emoji: "🐣", name: "First Step",      day: 1  },
+    { emoji: "🗺️", name: "Python Explorer", day: 5  },
+    { emoji: "🔄", name: "Loop Starter",    day: 10 },
+    { emoji: "⚡", name: "Function Wizard", day: 15 },
+    { emoji: "🎓", name: "Python Graduate", day: 22 },
+  ];
+
+  /* ---------- small helpers ---------- */
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  // pick the first present field from a list of candidate keys
+  const pick = (obj, keys, fallback = "") => {
+    if (!obj) return fallback;
+    for (const k of keys) if (obj[k] != null && obj[k] !== "") return obj[k];
+    return fallback;
+  };
+
+  let toastTimer;
+  function toast(msg, type) {
+    const t = $("#toast");
+    t.textContent = msg;
+    t.className = "show " + (type || "");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.className = ""; }, 3200);
+  }
+
+  // preserve which accordions are open across re-renders
+  const openPhases = new Set();
+  const openTasks = new Set();
+
+  let DASH = null;
+
+  /* ---------- API ---------- */
+  async function api(path, opts) {
+    const res = await fetch(API + path, { credentials: "include", ...(opts || {}) });
+    let body = null;
+    try { body = await res.json(); } catch (e) { /* ignore */ }
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403) {
+        // session expired/revoked mid-visit -- back to login, not the raw
+        // marketing page with no path back in.
+        try { localStorage.removeItem("placely_student_id"); } catch (ex) {}
+        window.location.replace("index.html?login=1");
+      }
+      const msg = (body && (body.error || body.message)) || ("HTTP " + res.status);
+      throw new Error(msg);
+    }
+    return body;
+  }
+
+  // Single-active-skill enrollment: the dashboard always shows whichever
+  // one enrollment is currently active server-side. There is no per-track
+  // query param anymore -- switching which track is active happens in
+  // Settings (see openSettings/switchActiveSkill below), which flips the
+  // active flag server-side and then reloads this same dashboard.
+  async function loadDashboard() {
+    try {
+      const data = await api("/api/dashboard/" + encodeURIComponent(studentId));
+      DASH = data;
+      $("#state").style.display = "none";
+      $("#app").style.display = "block";
+      render();
+    } catch (err) {
+      console.error("Dashboard load failed:", err);
+      if (/not found/i.test(err.message)) {
+        // stale / invalid id — bounce to landing
+        localStorage.removeItem("placely_student_id");
+        window.location.replace("index.html");
+        return;
+      }
+      $("#state").innerHTML =
+        '<div style="font-size:40px">⚠️</div>' +
+        '<h3>Couldn\'t load your dashboard</h3>' +
+        '<div class="muted">' + esc(err.message) + '</div>' +
+        '<button class="btn btn-primary" onclick="location.reload()">Retry</button>';
+    }
+  }
+
+  /* ---------- RENDER ---------- */
+  function render() {
+    renderHeader();
+    renderHero();
+    renderUnlockBanner();
+    renderRecommendedProjects();
+    renderBadges();
+    renderRoadmap();
+    renderCheckpoint();
+  }
+
+  // Shows once the active enrollment's skill is fully done: either a "next
+  // part unlocked" banner (DASH.next_part) with a start CTA, a congratulatory
+  // track-finished banner when the FINAL part of a multi-part track is done
+  // (DASH.track_completed), or — for a STANDALONE skill like Python, which
+  // has neither a next part nor a multi-part track to finish — a plain
+  // completion banner. That third case previously had no banner at all: the
+  // original code only checked nextPart/trackDone, so is_skill_complete=true
+  // with both null (exactly Python's shape) left the section permanently
+  // hidden. All three cases are computed server-side in get_dashboard so
+  // this needs no copy of the part-sequencing table.
+  function renderUnlockBanner() {
+    const sec = $("#unlock-sec");
+    if (!DASH.is_skill_complete) { sec.style.display = "none"; return; }
+    sec.style.display = "block";
+    const cta = $("#unlock-cta");
+    const nextPart = DASH.next_part;
+    const trackDone = DASH.track_completed;
+    if (trackDone) {
+      $("#unlock-title").textContent = "🏆 Track complete!";
+      $("#unlock-msg").textContent = "You've finished the entire " + (trackDone.track_name || "track") +
+        " track — every part, every task. Your GitHub portfolio is the proof.";
+      cta.style.display = "none";
+    } else if (nextPart) {
+      $("#unlock-title").textContent = "🎉 Next part unlocked!";
+      $("#unlock-msg").textContent = "You've completed " + ((DASH.skill && DASH.skill.name) || "this track") +
+        ". " + nextPart.name + " is ready whenever you are.";
+      cta.style.display = "";
+      cta.href = "index.html?track=" + encodeURIComponent(nextPart.slug) + "&autostart=1#join";
+    } else {
+      $("#unlock-title").textContent = "🏆 Track complete!";
+      $("#unlock-msg").textContent = "You've finished " + ((DASH.skill && DASH.skill.name) || "this track") +
+        " — every day, start to finish. Check out the project ideas below to keep building.";
+      cta.style.display = "none";
+    }
+  }
+
+  // Recommended projects, shown alongside the banner above whenever the
+  // active skill is complete (all three cases: standalone done, non-final
+  // part done, or full multi-part track done) -- same recommended_projects
+  // list the WhatsApp/Telegram completion message uses, so the dashboard
+  // and the chat message never show a different set of projects.
+  function renderRecommendedProjects() {
+    const sec = $("#projects-sec");
+    const projects = (DASH.is_skill_complete && DASH.recommended_projects) || [];
+    if (!projects.length) { sec.style.display = "none"; return; }
+    sec.style.display = "block";
+    $("#projects-grid").innerHTML = projects.map((p) => (
+      '<div class="project-card">' +
+        '<h4>' + esc(p.title) + '</h4>' +
+        '<div class="pmeta">' +
+          (p.difficulty ? '<span>' + esc(p.difficulty) + '</span>' : '') +
+          (p.estimated_hours ? '<span>~' + esc(p.estimated_hours) + 'h</span>' : '') +
+        '</div>' +
+        '<p>' + esc(p.description) + '</p>' +
+        '<div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">' +
+        (p.github_starter_url
+          ? '<a class="btn btn-sm" href="' + esc(p.github_starter_url) + '" target="_blank" rel="noopener noreferrer">View starter →</a>'
+          : '') +
+        '<button class="btn btn-sm" style="background: var(--green); color: #fff; border-color: var(--green);" onclick="submitProject(\'' + p.id + '\')">Submit Repo</button>' +
+        '</div>' +
+      '</div>'
+    )).join('');
+  }
+
+  async function submitProject(projectId) {
+    const url = prompt("Enter the URL to your GitHub Repository for this project:");
+    if (!url) return;
+    
+    try {
+      const res = await fetch("http://127.0.0.1:5000/api/submit-project", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          student_id: DASH.student.phone,
+          project_id: projectId,
+          github_url: url
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("Project submitted successfully! It has been added to your Portfolio.");
+      } else {
+        alert("Failed to submit project: " + (data.error || "Unknown error"));
+      }
+    } catch (e) {
+      alert("Network error while submitting project.");
+    }
+  }
+
+  /* ---------- SETTINGS (switch active skill) ---------- */
+  async function openSettings() {
+    document.getElementById("settings-overlay").classList.add("show");
+    const list = document.getElementById("skill-list");
+    list.innerHTML = '<p class="muted" style="text-align:center;padding:10px 0;">Loading…</p>';
+    try {
+      const res = await api("/api/student/" + encodeURIComponent(studentId) + "/enrollments");
+      const rows = (res && res.enrollments) || [];
+      if (!rows.length) {
+        list.innerHTML = '<p class="muted" style="text-align:center;padding:10px 0;">No tracks found.</p>';
+        return;
+      }
+      list.innerHTML = rows.map((r) => (
+        '<div class="skill-row ' + (r.is_active ? "is-active" : "") + '">' +
+          '<div class="sr-info">' +
+            '<div class="sr-name">' + esc(r.name || r.slug || "Track") + "</div>" +
+            '<div class="sr-meta">Day ' + esc(r.current_day) + " of " + esc(r.total_days || "?") + "</div>" +
+          "</div>" +
+          (r.is_active
+            ? '<span class="sr-badge">Active</span>'
+            : '<button class="btn btn-primary btn-sm" data-switch-to="' + esc(r.skill_id) + '">Switch here</button>') +
+        "</div>"
+      )).join("");
+      list.querySelectorAll("[data-switch-to]").forEach((btn) => {
+        btn.addEventListener("click", () => switchActiveSkill(btn.getAttribute("data-switch-to"), btn));
+      });
+    } catch (err) {
+      console.error(err);
+      list.innerHTML = '<p class="muted" style="text-align:center;padding:10px 0;">Couldn\'t load your tracks.</p>';
+    }
+  }
+
+  async function switchActiveSkill(skillId, btn) {
+    const original = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = "Switching…";
+    try {
+      await api("/api/enrollments/switch-active", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ student_id: studentId, skill_id: skillId }),
+      });
+      document.getElementById("settings-overlay").classList.remove("show");
+      toast("Switched active track ✅", "ok");
+      $("#state").style.display = "flex"; $("#app").style.display = "none";
+      await loadDashboard();
+    } catch (err) {
+      console.error(err);
+      toast("Couldn't switch tracks: " + err.message, "err");
+      btn.disabled = false; btn.innerHTML = original;
+    }
+  }
+
+  function currentDay() {
+    return (DASH.enrollment && DASH.enrollment.current_day) || 1;
+  }
+  function totalDays() {
+    return (DASH.skill && DASH.skill.total_days) || TOTAL_DAYS_DEFAULT;
+  }
+
+  function renderHeader() {
+    $("#student-name").textContent = (DASH.student && DASH.student.name) || "Student";
+    if (DASH.skill && DASH.skill.has_dsa) {
+      $("#dsa-link").style.display = "inline-flex";
+    } else {
+      $("#dsa-link").style.display = "none";
+    }
+  }
+
+  function renderHero() {
+    const day = currentDay();
+    const total = totalDays();
+    const pct = Math.min(100, Math.round((day / total) * 100));
+
+    $("#hero-day").textContent = day;
+    $("#hero-total").textContent = total;
+    $("#skill-name").textContent = (DASH.skill && DASH.skill.name)
+      ? DASH.skill.name + " sprint" : "Your learning sprint";
+    $("#streak-count").textContent = DASH.streak || 0;
+
+    // animate the bar after a tick
+    requestAnimationFrame(() => { $("#progress-fill").style.width = pct + "%"; });
+
+    const filled = Math.round(pct / 10);
+    $("#ascii-bar").textContent = "█".repeat(filled) + "░".repeat(10 - filled);
+    $("#ascii-pct").textContent = pct + "%";
+
+    const nm = DASH.next_milestone;
+    if (nm) {
+      const label = pick(nm, ["title", "name", "message", "description"], "");
+      const afterDay = pick(nm, ["after_day"], null);
+      $("#next-ms").innerHTML = "Next milestone: <b>" + esc(label || ("Day " + afterDay)) + "</b>"
+        + (afterDay ? ' <span class="muted">(day ' + esc(afterDay) + ")</span>" : "");
+    } else {
+      $("#next-ms").textContent = "";
+    }
+  }
+
+  function renderBadges() {
+    const day = currentDay();
+    // names of badges the API reports as earned (badges(name) shape)
+    const earnedNames = new Set();
+    (DASH.badges || []).forEach((b) => {
+      const inner = b.badges || b;
+      const t = (inner && inner.name) ? inner.name.toLowerCase().trim() : "";
+      if (t) earnedNames.add(t);
+    });
+    // shelf comes from this skill's badge definitions; fall back to canonical
+    // Python list only if the API didn't supply any (older backend).
+    const defs = (DASH.all_badges && DASH.all_badges.length)
+      ? DASH.all_badges.map((b) => ({ emoji: b.emoji || "🏅", name: b.name, day: b.day_threshold }))
+      : BADGES;
+    const shelf = $("#badge-shelf");
+    shelf.innerHTML = defs.map((b) => {
+      const earned = day >= b.day || earnedNames.has((b.name || "").toLowerCase());
+      return (
+        '<div class="badge ' + (earned ? "earned" : "locked") + '">' +
+          (earned ? "" : '<span class="lock">🔒</span>') +
+          '<span class="emoji">' + (b.emoji || "🏅") + "</span>" +
+          '<div class="bname">' + esc(b.name) + "</div>" +
+          '<div class="bname" style="opacity:.6;font-size:9.5px">Day ' + esc(b.day) + "</div>" +
+        "</div>"
+      );
+    }).join("");
+  }
+
+  function statusIcon(status) {
+    if (status === "done") return "✅";
+    if (status === "stuck") return "⚠️";
+    return "•";
+  }
+
+  function renderRoadmap() {
+    const phases = (DASH.phases || []).slice().sort(
+      (a, b) => (a.order_index || 0) - (b.order_index || 0)
+    );
+    const road = $("#roadmap");
+    road.innerHTML = phases.map((phase, i) => {
+      const tasks = (phase.tasks || []).slice().sort(
+        (a, b) => (a.day_number || 0) - (b.day_number || 0)
+      );
+      const doneCount = tasks.filter((t) => t.progress && t.progress.status === "done").length;
+      const isOpen = openPhases.has(phase.id);
+      return (
+        '<div class="phase ' + (isOpen ? "open" : "") + '" data-phase="' + esc(phase.id) + '">' +
+          '<div class="phase-head" data-toggle-phase="' + esc(phase.id) + '">' +
+            '<div class="pt">' +
+              '<div class="phase-num">' + (i + 1) + "</div>" +
+              "<div>" +
+                '<div class="phase-title">' + esc(phase.title || ("Phase " + (i + 1))) + "</div>" +
+                '<div class="phase-meta">' + doneCount + " / " + tasks.length + " tasks done</div>" +
+              "</div>" +
+            "</div>" +
+            '<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>' +
+          "</div>" +
+          '<div class="phase-body"><div class="phase-body-inner"><div class="phase-tasks">' +
+            tasks.map(renderTask).join("") +
+          "</div></div></div>" +
+        "</div>"
+      );
+    }).join("");
+  }
+
+  function renderTask(task) {
+    const prog = task.progress || { status: "pending" };
+    const status = prog.status || "pending";
+    const isOpen = openTasks.has(task.id);
+    const pill = status === "done"
+      ? '<span class="badge-pill pill-done">Done</span>'
+      : status === "stuck"
+      ? '<span class="badge-pill pill-stuck">Stuck</span>'
+      : "";
+
+    const challenge = (label, val) => val
+      ? '<div class="chal"><b>' + label + ":</b> " + esc(val) + "</div>" : "";
+
+    const fb = prog.ai_feedback
+      ? '<div class="ai-feedback show" id="fb-' + esc(task.id) + '">' +
+          '<div class="ai-head">🤖 AI Mentor Review</div>' +
+          '<div class="ai-body">' + esc(prog.ai_feedback) + "</div></div>"
+      : '<div class="ai-feedback" id="fb-' + esc(task.id) + '">' +
+          '<div class="ai-head">🤖 AI Mentor Review</div>' +
+          '<div class="ai-body"></div></div>';
+
+    // A watch button for EVERY resource with a usable URL — a day can have
+    // several lecture videos, not just one. Each is labelled with its own
+    // resource title (e.g. "Watch 0:00–10:52 — Inline & Block Elements") so
+    // the multiple links are distinguishable; falls back to the generic
+    // label for any resource without a title.
+    const watchBtn = (task.resources || [])
+      .filter((r) => r && r.url)
+      .map((r) => '<a class="btn-watch" href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">▶ ' + esc(r.title || "Watch this section on YouTube") + ' →</a>')
+      .join(" ");
+
+    return (
+      '<div class="task ' + status + " " + (isOpen ? "open" : "") + '" data-task="' + esc(task.id) + '">' +
+        '<div class="task-head" data-toggle-task="' + esc(task.id) + '">' +
+          '<div class="task-status">' + statusIcon(status) + "</div>" +
+          '<div class="grow">' +
+            '<div class="task-day">Day ' + esc(task.day_number) + "</div>" +
+            '<div class="task-title">' + esc(task.title) + "</div>" +
+          "</div>" +
+          pill +
+          '<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>' +
+        "</div>" +
+        '<div class="task-body"><div class="task-body-inner"><div class="task-content">' +
+          watchBtn +
+          (task.instruction ? '<div class="field-block"><div class="field-label">Your task</div><div class="field-text">' + esc(task.instruction) + "</div></div>" : "") +
+          (task.real_world_context ? '<div class="field-block"><div class="field-label">Why it matters</div><div class="field-text ctx">' + esc(task.real_world_context) + "</div></div>" : "") +
+          (task.optional_challenge || task.stretch_challenge
+            ? '<div class="field-block"><div class="field-label">Challenges</div>' +
+                challenge("Optional", task.optional_challenge) +
+                challenge("Stretch", task.stretch_challenge) +
+              "</div>" : "") +
+          '<div class="task-actions">' +
+            '<button class="btn btn-done btn-sm" data-action="done" data-task="' + esc(task.id) + '">✅ Mark as Done</button>' +
+            '<button class="btn btn-stuck btn-sm" data-action="stuck" data-task="' + esc(task.id) + '">⚠️ Mark as Stuck</button>' +
+          "</div>" +
+          '<div class="code-area">' +
+            '<div class="field-label">Submit your code for AI review</div>' +
+            '<textarea class="code" id="code-' + esc(task.id) + '" placeholder="Paste your Python code here…">' + esc(prog.submitted_code || "") + "</textarea>" +
+            '<button class="btn btn-primary btn-sm" style="margin-top:10px" data-action="review" data-task="' + esc(task.id) + '">✨ Submit for AI Review</button>' +
+          "</div>" +
+          fb +
+        "</div></div></div>" +
+      "</div>"
+    );
+  }
+
+  /* ---------- CHECKPOINT ---------- */
+  let cpScore = null;
+  let cpConfig = null;
+
+  function renderCheckpoint() {
+    const day = currentDay();
+    const sec = $("#checkpoint-sec");
+    // Checkpoints come from the API for the current skill (ai_checkpoints rows,
+    // scoped by skill_id). Show the one whose after_day matches today.
+    const cps = (DASH && DASH.checkpoints) || [];
+    const cp = cps.find((c) => Number(c.after_day) === Number(day)) || null;
+    cpConfig = cp ? { id: cp.id, after_day: cp.after_day } : null;
+
+    if (!cpConfig) { sec.style.display = "none"; return; }
+    sec.style.display = "block";
+    $("#cp-title").textContent = "Day " + cp.after_day + " Checkpoint";
+    cpScore = null;
+    $("#cp-result").className = "cp-result";
+    $$all(".cp-score .opt").forEach((o) => o.classList.remove("sel"));
+    $("#cp-submit").disabled = true;
+
+    const trio = [
+      pick(cp, ["question_1", "question1", "q1"], ""),
+      pick(cp, ["question_2", "question2", "q2"], ""),
+      pick(cp, ["question_3", "question3", "q3"], ""),
+    ].filter(Boolean);
+    setCheckpointQuestions(trio.length ? trio : [
+      "Could you explain today's core concept to a friend?",
+      "Did your code run without errors you couldn't fix?",
+      "Could you rebuild this from scratch without looking?",
+    ]);
+  }
+
+  function setCheckpointQuestions(list) {
+    $("#cp-questions").innerHTML = list.map((q, i) =>
+      '<div class="cp-q"><span class="qn">' + (i + 1) + ".</span><span>" + esc(q) + "</span></div>"
+    ).join("");
+  }
+
+  function $$all(sel, root = document) { return Array.prototype.slice.call(root.querySelectorAll(sel)); }
+
+  /* ---------- ACTIONS ---------- */
+  async function updateProgress(taskId, status) {
+    try {
+      const res = await api("/api/progress/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ student_id: studentId, task_id: taskId, status: status }),
+      });
+      toast(status === "done" ? "Marked as done ✅" : "Marked as stuck ⚠️", status === "done" ? "ok" : "");
+      if (res && res.track_completed) {
+        showMilestone({
+          title: "🏆 Track complete!",
+          message: "You've finished the ENTIRE " + (res.track_completed.track_name || "track") +
+            " track — every part, every task, start to finish. Your GitHub portfolio is the proof. Congratulations, graduate!",
+          emoji: "🏆",
+        });
+      } else if (res && res.part_unlocked) {
+        showMilestone({
+          title: "Next part unlocked! 🎉",
+          message: (res.part_unlocked.name || "The next part") + " is ready whenever you are — see the banner below to start it.",
+          emoji: "🎉",
+        });
+      } else if (res && res.milestone) {
+        showMilestone(res.milestone);
+      } else if (res && res.badge_earned) {
+        const b = res.badge_earned;
+        toast("Badge unlocked: " + (b.title || b.name || "New badge") + " " + (b.icon || "🏅"), "ok");
+      }
+      await loadDashboard(); // re-fetch so the UI stays in sync
+    } catch (err) {
+      console.error(err);
+      toast("Update failed: " + err.message, "err");
+    }
+  }
+
+  async function reviewCode(taskId, btn) {
+    const ta = $("#code-" + cssId(taskId));
+    const code = ta ? ta.value.trim() : "";
+    if (!code) { toast("Paste some code first", "err"); return; }
+    const fb = $("#fb-" + cssId(taskId));
+    const original = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = "Reviewing…";
+    try {
+      const res = await api("/api/code/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ student_id: studentId, task_id: taskId, code: code }),
+      });
+      if (fb) {
+        $(".ai-body", fb).textContent = (res && res.feedback) || "No feedback returned.";
+        fb.classList.add("show");
+      }
+      toast("AI review ready ✨", "ok");
+    } catch (err) {
+      console.error(err);
+      toast("Review failed: " + err.message, "err");
+    } finally {
+      btn.disabled = false; btn.innerHTML = original;
+    }
+  }
+
+  async function submitCheckpoint(btn) {
+    if (cpScore == null || !cpConfig) return;
+    const original = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = "Submitting…";
+    try {
+      const res = await api("/api/checkpoint/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ student_id: studentId, checkpoint_id: cpConfig.id, score: cpScore }),
+      });
+      const box = $("#cp-result");
+      const pass = res && res.result === "pass";
+      box.textContent = (res && res.message) || (pass ? "Great work!" : "Revise before continuing");
+      box.className = "cp-result show " + (pass ? "pass" : "revise");
+    } catch (err) {
+      console.error(err);
+      const box = $("#cp-result");
+      box.textContent = "Submit failed: " + err.message;
+      box.className = "cp-result show revise";
+    } finally {
+      btn.disabled = false; btn.innerHTML = original;
+    }
+  }
+
+  // CSS.escape fallback for ids used in selectors
+  function cssId(id) {
+    return (window.CSS && CSS.escape) ? CSS.escape(id) : String(id).replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+  }
+
+  /* ---------- MILESTONE POPUP ---------- */
+  function showMilestone(ms) {
+    const msg = pick(ms, ["message", "description", "title", "name"], "You've reached a new milestone!");
+    const title = pick(ms, ["title", "name"], "Milestone unlocked!");
+    $("#ms-title").textContent = title;
+    $("#ms-message").textContent = msg;
+    $("#ms-emoji").textContent = pick(ms, ["icon", "emoji"], "🎉");
+    $("#milestone-overlay").classList.add("show");
+  }
+
+  /* ---------- EVENTS (delegated) ---------- */
+  document.addEventListener("click", (e) => {
+    const phaseToggle = e.target.closest("[data-toggle-phase]");
+    if (phaseToggle) {
+      const id = phaseToggle.getAttribute("data-toggle-phase");
+      const el = phaseToggle.closest(".phase");
+      el.classList.toggle("open");
+      if (el.classList.contains("open")) openPhases.add(id); else openPhases.delete(id);
+      return;
+    }
+    const taskToggle = e.target.closest("[data-toggle-task]");
+    if (taskToggle && !e.target.closest("[data-action]")) {
+      const id = taskToggle.getAttribute("data-toggle-task");
+      const el = taskToggle.closest(".task");
+      el.classList.toggle("open");
+      if (el.classList.contains("open")) openTasks.add(id); else openTasks.delete(id);
+      return;
+    }
+    const actionBtn = e.target.closest("[data-action]");
+    if (actionBtn) {
+      e.stopPropagation();
+      const action = actionBtn.getAttribute("data-action");
+      const taskId = actionBtn.getAttribute("data-task");
+      if (action === "done") updateProgress(taskId, "done");
+      else if (action === "stuck") updateProgress(taskId, "stuck");
+      else if (action === "review") reviewCode(taskId, actionBtn);
+      return;
+    }
+    const cpOpt = e.target.closest(".cp-score .opt");
+    if (cpOpt) {
+      cpScore = parseInt(cpOpt.getAttribute("data-score"), 10);
+      $$all(".cp-score .opt").forEach((o) => o.classList.remove("sel"));
+      cpOpt.classList.add("sel");
+      $("#cp-submit").disabled = false;
+      return;
+    }
+  });
+
+  $("#cp-submit").addEventListener("click", (e) => submitCheckpoint(e.currentTarget));
+  $("#ms-dismiss").addEventListener("click", () => $("#milestone-overlay").classList.remove("show"));
+  $("#milestone-overlay").addEventListener("click", (e) => {
+    if (e.target === $("#milestone-overlay")) $("#milestone-overlay").classList.remove("show");
+  });
+
+  /* ---------- SETTINGS ---------- */
+  $("#settings-btn").addEventListener("click", openSettings);
+  $("#settings-close").addEventListener("click", () => $("#settings-overlay").classList.remove("show"));
+  $("#settings-overlay").addEventListener("click", (e) => {
+    if (e.target === $("#settings-overlay")) $("#settings-overlay").classList.remove("show");
+  });
+
+  /* ---------- LOGOUT ---------- */
+  $("#logout-btn").addEventListener("click", async () => {
+    try {
+      await fetch(API + "/api/auth/logout", { method: "POST", credentials: "include" });
+    } catch (e) { /* revoke best-effort — clearing local state still logs the UI out */ }
+    try { localStorage.removeItem("placely_student_id"); } catch (ex) {}
+    window.location.href = "index.html";
+  });
+
+  /* ---------- GO ---------- */
+  // Verify the session server-side before loading anything -- this is the
+  // actual authentication check (a valid httpOnly cookie the browser holds
+  // and Flask verifies against the sessions table), not a check of
+  // whatever happens to be sitting in localStorage.
+  (async function bootstrap() {
+    try {
+      const res = await fetch(API + "/api/auth/session", { credentials: "include" });
+      if (!res.ok) throw new Error("not logged in");
+      const data = await res.json();
+      if (!data || !data.logged_in || !data.student_id) throw new Error("not logged in");
+      studentId = data.student_id;
+      try { localStorage.setItem("placely_student_id", studentId); } catch (ex) {}
+      loadDashboard();
+    } catch (err) {
+      // No valid session -- send them to log in, not silently to the
+      // marketing page with no way back into their own dashboard.
+      try { localStorage.removeItem("placely_student_id"); } catch (ex) {}
+      window.location.replace("index.html?login=1");
+    }
+  })();
+})();
+</script>
+</body>
+</html>

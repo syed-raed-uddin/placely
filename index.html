@@ -1,0 +1,2914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WW7TJ68D');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Placely | AI Coding Mentor & Accountability Partner | Learn to Code</title>
+<meta name="description" content="Learn to code with a daily AI mentor on WhatsApp. Get a structured roadmap, free coding resources, and a coding accountability partner to ensure you actually finish. Start with Python today." />
+<meta name="theme-color" content="#07090f" />
+
+<!-- Canonical URL -->
+<link rel="canonical" href="https://www.placely.co.in/" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="Placely | AI Coding Mentor & Accountability Partner" />
+<meta property="og:description" content="Learn to code with a daily AI mentor on WhatsApp. Get a structured roadmap, free coding resources, and a coding accountability partner to ensure you actually finish." />
+<meta property="og:url" content="https://www.placely.co.in/" />
+<meta property="og:type" content="website" />
+
+<!-- Schema Markup -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  "name": "Placely",
+  "url": "https://www.placely.co.in/",
+  "description": "AI-powered coding mentor and accountability partner via WhatsApp. Learn Python, JavaScript, and more.",
+  "sameAs": []
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": "Learn Python with AI Mentor",
+  "description": "A 22-day structured roadmap to learn Python with a daily AI mentor checking your progress.",
+  "provider": {
+    "@type": "EducationalOrganization",
+    "name": "Placely",
+    "sameAs": "https://www.placely.co.in/"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "199",
+    "priceCurrency": "INR",
+    "category": "Subscription"
+  }
+}
+</script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+<!-- Supabase client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<style>
+  /* ============================================================
+     TOKENS
+     ============================================================ */
+  :root {
+    --bg:        #07090f;
+    --bg-soft:   #0c0f18;
+    --bg-card:   #10131e;
+    --line:      rgba(255,255,255,0.08);
+    --line-2:    rgba(255,255,255,0.14);
+    --text:      #eef1f7;
+    --muted:     #9aa3b2;
+    --muted-2:   #5f6675;
+    --amber:     #f59e0b;
+    --amber-2:   #fbbf24;
+    --amber-dim: rgba(245,158,11,0.14);
+    --green:     #22c55e;
+    --radius:    18px;
+    --maxw:      1180px;
+    --ease:      cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Lenis */
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-stopped { overflow: hidden; }
+
+  h1, h2, h3, h4, .display {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+  ::selection { background: var(--amber); color: #07090f; }
+
+  /* ============================================================
+     LAYOUT HELPERS
+     ============================================================ */
+  .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
+  section { position: relative; }
+  .eyebrow {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--amber); font-weight: 600; margin-bottom: 18px;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 1px; background: var(--amber); opacity: 0.7; }
+
+  .sec-head { max-width: 720px; margin-bottom: 56px; }
+  .sec-head h2 { font-size: clamp(30px, 5vw, 52px); }
+  .sec-head p { color: var(--muted); margin-top: 18px; font-size: clamp(15px, 2vw, 18px); max-width: 560px; }
+
+  .pad { padding: clamp(80px, 12vw, 150px) 0; }
+
+  /* ============================================================
+     BUTTONS
+     ============================================================ */
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+    font-size: 15px; padding: 14px 26px; border-radius: 100px;
+    cursor: pointer; border: 1px solid transparent;
+    transition: transform .35s var(--ease), background .35s var(--ease), box-shadow .35s var(--ease);
+    will-change: transform;
+  }
+  .btn-primary {
+    background: var(--amber); color: #1a1303;
+    box-shadow: 0 8px 30px -8px rgba(245,158,11,0.5);
+  }
+  .btn-primary:hover { transform: translateY(-2px); background: var(--amber-2); box-shadow: 0 14px 40px -8px rgba(245,158,11,0.6); }
+  .btn-ghost { background: transparent; color: var(--text); border-color: var(--line-2); }
+  .btn-ghost:hover { border-color: var(--amber); color: var(--amber); transform: translateY(-2px); }
+  .btn svg { width: 16px; height: 16px; }
+
+  /* ============================================================
+     NAV
+     ============================================================ */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 28px;
+    transition: background .4s var(--ease), backdrop-filter .4s var(--ease), border-color .4s var(--ease);
+    border-bottom: 1px solid transparent;
+  }
+  .nav.scrolled {
+    background: rgba(7,9,15,0.72);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 11px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px; letter-spacing: -0.02em; }
+  .brand .dot {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--amber); box-shadow: 0 0 14px var(--amber);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  .brand b { color: var(--amber); font-weight: 700; }
+  @keyframes pulse { 0%,100%{ transform: scale(1); opacity:1 } 50%{ transform: scale(0.7); opacity:.55 } }
+
+  .nav-links { display: flex; align-items: center; gap: 6px; }
+  .nav-links a {
+    font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 500;
+    color: var(--muted); padding: 9px 15px; border-radius: 100px;
+    transition: color .3s var(--ease), background .3s var(--ease);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+  .nav-links a .num { color: var(--amber); font-size: 11px; opacity: 0.8; }
+  .nav-cta { display: flex; align-items: center; gap: 14px; }
+
+  .menu-btn { display: none; background: none; border: 1px solid var(--line-2); border-radius: 10px; width: 42px; height: 38px; color: var(--text); cursor: pointer; }
+
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .nav-cta .btn-ghost { display: none; }
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .hero { min-height: 100svh; display: flex; align-items: center; overflow: hidden; padding-top: 90px; }
+  #hero-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    z-index: 0; opacity: 0;
+  }
+  #hero-canvas.ready { opacity: 1; }
+  .hero-glow {
+    position: absolute; z-index: 0; pointer-events: none;
+    width: 70vw; height: 70vw; max-width: 900px; max-height: 900px;
+    top: -10%; left: 50%; transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(245,158,11,0.16), transparent 62%);
+    filter: blur(20px);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(circle at 50% 38%, #000 0%, transparent 72%);
+    -webkit-mask-image: radial-gradient(circle at 50% 38%, #000 0%, transparent 72%);
+  }
+  .hero-inner { position: relative; z-index: 2; width: 100%; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 9px;
+    background: var(--amber-dim); border: 1px solid rgba(245,158,11,0.3);
+    color: var(--amber-2); font-family: 'Space Grotesk', sans-serif; font-weight: 500;
+    font-size: 13px; padding: 7px 15px; border-radius: 100px; margin-bottom: 30px;
+  }
+  .hero-badge .live { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 1.8s infinite; }
+
+  .hero h1 { font-size: clamp(44px, 8.5vw, 96px); font-weight: 600; max-width: 22ch; }
+  .hero h1 .static-line { display: block; }
+  .hero h1 .cycle {
+    color: var(--amber);
+    display: inline-block; position: relative;
+  }
+  .cycle .caret {
+    display: inline-block; width: 4px; height: 0.82em; background: var(--amber);
+    margin-left: 6px; vertical-align: -2px; animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{ opacity:1 } 50%{ opacity:0 } }
+
+  .hero p.lead { color: var(--muted); font-size: clamp(16px, 2.3vw, 21px); max-width: 580px; margin-top: 26px; }
+  .hero p.lead b { color: var(--text); font-weight: 600; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 38px; align-items: center; }
+  .guarantee-pill { font-size: 13.5px; color: var(--muted); display: inline-flex; align-items: center; gap: 8px; }
+  .guarantee-pill svg { width: 16px; height: 16px; color: var(--green); }
+
+  .hero-guarantee {
+    display: inline-flex; align-items: center; gap: 11px; margin-top: 26px;
+    background: var(--amber-dim); border: 1px solid rgba(245,158,11,0.32);
+    padding: 11px 20px; border-radius: 100px;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+    font-size: clamp(14px, 2vw, 18px); letter-spacing: -0.01em; color: var(--text);
+  }
+  .hero-guarantee svg { width: 19px; height: 19px; color: var(--amber); flex-shrink: 0; }
+  .hero-guarantee b { color: var(--amber-2); font-weight: 700; }
+
+  /* ---- why-not-chatgpt comparison table ---- */
+  .vs-table { max-width: 920px; margin: 0 auto; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--bg-card); }
+  .vs-head, .vs-row { display: grid; grid-template-columns: 1fr 1fr; }
+  .vs-head { border-bottom: 1px solid var(--line-2); }
+  .vs-col-label { padding: 18px 26px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(13px, 1.8vw, 17px); letter-spacing: -0.01em; }
+  .vs-col-label.vs-them { color: var(--muted-2); }
+  .vs-col-label.vs-us { color: var(--amber-2); background: var(--amber-dim); border-left: 1px solid rgba(245,158,11,0.28); display: inline-flex; align-items: center; gap: 8px; }
+  .vs-col-label.vs-us::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 10px var(--amber); }
+  .vs-row { border-top: 1px solid var(--line); }
+  .vs-cell { padding: 20px 26px; display: flex; align-items: flex-start; gap: 12px; font-size: clamp(13.5px, 1.7vw, 16.5px); line-height: 1.45; }
+  .vs-cell.vs-them { color: var(--muted); }
+  .vs-cell.vs-us { color: var(--text); background: var(--amber-dim); border-left: 1px solid rgba(245,158,11,0.28); font-weight: 500; }
+  .vs-cell svg { width: 19px; height: 19px; flex-shrink: 0; margin-top: 1px; }
+  .vs-cell.vs-them svg { color: var(--muted-2); }
+  .vs-cell.vs-us svg { color: var(--amber); }
+  @media (max-width: 560px) {
+    .vs-col-label, .vs-cell { padding: 15px 14px; }
+    .vs-cell { gap: 8px; }
+  }
+
+  /* ---- VS comparison cards (2x2) ---- */
+  .vs-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 920px; margin: 0 auto 22px; }
+  .vs-card { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; background: var(--bg-card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .vs-card .side { padding: 18px 20px; display: flex; flex-direction: column; gap: 9px; }
+  .vs-card .who { font-family: 'Space Grotesk', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  .vs-card .what { display: flex; align-items: flex-start; gap: 9px; font-size: 14.5px; line-height: 1.4; }
+  .vs-card .what svg { width: 17px; height: 17px; flex-shrink: 0; margin-top: 2px; }
+  .vs-card .left { color: var(--muted); }
+  .vs-card .left .who { color: var(--muted-2); }
+  .vs-card .left .what svg { color: var(--muted-2); }
+  .vs-card .right { background: var(--amber-dim); color: var(--text); border-left: 1px solid rgba(245,158,11,0.28); }
+  .vs-card .right .who { color: var(--amber-2); }
+  .vs-card .right .what svg { color: var(--amber); }
+  .vs-card .vsdiv { display: flex; align-items: center; justify-content: center; padding: 0 6px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 11px; color: var(--amber); border-left: 1px solid var(--line); border-right: 1px solid rgba(245,158,11,0.28); background: rgba(0,0,0,0.18); }
+  .vs-tagline { text-align: center; max-width: 760px; margin: 44px auto 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(20px, 3.2vw, 31px); line-height: 1.25; letter-spacing: -0.01em; color: var(--amber-2); }
+  @media (max-width: 620px) {
+    .vs-cards { grid-template-columns: 1fr; }
+  }
+
+  .hero-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+    margin-top: 64px; border-top: 1px solid var(--line); padding-top: 32px;
+    max-width: 760px;
+  }
+  .stat .num { font-family: 'Space Grotesk', sans-serif; font-size: clamp(28px, 4.5vw, 44px); font-weight: 600; color: var(--text); letter-spacing: -0.03em; }
+  .stat .num .suf { color: var(--amber); }
+  .stat .lbl { font-size: 12.5px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+  @media (max-width: 640px) {
+    .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 24px 14px; }
+  }
+
+  /* ============================================================
+     PROBLEM
+     ============================================================ */
+  .prob-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  @media (max-width: 980px){ .prob-grid { grid-template-columns: repeat(2,1fr);} }
+  @media (max-width: 560px){ .prob-grid { grid-template-columns: 1fr;} }
+  .prob-card {
+    background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 30px 26px; transition: border-color .4s var(--ease), transform .4s var(--ease);
+    position: relative; overflow: hidden;
+  }
+  .prob-card:hover { border-color: var(--line-2); transform: translateY(-4px); }
+  .prob-card .ic { width: 46px; height: 46px; border-radius: 12px; background: var(--amber-dim); display: grid; place-items: center; margin-bottom: 22px; color: var(--amber); }
+  .prob-card .ic svg { width: 22px; height: 22px; }
+  .prob-card h3 { font-size: 19px; margin-bottom: 10px; }
+  .prob-card p { color: var(--muted); font-size: 14.5px; }
+  .prob-card .stat-tag { margin-top: 18px; font-family: 'Space Grotesk',sans-serif; font-size: 13px; color: var(--amber); font-weight:600; }
+
+  /* ============================================================
+     WHATSAPP MOCKUP
+     ============================================================ */
+  .wa-section { background: var(--bg-soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .wa-layout { display: grid; grid-template-columns: 1fr 380px; gap: 70px; align-items: center; }
+  @media (max-width: 920px){ .wa-layout { grid-template-columns: 1fr; gap: 50px; } .wa-copy{ order:2 } .wa-phone-wrap{ order:1 } }
+
+  .wa-copy h2 { font-size: clamp(28px, 4.5vw, 46px); }
+  .wa-copy p { color: var(--muted); margin-top: 18px; font-size: 17px; max-width: 460px; }
+  .wa-points { margin-top: 30px; display: grid; gap: 14px; }
+  .wa-points li { list-style: none; display: flex; gap: 14px; align-items: flex-start; font-size: 15px; color: var(--text); }
+  .wa-points li svg { width: 20px; height: 20px; color: var(--amber); flex: 0 0 auto; margin-top: 2px; }
+  .wa-points li span { color: var(--muted); }
+
+  .wa-phone-wrap { display: flex; justify-content: center; }
+  .phone {
+    width: 330px; max-width: 100%; background: #0b141a; border-radius: 38px;
+    border: 9px solid #1c2730; box-shadow: 0 40px 90px -30px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+    overflow: hidden; position: relative;
+  }
+  .phone::before { content:""; position:absolute; top:14px; left:50%; transform:translateX(-50%); width:96px; height:6px; border-radius:6px; background:#000; z-index:5; }
+  .wa-top {
+    background: #1f2c34; padding: 30px 16px 12px; display: flex; align-items: center; gap: 12px;
+  }
+  .wa-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--amber), #b45309); display: grid; place-items: center; font-family:'Space Grotesk'; font-weight:700; color:#1a1303; font-size:16px; }
+  .wa-name { font-weight: 600; font-size: 15px; color: #e9edef; line-height:1.2; }
+  .wa-status { font-size: 11.5px; color: #8696a0; }
+  .wa-status b { color: var(--green); font-weight: 500; }
+  .wa-body {
+    background-color: #0b141a;
+    background-image:
+      radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 22px 22px;
+    padding: 18px 14px 20px; min-height: 430px;
+    display: flex; flex-direction: column; gap: 9px;
+  }
+  .wa-day { align-self: center; background: #1c2730; color: #8696a0; font-size: 11px; padding: 4px 11px; border-radius: 8px; margin: 4px 0; }
+  .bubble {
+    max-width: 82%; padding: 8px 11px 7px; border-radius: 9px; font-size: 13.5px; line-height: 1.45;
+    position: relative; box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+  }
+  .bubble .time { font-size: 10px; color: rgba(255,255,255,0.45); float: right; margin: 6px 0 -2px 10px; }
+  .bubble.in { align-self: flex-start; background: #1f2c34; color: #e9edef; border-top-left-radius: 2px; }
+  .bubble.out { align-self: flex-end; background: #144d37; color: #e9edef; border-top-right-radius: 2px; }
+  .bubble.out .time { color: rgba(134,150,160,0.9); }
+  .bubble b { color: var(--amber-2); font-weight: 600; }
+  .bubble.in b { color: var(--amber-2); }
+  .typing { align-self: flex-start; background:#1f2c34; border-radius:9px; padding:11px 14px; display:flex; gap:4px; }
+  .typing span { width:7px;height:7px;border-radius:50%;background:#8696a0; animation: dot 1.2s infinite; }
+  .typing span:nth-child(2){ animation-delay:.2s } .typing span:nth-child(3){ animation-delay:.4s }
+  @keyframes dot { 0%,60%,100%{ transform:translateY(0); opacity:.4 } 30%{ transform:translateY(-4px); opacity:1 } }
+
+  /* ============================================================
+     MARQUEE
+     ============================================================ */
+  .marquee-sec { padding: 60px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--bg-soft); overflow: hidden; }
+  .marquee-label { text-align:center; font-size:13px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted-2); font-family:'Space Grotesk'; margin-bottom:34px; }
+  .marquee { display: flex; width: max-content; will-change: transform; }
+  .marquee .track { display: flex; align-items: center; }
+  .marquee .item {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(28px, 5vw, 52px);
+    color: var(--text); padding: 0 38px; display: flex; align-items: center; gap: 38px; white-space: nowrap;
+  }
+  .marquee .item::after { content: "·"; color: var(--amber); }
+  .marquee .item.dim { color: transparent; -webkit-text-stroke: 1px var(--muted-2); }
+
+  /* ============================================================
+     FEATURES GRID
+     ============================================================ */
+  .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  @media (max-width: 880px){ .feat-grid { grid-template-columns: repeat(2,1fr);} }
+  @media (max-width: 560px){ .feat-grid { grid-template-columns: 1fr;} }
+  .feat {
+    padding: 38px 30px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    position: relative; transition: background .4s var(--ease); background: transparent;
+  }
+  .feat:hover { background: var(--bg-card); }
+  .feat .fnum { font-family: 'Space Grotesk', sans-serif; font-size: 14px; color: var(--amber); font-weight: 600; letter-spacing: .1em; }
+  .feat h3 { font-size: 20px; margin: 16px 0 9px; }
+  .feat p { color: var(--muted); font-size: 14px; }
+  .feat .big { position:absolute; right:18px; top:6px; font-family:'Space Grotesk'; font-size:74px; font-weight:700; color:rgba(255,255,255,0.025); line-height:1; pointer-events:none; }
+
+  /* ============================================================
+     COMPARISON TABLE
+     ============================================================ */
+  .compare { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; min-width: 640px; }
+  thead th { font-family:'Space Grotesk'; font-size: 15px; font-weight: 600; padding: 24px 20px; text-align: left; color: var(--muted); border-bottom: 1px solid var(--line); }
+  thead th.us { color: var(--amber); background: var(--amber-dim); position: relative; }
+  thead th.us span { font-size: 11px; display:block; font-weight:500; letter-spacing:.05em; opacity:.85; }
+  tbody td { padding: 18px 20px; border-bottom: 1px solid var(--line); font-size: 14.5px; color: var(--text); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody td:first-child { color: var(--muted); font-weight: 500; }
+  tbody td.us { background: rgba(245,158,11,0.05); }
+  .yes { color: var(--green); font-weight: 600; display:inline-flex; align-items:center; gap:7px;}
+  .no { color: var(--muted-2); display:inline-flex; align-items:center; gap:7px; }
+  .yes svg,.no svg{ width:16px;height:16px; }
+  td .price-cell { font-family:'Space Grotesk'; font-weight:600; }
+
+  /* ============================================================
+     PRICING
+     ============================================================ */
+  .pricing-sec { background: var(--bg-soft); border-top: 1px solid var(--line); }
+  .price-wrap { display: flex; justify-content: center; }
+  .price-card {
+    position: relative; width: 100%; max-width: 540px; border-radius: 24px;
+    background: linear-gradient(180deg, var(--bg-card), #0a0d15);
+    padding: 46px 42px; overflow: hidden;
+  }
+  .price-card::before {
+    content:""; position:absolute; inset:0; border-radius:24px; padding:1.5px;
+    background: linear-gradient(135deg, var(--amber), rgba(245,158,11,0.05) 40%, rgba(245,158,11,0.05) 60%, var(--amber));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events:none;
+  }
+  .price-glow { position:absolute; top:-40%; left:50%; transform:translateX(-50%); width:120%; height:60%; background:radial-gradient(circle, rgba(245,158,11,0.22), transparent 65%); filter:blur(30px); pointer-events:none; }
+  .price-card .ribbon { display:inline-block; font-family:'Space Grotesk'; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--amber); background:var(--amber-dim); padding:6px 14px; border-radius:100px; margin-bottom:24px; position:relative; }
+  .price-amt { display:flex; align-items:baseline; gap:8px; position:relative; }
+  .price-amt .cur { font-family:'Space Grotesk'; font-size:34px; font-weight:600; }
+  .price-amt .val { font-family:'Space Grotesk'; font-size:72px; font-weight:700; letter-spacing:-0.03em; line-height:1; }
+  .price-amt .per { color:var(--muted); font-size:15px; }
+  .price-sub { color:var(--muted); margin-top:12px; position:relative; }
+  .price-sub s { color: var(--muted-2); }
+  .price-list { margin:30px 0; display:grid; gap:13px; position:relative; }
+  .price-list li { list-style:none; display:flex; gap:12px; align-items:flex-start; font-size:14.5px; }
+  .price-list li svg { width:19px; height:19px; color:var(--amber); flex:0 0 auto; margin-top:1px; }
+  .price-card .btn-primary { width:100%; justify-content:center; position:relative; font-size:16px; padding:16px; }
+  .price-foot { text-align:center; margin-top:18px; font-size:13px; color:var(--muted); position:relative; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .price-foot svg{ width:15px;height:15px;color:var(--green); }
+
+  /* ============================================================
+     WAITLIST FORM
+     ============================================================ */
+  .form-layout { display:grid; grid-template-columns: 0.9fr 1.1fr; gap:64px; align-items:center; }
+  @media (max-width:920px){ .form-layout{ grid-template-columns:1fr; gap:44px; } }
+  .form-copy h2 { font-size: clamp(30px,5vw,50px); }
+  .form-copy p { color:var(--muted); margin-top:18px; font-size:17px; max-width:420px; }
+  .waitlist-count { margin-top:30px; display:flex; align-items:center; gap:14px; }
+  .waitlist-count .big { font-family:'Space Grotesk'; font-size:42px; font-weight:700; color:var(--amber); letter-spacing:-0.02em; }
+  .waitlist-count .lbl { font-size:14px; color:var(--muted); line-height:1.3; }
+  .avatars { display:flex; margin-top:22px; }
+  .avatars span { width:34px;height:34px;border-radius:50%;border:2px solid var(--bg); margin-left:-10px; display:grid;place-items:center; font-size:13px; font-weight:600; font-family:'Space Grotesk'; color:#1a1303; }
+  .avatars span:first-child{ margin-left:0 }
+
+  .form-card { background: var(--bg-card); border:1px solid var(--line); border-radius:24px; padding:36px; }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .field { display:flex; flex-direction:column; gap:7px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label { font-size:13px; color:var(--muted); font-weight:500; font-family:'Space Grotesk'; }
+  .field input, .field select {
+    background: var(--bg); border:1px solid var(--line-2); border-radius:11px;
+    padding:12px 14px; color:var(--text); font-family:'Inter',sans-serif; font-size:14.5px;
+    transition: border-color .3s var(--ease), box-shadow .3s var(--ease); width:100%;
+  }
+  .field input:focus, .field select:focus { outline:none; border-color:var(--amber); box-shadow:0 0 0 3px var(--amber-dim); }
+  .field input::placeholder { color: var(--muted-2); }
+  .field select { appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239aa3b2' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:38px; }
+  /* ---- custom dropdown (native <select> popups are unstylable on Windows/Chrome,
+     so we render our own list that always shows readable light-on-dark options) ---- */
+  .cselect { position: relative; }
+  .cselect-btn {
+    width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    background: var(--bg); border: 1px solid var(--line-2); border-radius: 11px;
+    padding: 12px 14px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 14.5px;
+    cursor: pointer; text-align: left; transition: border-color .3s var(--ease), box-shadow .3s var(--ease);
+  }
+  .cselect.open .cselect-btn, .cselect-btn:focus-visible { outline: none; border-color: var(--amber); box-shadow: 0 0 0 3px var(--amber-dim); }
+  .cselect-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cselect-value.placeholder { color: var(--muted-2); }
+  .cselect-arrow { width: 14px; height: 14px; color: var(--muted); flex: 0 0 auto; transition: transform .3s var(--ease); }
+  .cselect.open .cselect-arrow { transform: rotate(180deg); }
+  .cselect-list {
+    list-style: none; margin: 8px 0 0; padding: 6px; position: absolute; top: 100%; left: 0; right: 0; z-index: 40;
+    background: #10131e; border: 1px solid var(--line-2); border-radius: 12px;
+    box-shadow: 0 24px 55px -18px rgba(0,0,0,0.75); max-height: 240px; overflow-y: auto;
+    opacity: 0; transform: translateY(-6px); pointer-events: none;
+    transition: opacity .2s var(--ease), transform .2s var(--ease);
+  }
+  .cselect.open .cselect-list { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .cselect-list li {
+    padding: 11px 12px; border-radius: 8px; font-size: 14.5px; color: var(--text); cursor: pointer;
+    transition: background .15s var(--ease), color .15s var(--ease);
+  }
+  .cselect-list li:hover, .cselect-list li.active { background: var(--amber-dim); color: var(--amber-2); }
+  .cselect.invalid .cselect-btn { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.18); }
+  .form-card .btn-primary { width:100%; justify-content:center; margin-top:6px; font-size:16px; padding:15px; }
+  .form-note { font-size:12.5px; color:var(--muted-2); margin-top:14px; text-align:center; }
+  /* single-CTA enroll block (replaces the old waitlist form) */
+  .join-pay { text-align:center; padding:6px 4px; }
+  .join-pay .join-price { display:flex; align-items:baseline; justify-content:center; gap:6px; font-family:'Space Grotesk',sans-serif; letter-spacing:-0.03em; }
+  .join-pay .join-price .cur { font-size:30px; color:var(--amber); font-weight:600; }
+  .join-pay .join-price .amt { font-size:58px; font-weight:700; color:var(--text); line-height:1; }
+  .join-pay .join-price .per { font-size:14px; color:var(--muted-2); font-weight:500; }
+  .join-pay .join-sub { color:var(--muted); font-size:15px; line-height:1.6; max-width:420px; margin:18px auto 28px; }
+  .join-pay .join-sub b { color:var(--text); font-weight:600; }
+  .form-success { display:none; text-align:center; padding:30px 10px; }
+  .form-success.show { display:block; }
+  .form-success .check { width:64px;height:64px;border-radius:50%;background:var(--amber-dim);display:grid;place-items:center;margin:0 auto 20px;color:var(--amber); }
+  .form-success h3 { font-size:24px; margin-bottom:10px; }
+  .form-success p { color:var(--muted); }
+  @media (max-width:480px){ .form-grid{ grid-template-columns:1fr; } }
+
+  /* ---- payment modal (Razorpay enrollment) ---- */
+  #pay-modal { position: fixed; inset: 0; z-index: 12000; display: none; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+  #pay-modal.open { display: flex; }
+  #pay-modal .pay-overlay { position: fixed; inset: 0; background: rgba(4,6,11,0.74); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  #pay-modal .pay-card { position: relative; z-index: 1; width: 100%; max-width: 560px; margin: auto; background: var(--bg-card); border: 1px solid var(--line-2); border-radius: 24px; padding: 32px; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.7); }
+  .pay-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+  .pay-head h3 { font-size: clamp(22px, 4vw, 28px); }
+  .pay-head .price { margin-top: 6px; font-size: 14px; color: var(--muted); }
+  .pay-head .price b { color: var(--amber-2); font-family: 'Space Grotesk', sans-serif; }
+  .pay-close { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--bg); color: var(--text); cursor: pointer; display: grid; place-items: center; transition: border-color .25s var(--ease), color .25s var(--ease); }
+  .pay-close:hover { border-color: var(--amber); color: var(--amber); }
+  .pay-close svg { width: 18px; height: 18px; }
+  #pay-modal .btn-primary { width: 100%; justify-content: center; margin-top: 6px; }
+  .pay-secure { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12.5px; color: var(--muted-2); }
+  .pay-secure svg { width: 14px; height: 14px; }
+
+  /* ---- login modal (WhatsApp OTP) — same shell/state pattern as #pay-modal ---- */
+  #login-modal { position: fixed; inset: 0; z-index: 12000; display: none; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+  #login-modal.open { display: flex; }
+  #login-modal .pay-overlay { position: fixed; inset: 0; background: rgba(4,6,11,0.74); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  #login-modal .pay-card { position: relative; z-index: 1; width: 100%; max-width: 480px; margin: auto; background: var(--bg-card); border: 1px solid var(--line-2); border-radius: 24px; padding: 32px; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.7); }
+  #login-modal .btn-primary { width: 100%; justify-content: center; margin-top: 6px; }
+  #login-modal #login-code-state, #login-modal #login-error { text-align: center; padding: 18px 6px 6px; }
+  .pay-state { display: none; text-align: center; padding: 18px 6px 6px; }
+  .pay-state.show { display: block; }
+  /* ---- track picker (shown when a generic CTA has no known track intent) ---- */
+  .track-pick { display: none; padding: 4px 2px 2px; }
+  .track-pick.show { display: block; }
+  .track-pick-intro { color: var(--muted); font-size: 14px; margin-bottom: 16px; text-align: center; }
+  .track-pick-list { display: flex; flex-direction: column; gap: 10px; }
+  .track-pick-opt { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; background: var(--bg); border: 1px solid var(--line-2); border-radius: 14px; padding: 14px 16px; color: var(--text); transition: border-color .25s var(--ease), background .25s var(--ease); }
+  .track-pick-opt:hover { border-color: var(--amber); background: var(--amber-dim); }
+  .track-pick-opt .tp-emoji { font-size: 26px; line-height: 1; flex: 0 0 auto; }
+  .track-pick-opt .tp-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .track-pick-opt .tp-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; }
+  .track-pick-opt .tp-meta { font-size: 12.5px; color: var(--muted); }
+  .track-pick-opt .tp-arrow { width: 18px; height: 18px; color: var(--muted-2); flex: 0 0 auto; }
+  .pay-state .ic { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 20px; }
+  .pay-state.ok .ic { background: var(--amber-dim); color: var(--amber); }
+  .pay-state.err .ic { background: rgba(239,68,68,0.14); color: #ef4444; }
+  .pay-state h3 { font-size: 23px; margin-bottom: 10px; }
+  .pay-state p { color: var(--muted); max-width: 380px; margin: 0 auto; }
+  .pay-state .btn { margin-top: 22px; }
+
+  /* ============================================================
+     FAQ
+     ============================================================ */
+  .faq-sec { background: var(--bg-soft); border-top:1px solid var(--line); }
+  .faq-list { max-width: 820px; margin: 0 auto; }
+  .faq-item { border-bottom: 1px solid var(--line); }
+  .faq-q {
+    width:100%; background:none; border:none; cursor:pointer; text-align:left;
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    padding: 26px 4px; color:var(--text); font-family:'Space Grotesk',sans-serif;
+    font-size: clamp(17px, 2.3vw, 21px); font-weight:500;
+  }
+  .faq-q .ico { flex:0 0 auto; width:26px;height:26px; position:relative; transition:transform .4s var(--ease); }
+  .faq-q .ico::before, .faq-q .ico::after { content:""; position:absolute; background:var(--amber); border-radius:2px; }
+  .faq-q .ico::before { top:50%; left:4px; right:4px; height:2px; transform:translateY(-50%); }
+  .faq-q .ico::after { left:50%; top:4px; bottom:4px; width:2px; transform:translateX(-50%); transition:transform .4s var(--ease); }
+  .faq-item.open .faq-q .ico::after { transform:translateX(-50%) scaleY(0); }
+  .faq-a { overflow:hidden; height:0; }
+  .faq-a .inner { padding: 0 4px 26px; color:var(--muted); font-size:15.5px; max-width:680px; }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  footer { border-top:1px solid var(--line); padding: 70px 0 40px; }
+  .foot-top { display:flex; justify-content:space-between; gap:40px; flex-wrap:wrap; margin-bottom:50px; }
+  .foot-brand { max-width:320px; }
+  .foot-brand p { color:var(--muted); font-size:14.5px; margin-top:16px; }
+  .foot-cta { display:flex; flex-direction:column; gap:14px; align-items:flex-start; }
+  .foot-cta h3 { font-size:24px; }
+  .foot-cols { display:flex; gap:60px; flex-wrap:wrap; }
+  .foot-col h4 { font-size:12px; text-transform:uppercase; letter-spacing:.16em; color:var(--muted-2); margin-bottom:16px; font-family:'Space Grotesk'; }
+  .foot-col a { display:block; color:var(--muted); font-size:14px; margin-bottom:11px; transition:color .3s; }
+  .foot-col a:hover { color:var(--amber); }
+  .foot-bottom { display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:28px; color:var(--muted-2); font-size:13px; }
+  .foot-bottom .made { display:flex; align-items:center; gap:8px; }
+
+  /* ---- intro splash (BlurText-style reveal) ---- */
+  #intro {
+    position: fixed; inset: 0; z-index: 11000; background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    will-change: transform, opacity;
+  }
+  .intro-word {
+    display: inline-flex; flex-wrap: nowrap;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+    font-size: clamp(48px, 13vw, 150px); letter-spacing: -0.04em;
+    color: var(--text); line-height: 1;
+  }
+  .intro-word .il { display: inline-block; will-change: transform, filter, opacity; }
+  .intro-word .il.dot { color: var(--amber); }
+
+  /* reveal helper */
+  .reveal { opacity: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1 !important; transform:none !important; }
+    * { animation-duration: 0.001s !important; }
+    #preloader { display: none !important; }
+    .grain { display: none !important; }
+    .line-mask { overflow: visible; }
+    .line-inner { transform: none !important; }
+  }
+
+  /* ============================================================
+     CREATIVE LAYER — preloader · cursor · grain · split text · h-scroll
+     (interaction patterns inspired by Awwwards creative-dev sites)
+     ============================================================ */
+  body.loading { overflow: hidden; height: 100%; }
+
+  /* ---- preloader ---- */
+  #preloader {
+    position: fixed; inset: 0; z-index: 10000; background: var(--bg);
+    display: flex; align-items: center; justify-content: center; will-change: transform;
+  }
+  .pl-inner { text-align: center; }
+  .pl-num { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(64px, 15vw, 180px); line-height: 1; letter-spacing: -0.04em; color: var(--text); }
+  .pl-num .pl-pct { color: var(--amber); font-size: 0.34em; vertical-align: super; margin-left: 6px; }
+  .pl-word { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--muted); margin-top: 20px; }
+  .pl-word b { color: var(--amber); }
+  .pl-bar { position: absolute; left: 0; bottom: 0; height: 2px; width: 0%; background: var(--amber); box-shadow: 0 0 14px var(--amber); }
+
+  /* ---- custom cursor ---- */
+  #cursor-dot, #cursor-ring { position: fixed; top: 0; left: 0; pointer-events: none; border-radius: 50%; z-index: 99999; opacity: 0; }
+  body.cursor-active #cursor-dot, body.cursor-active #cursor-ring { opacity: 1; }
+  #cursor-dot { width: 7px; height: 7px; background: var(--amber); transform: translate(-50%, -50%); }
+  #cursor-ring {
+    width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.4); transform: translate(-50%, -50%);
+    transition: width .35s var(--ease), height .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);
+  }
+  #cursor-ring.hover { width: 66px; height: 66px; background: var(--amber-dim); border-color: var(--amber); }
+  @media (pointer: fine) { body.has-cursor, body.has-cursor * { cursor: none !important; } }
+  @media (hover: none), (pointer: coarse) { #cursor-dot, #cursor-ring { display: none !important; } }
+
+  /* ---- film grain ---- */
+  .grain {
+    position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; z-index: 9997; pointer-events: none;
+    opacity: 0.05; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px; animation: grain .5s steps(3) infinite;
+  }
+  @keyframes grain {
+    0%{transform:translate(0,0)} 20%{transform:translate(-4%,3%)} 40%{transform:translate(3%,-3%)}
+    60%{transform:translate(-3%,-4%)} 80%{transform:translate(4%,2%)} 100%{transform:translate(-2%,3%)}
+  }
+
+  /* ---- split-line heading masks ---- */
+  .line-mask { display: block; overflow: hidden; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+  .line-inner { display: block; will-change: transform; }
+
+  /* ---- horizontal How It Works ---- */
+  .hsection { position: relative; background: var(--bg); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .hpin { height: 100vh; height: 100svh; display: flex; align-items: center; overflow: hidden; }
+  .htrack { display: flex; gap: 26px; padding: 0 28px; align-items: stretch; will-change: transform; }
+  .hpanel { flex: 0 0 auto; }
+  .hp-intro { width: min(540px, 86vw); display: flex; flex-direction: column; justify-content: center; padding-right: 24px; }
+  .hp-intro .eyebrow { margin-bottom: 22px; }
+  .hp-intro h2 { font-size: clamp(34px, 5vw, 62px); }
+  .hp-intro p { color: var(--muted); margin-top: 24px; max-width: 430px; font-size: 17px; }
+  .hp-hint { margin-top: 36px; display: inline-flex; align-items: center; gap: 12px; color: var(--amber); font-family: 'Space Grotesk', sans-serif; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; }
+  .hp-hint svg { width: 30px; height: 10px; }
+  .hp-step {
+    position: relative; width: min(400px, 80vw); min-height: 58vh; background: var(--bg-card);
+    border: 1px solid var(--line); border-radius: 24px; padding: 40px 36px;
+    display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;
+    transition: border-color .4s var(--ease);
+  }
+  .hp-step:hover { border-color: var(--line-2); }
+  .hp-step::after {
+    content: ""; position: absolute; right: -40px; bottom: -40px; width: 170px; height: 170px; border-radius: 50%;
+    background: radial-gradient(circle, var(--amber-dim), transparent 70%); opacity: 0; transition: opacity .5s var(--ease);
+  }
+  .hp-step:hover::after { opacity: 1; }
+  .hp-num { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(92px, 11vw, 150px); line-height: 0.9; color: transparent; -webkit-text-stroke: 1.4px rgba(245,158,11,0.5); position: relative; }
+  .hp-content { position: relative; }
+  .hp-tag { display: inline-block; font-family: 'Space Grotesk', sans-serif; font-size: 12px; letter-spacing: 0.06em; color: var(--amber); background: var(--amber-dim); padding: 6px 13px; border-radius: 100px; margin-bottom: 14px; }
+  .hp-content h3 { font-size: clamp(23px, 3vw, 31px); margin-bottom: 12px; }
+  .hp-content p { color: var(--muted); font-size: 15.5px; max-width: 320px; }
+  @media (max-width: 760px) {
+    .hpin { height: auto; display: block; padding: clamp(80px, 12vw, 120px) 0; }
+    .htrack { flex-direction: column; gap: 16px; padding: 0 24px; transform: none !important; }
+    .hp-intro, .hp-step { width: 100%; }
+    .hp-step { min-height: auto; }
+    .hp-hint { display: none; }
+  }
+
+  /* ---- floating project gallery (3D drift + simultaneous text reveal) ---- */
+  .gallery-sec { position: relative; height: 100vh; height: 100svh; min-height: 640px; overflow: hidden; background: var(--bg); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: center; }
+  .gallery-field { position: absolute; inset: 0; perspective: 1300px; }
+  .g-stage { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+  .g-card { position: absolute; left: 50%; top: 50%; width: clamp(116px, 13vw, 178px); border-radius: 14px; overflow: hidden; background: #0e1320; border: 1px solid var(--line-2); box-shadow: 0 30px 60px -22px rgba(0,0,0,0.82); will-change: transform, opacity; }
+  .g-card .logo-wrap { aspect-ratio: 16 / 11; display: grid; place-items: center; background: radial-gradient(circle at 50% 42%, rgba(255,255,255,0.07), transparent 68%); }
+  .g-card .logo-wrap img.tlogo { width: 44%; height: 44%; object-fit: contain; opacity: 1; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.55)); }
+  .g-card .logo-wrap svg.tlogo { width: 47%; height: 47%; opacity: 0.96; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.55)); }
+  .g-card .glabel { display: block; text-align: center; padding: 10px 6px; border-top: 1px solid var(--line); font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 600; color: #fff; }
+  .gallery-text { position: relative; z-index: 20; text-align: center; max-width: 940px; padding: 0 24px; pointer-events: none; }
+  .gallery-h2 { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: clamp(32px, 6vw, 76px); line-height: 1.05; letter-spacing: -0.02em; }
+  .gallery-h2 .serif { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: 0; }
+  .g-count, .g-side { position: absolute; z-index: 20; font-family: 'Space Grotesk', sans-serif; font-size: 13px; color: var(--muted); }
+  .g-count { left: 28px; top: 50%; transform: translateY(-50%); letter-spacing: 0.1em; }
+  .g-side { right: 24px; top: 50%; transform: translateY(-50%); text-transform: uppercase; letter-spacing: 0.26em; color: var(--amber); writing-mode: vertical-rl; }
+  @media (max-width: 640px) {
+    .g-count, .g-side { display: none; }
+    .g-card { width: clamp(108px, 30vw, 150px); }
+  }
+</style>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WW7TJ68D"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- intro splash — BlurText-style "Placely" reveal (~2s) -->
+<div id="intro"><span class="intro-word" data-text="Placely" aria-label="Placely"></span></div>
+
+<!-- film grain / custom cursor (creative layer) -->
+<div class="grain" aria-hidden="true"></div>
+<div id="cursor-ring" aria-hidden="true"></div>
+<div id="cursor-dot" aria-hidden="true"></div>
+
+<!-- ====================== NAV ====================== -->
+<nav class="nav" id="nav">
+  <a href="#home" class="brand"><span class="dot"></span>Placely</a>
+  <div class="nav-links">
+    <a href="#home"><span class="num">(1)</span> Home</a>
+    <a href="#how"><span class="num">(2)</span> How It Works</a>
+    <a href="#pricing"><span class="num">(3)</span> Pricing</a>
+    <a href="#join"><span class="num">(4)</span> Join</a>
+  </div>
+  <div class="nav-cta">
+    <a href="#how" class="btn btn-ghost">How it works</a>
+    <button type="button" class="btn btn-ghost" id="nav-login-btn">Log in</button>
+    <a href="#join" class="btn btn-primary" data-pay id="nav-cta-btn">Start learning
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- ====================== HERO ====================== -->
+<header class="hero" id="home">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="wrap hero-inner">
+    <div class="hero-badge reveal"><span class="live"></span> Your AI coding accountability partner</div>
+    <h1 class="reveal">
+      <span class="static-line">Learn to code with an AI mentor.</span>
+      <span class="cycle"><span id="cycle-word">And actually finish.</span><span class="caret"></span></span>
+    </h1>
+    <div class="hero-guarantee reveal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+      <span><b>₹199/month</b> · cancel anytime · all learning resources are free.</span>
+    </div>
+    <p class="lead reveal">
+      <b>Daily AI mentor</b> on WhatsApp. A <b>structured roadmap</b> with free resources. It checks in every day until you finish. <b>₹199/month</b> — cancel anytime.
+    </p>
+    <div class="hero-actions reveal">
+      <a href="#join" class="btn btn-primary" data-pay>Start learning
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+
+    <div class="hero-stats reveal">
+      <div class="stat">
+        <div class="num" data-count="22"><span class="val">0</span><span class="suf"> days</span></div>
+        <div class="lbl">to complete your first track</div>
+      </div>
+      <div class="stat">
+        <div class="num" data-count="5"><span class="val">0</span><span class="suf"> projects</span></div>
+        <div class="lbl">built along the way</div>
+      </div>
+      <div class="stat">
+        <div class="num" data-count="7" data-suffix="+"><span class="val">0</span><span class="suf">+ tracks</span></div>
+        <div class="lbl">coming soon</div>
+      </div>
+      <div class="stat">
+        <div class="num"><span class="suf">₹</span><span class="val">0</span></div>
+        <div class="lbl">cost of all learning resources</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ====================== WHY NOT CHATGPT ====================== -->
+<section class="pad" id="why-not-chatgpt">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">The difference</span>
+      <h2>Why not just use ChatGPT&nbsp;?</h2>
+      <p>Placely is not another AI tutor. It's an AI execution system.</p>
+    </div>
+
+    <!-- 4 VS cards (2x2 on desktop, stacked on mobile) -->
+    <div class="vs-cards reveal">
+      <div class="vs-card">
+        <div class="side left">
+          <span class="who">Free AI / Courses</span>
+          <span class="what"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Waits for you to start</span>
+        </div>
+        <div class="vsdiv">VS</div>
+        <div class="side right">
+          <span class="who">Placely</span>
+          <span class="what"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Starts your day automatically</span>
+        </div>
+      </div>
+      <div class="vs-card">
+        <div class="side left">
+          <span class="who">YouTube</span>
+          <span class="what"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> 300+ videos to choose from</span>
+        </div>
+        <div class="vsdiv">VS</div>
+        <div class="side right">
+          <span class="who">Placely</span>
+          <span class="what"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Exactly one task today</span>
+        </div>
+      </div>
+      <div class="vs-card">
+        <div class="side left">
+          <span class="who">Free AI</span>
+          <span class="what"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Helps you write code</span>
+        </div>
+        <div class="vsdiv">VS</div>
+        <div class="side right">
+          <span class="who">Placely</span>
+          <span class="what"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Makes sure you finish projects</span>
+        </div>
+      </div>
+      <div class="vs-card">
+        <div class="side left">
+          <span class="who">Free AI</span>
+          <span class="what"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Doesn't care if you disappear</span>
+        </div>
+        <div class="vsdiv">VS</div>
+        <div class="side right">
+          <span class="who">Placely</span>
+          <span class="what"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Keeps following up until you finish</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- full comparison table -->
+    <div class="vs-table reveal">
+      <div class="vs-head">
+        <div class="vs-col-label vs-them">Free AI / Courses</div>
+        <div class="vs-col-label vs-us">Placely</div>
+      </div>
+      <div class="vs-row">
+        <div class="vs-cell vs-them"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Waits for you to start</div>
+        <div class="vs-cell vs-us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Starts your day automatically</div>
+      </div>
+      <div class="vs-row">
+        <div class="vs-cell vs-them"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Gives information</div>
+        <div class="vs-cell vs-us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Gives today's exact task</div>
+      </div>
+      <div class="vs-row">
+        <div class="vs-cell vs-them"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Answers questions</div>
+        <div class="vs-cell vs-us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Tracks whether you finished</div>
+      </div>
+      <div class="vs-row">
+        <div class="vs-cell vs-them"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> No learning schedule</div>
+        <div class="vs-cell vs-us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Personalized daily roadmap</div>
+      </div>
+      <div class="vs-row">
+        <div class="vs-cell vs-them"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Doesn't remember your progress</div>
+        <div class="vs-cell vs-us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Remembers every milestone</div>
+      </div>
+      <div class="vs-row">
+        <div class="vs-cell vs-them"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> No accountability</div>
+        <div class="vs-cell vs-us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Daily mentor until completion</div>
+      </div>
+      <div class="vs-row">
+        <div class="vs-cell vs-them"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Doesn't review your projects</div>
+        <div class="vs-cell vs-us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> AI reviews every project</div>
+      </div>
+      <div class="vs-row">
+        <div class="vs-cell vs-them"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> No portfolio at the end</div>
+        <div class="vs-cell vs-us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Resume-ready GitHub portfolio</div>
+      </div>
+      <div class="vs-row">
+        <div class="vs-cell vs-them"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Learning alone</div>
+        <div class="vs-cell vs-us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Progress tracking + streaks</div>
+      </div>
+      <div class="vs-row">
+        <div class="vs-cell vs-them"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Generic answers</div>
+        <div class="vs-cell vs-us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Personalized guidance for your goal</div>
+      </div>
+      <div class="vs-row">
+        <div class="vs-cell vs-them"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Doesn't remember your journey</div>
+        <div class="vs-cell vs-us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Knows exactly where you stopped yesterday</div>
+      </div>
+    </div>
+
+    <p class="vs-tagline reveal">Placely is not another AI tutor. It's an AI execution system.</p>
+  </div>
+</section>
+
+<!-- ====================== PROBLEM ====================== -->
+<section class="pad" id="problem">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">The Problem</span>
+      <h2>You've started learning to code. You haven't finished once.</h2>
+      <p>You're not lazy and you're not dumb. You're learning alone, with no plan and nobody checking in. Here's where it breaks.</p>
+    </div>
+    <div class="prob-grid">
+      <div class="prob-card reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/></svg></div>
+        <h3>No accountability</h3>
+        <p>You open the course, watch 10 minutes, close it. Nobody notices. Nobody cares. You quit.</p>
+        <div class="stat-tag">~97% never finish</div>
+      </div>
+      <div class="prob-card reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></div>
+        <h3>Too much content</h3>
+        <p>Hundreds of hours of tutorials with no clear daily path. Overwhelming from day one.</p>
+        <div class="stat-tag">100s of hours</div>
+      </div>
+      <div class="prob-card reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></div>
+        <h3>No real projects</h3>
+        <p>Tutorials teach syntax. Nobody shows you how to build something real that you can put on a resume.</p>
+        <div class="stat-tag">0 real projects</div>
+      </div>
+      <div class="prob-card reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4M16 11l2 2 4-4"/></svg></div>
+        <h3>No feedback</h3>
+        <p>You write code and have no idea if it's right — or if you're quietly building bad habits.</p>
+        <div class="stat-tag">0 code review</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== WHATSAPP MOCKUP ====================== -->
+<section class="pad wa-section" id="guidance">
+  <div class="wrap">
+    <div class="wa-layout">
+      <div class="wa-copy reveal">
+        <span class="eyebrow">Daily AI Check-in</span>
+        <h2>Your mentor lives in WhatsApp.</h2>
+        <p>Every morning, your AI sends today's task. Reply YES when done, STUCK if you need help. It nudges. It checks in. It never lets you disappear.</p>
+        <ul class="wa-points">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            <div>One clear task <strong>every single day</strong><br><span>A free video plus a small exercise. Never lost, never overwhelmed.</span></div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            <div>Reply <strong>YES</strong> when done, <strong>STUCK</strong> if stuck<br><span>Works on any phone — no new app to download.</span></div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            <div>Daily streaks, code review &amp; nudges<br><span>You finish with real skills and a GitHub portfolio.</span></div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="wa-phone-wrap reveal">
+        <div class="phone">
+          <div class="wa-top">
+            <div class="wa-avatar">P</div>
+            <div>
+              <div class="wa-name">Placely AI Mentor</div>
+              <div class="wa-status"><b>● online</b> · typically replies instantly</div>
+            </div>
+          </div>
+          <div class="wa-body" id="wa-body">
+            <div class="wa-day wa-msg">DAY 7 OF 22 · TODAY</div>
+            <div class="bubble in wa-msg">Good morning! Day 7 of 22 🐍 Today: <b>While loops</b>.<span class="time">8:00 AM</span></div>
+            <div class="bubble in wa-msg">Your task: print numbers 1–10 using a while loop. 📺 Watch: <b>Apna College — Lecture 5</b> (0:00–12:00). Reply <b>YES</b> when done, <b>STUCK</b> if you need help 💪<span class="time">8:00 AM</span></div>
+            <div class="bubble out wa-msg">YES ✅ done it!<span class="time">9:38 AM</span></div>
+            <div class="bubble in wa-msg">Amazing! 🔥 <b>7 day streak.</b><span class="time">9:39 AM</span></div>
+            <div class="bubble out wa-msg">what's next? 😄<span class="time">9:39 AM</span></div>
+            <div class="bubble in wa-msg">Tomorrow: <b>For loops</b> — you're building a number guessing game by the end of this phase. Keep going!<span class="time">9:40 AM</span></div>
+            <div class="typing wa-msg" id="wa-typing"><span></span><span></span><span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== HOW IT WORKS (horizontal pinned scroll) ====================== -->
+<section class="hsection" id="how">
+  <div class="hpin" id="hpin">
+    <div class="htrack" id="htrack">
+
+      <div class="hpanel hp-intro">
+        <span class="eyebrow">How It Works</span>
+        <h2>From zero to finished — one day at a time.</h2>
+        <p>One clear path. A task a day, an AI mentor that checks in, and real projects — until you actually finish.</p>
+        <span class="hp-hint">Scroll to advance
+          <svg viewBox="0 0 30 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 5h28M24 1l5 4-5 4"/></svg>
+        </span>
+      </div>
+
+      <article class="hpanel hp-step">
+        <span class="hp-num">01</span>
+        <div class="hp-content">
+          <span class="hp-tag">Day 0</span>
+          <h3>Pick your track</h3>
+          <p>Choose your skill track and pay ₹199. Get instant dashboard access and your full day-by-day roadmap.</p>
+        </div>
+      </article>
+
+      <article class="hpanel hp-step">
+        <span class="hp-num">02</span>
+        <div class="hp-content">
+          <span class="hp-tag">Days 1–N</span>
+          <h3>One task a day</h3>
+          <p>One clear task per day — a free video plus a small exercise. Never lost, never overwhelmed.</p>
+        </div>
+      </article>
+
+      <article class="hpanel hp-step">
+        <span class="hp-num">03</span>
+        <div class="hp-content">
+          <span class="hp-tag">Every morning</span>
+          <h3>Your AI mentor checks in</h3>
+          <p>Every morning your AI mentor messages you on WhatsApp with today's task and checks if you did it.</p>
+        </div>
+      </article>
+
+      <article class="hpanel hp-step">
+        <span class="hp-num">04</span>
+        <div class="hp-content">
+          <span class="hp-tag">Every phase</span>
+          <h3>Build a real mini project</h3>
+          <p>After every phase, build a real mini project using only what you've learned so far.</p>
+        </div>
+      </article>
+
+      <article class="hpanel hp-step">
+        <span class="hp-num">05</span>
+        <div class="hp-content">
+          <span class="hp-tag">Final day</span>
+          <h3>Portfolio &amp; real skills</h3>
+          <p>Finish with a GitHub portfolio and real skills you can actually show.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ====================== MARQUEE ====================== -->
+<section class="marquee-sec" id="industries">
+  <div class="marquee-label">More tracks launching every month</div>
+  <div class="marquee" id="marquee">
+    <div class="track" aria-hidden="false">
+      <span class="item">Python</span><span class="item dim">JavaScript</span><span class="item">Java</span><span class="item dim">C++</span><span class="item">AI / ML</span><span class="item dim">DSA</span><span class="item">Web Development</span>
+    </div>
+    <div class="track" aria-hidden="true">
+      <span class="item">Python</span><span class="item dim">JavaScript</span><span class="item">Java</span><span class="item dim">C++</span><span class="item">AI / ML</span><span class="item dim">DSA</span><span class="item">Web Development</span>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== FLOATING PROJECT GALLERY ====================== -->
+<section class="gallery-sec" id="gallery">
+  <span class="g-count">(10)</span>
+  <span class="g-side">Tracks</span>
+
+  <!-- Available skill tracks. Python is live; the rest are launching soon. -->
+  <div class="gallery-field">
+    <div class="g-stage" id="gstage">
+      <div class="g-card" data-pay data-skill="python" style="cursor:pointer;border-color:var(--amber);box-shadow:0 30px 60px -22px rgba(245,158,11,0.5)"><div class="logo-wrap"><img class="tlogo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" decoding="async" onerror="this.style.display='none'"></div><span class="glabel">Python<br><span style="color:var(--amber);font-size:9.5px;letter-spacing:.12em">AVAILABLE NOW</span></span></div>
+      <div class="g-card"><div class="logo-wrap"><img class="tlogo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JavaScript" decoding="async" onerror="this.style.display='none'"></div><span class="glabel">JavaScript<br><span style="color:var(--muted-2);font-size:9.5px;letter-spacing:.12em">COMING SOON</span></span></div>
+      <div class="g-card"><div class="logo-wrap"><img class="tlogo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java" decoding="async" onerror="this.style.display='none'"></div><span class="glabel">Java<br><span style="color:var(--muted-2);font-size:9.5px;letter-spacing:.12em">COMING SOON</span></span></div>
+      <div class="g-card"><div class="logo-wrap"><img class="tlogo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" alt="C++" decoding="async" onerror="this.style.display='none'"></div><span class="glabel">C++<br><span style="color:var(--muted-2);font-size:9.5px;letter-spacing:.12em">COMING SOON</span></span></div>
+      <div class="g-card"><div class="logo-wrap"><svg class="tlogo" viewBox="0 0 48 48" fill="none" stroke-linecap="round"><g stroke="#94a3b8" stroke-width="1.8" opacity="0.5"><path d="M12 12 26 18M12 12 26 30M12 24 26 18M12 24 26 30M12 36 26 18M12 36 26 30M26 18 38 24M26 30 38 24"/></g><circle cx="12" cy="12" r="3" fill="#f59e0b"/><circle cx="12" cy="24" r="3" fill="#f59e0b"/><circle cx="12" cy="36" r="3" fill="#f59e0b"/><circle cx="26" cy="18" r="3" fill="#22d3ee"/><circle cx="26" cy="30" r="3" fill="#22d3ee"/><circle cx="38" cy="24" r="3.6" fill="#f97316"/></svg></div><span class="glabel">AI / ML<br><span style="color:var(--muted-2);font-size:9.5px;letter-spacing:.12em">COMING SOON</span></span></div>
+      <div class="g-card"><div class="logo-wrap"><svg class="tlogo" viewBox="0 0 48 48" fill="none" stroke-linecap="round"><g stroke="#94a3b8" stroke-width="1.9" opacity="0.55"><path d="M24 11 13 23M24 11 35 23M13 25 8 35M13 25 18 35M35 25 30 35M35 25 40 35"/></g><circle cx="24" cy="9" r="3.4" fill="#f59e0b"/><circle cx="13" cy="24" r="3.1" fill="#22d3ee"/><circle cx="35" cy="24" r="3.1" fill="#22d3ee"/><circle cx="8" cy="37" r="2.9" fill="#34d399"/><circle cx="18" cy="37" r="2.9" fill="#34d399"/><circle cx="30" cy="37" r="2.9" fill="#34d399"/><circle cx="40" cy="37" r="2.9" fill="#34d399"/></svg></div><span class="glabel">DSA<br><span style="color:var(--muted-2);font-size:9.5px;letter-spacing:.12em">COMING SOON</span></span></div>
+      <div class="g-card" data-pay data-skill="web-dev-part-1" style="cursor:pointer;border-color:var(--amber);box-shadow:0 30px 60px -22px rgba(245,158,11,0.5)"><div class="logo-wrap"><img class="tlogo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="Web Development" decoding="async" onerror="this.style.display='none'"></div><span class="glabel">Web Dev — Part 1<br><span style="color:var(--amber);font-size:9.5px;letter-spacing:.12em">AVAILABLE NOW</span></span></div>
+      <div class="g-card" data-pay data-skill="web-dev-part-2" style="cursor:pointer"><div class="logo-wrap"><img class="tlogo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="Web Development Part 2" decoding="async" onerror="this.style.display='none'"></div><span class="glabel">Web Dev — Part 2<br><span style="color:var(--muted-2);font-size:9.5px;letter-spacing:.12em">🔒 COMPLETE PART 1</span></span></div>
+      <div class="g-card" data-pay data-skill="web-dev-part-3" style="cursor:pointer"><div class="logo-wrap"><img class="tlogo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt="Web Development Part 3" decoding="async" onerror="this.style.display='none'"></div><span class="glabel">Web Dev — Part 3<br><span style="color:var(--muted-2);font-size:9.5px;letter-spacing:.12em">🔒 COMPLETE PART 2</span></span></div>
+      <div class="g-card" data-pay data-skill="web-dev-part-4" style="cursor:pointer"><div class="logo-wrap"><img class="tlogo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="Web Development Part 4" decoding="async" onerror="this.style.display='none'"></div><span class="glabel">Web Dev — Part 4<br><span style="color:var(--muted-2);font-size:9.5px;letter-spacing:.12em">🔒 COMPLETE PART 3</span></span></div>
+    </div>
+  </div>
+
+  <div class="gallery-text">
+    <h2 class="gallery-h2">
+      <span class="line-mask"><span class="line-inner">Choose your <em class="serif">path.</em></span></span>
+      <span class="line-mask"><span class="line-inner">Build <em class="serif">real skills.</em></span></span>
+      <span class="line-mask"><span class="line-inner">One <em class="serif">day</em> at a time.</span></span>
+    </h2>
+  </div>
+</section>
+
+<!-- ====================== FEATURES ====================== -->
+<section class="pad" id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">What's Inside</span>
+      <h2>Everything you get for ₹199/month.</h2>
+      <p>This isn't a course. It's a system that makes sure you actually finish what you start.</p>
+    </div>
+
+    <div class="feat-grid">
+      <div class="feat reveal"><span class="big">01</span><div class="fnum">01</div><h3>Structured daily roadmap</h3><p>A clear path, one task a day. No guesswork, no decision fatigue — just open WhatsApp and go.</p></div>
+      <div class="feat reveal"><span class="big">02</span><div class="fnum">02</div><h3>Daily WhatsApp AI check-in</h3><p>Your mentor messages you every morning and makes sure you actually did the work.</p></div>
+      <div class="feat reveal"><span class="big">03</span><div class="fnum">03</div><h3>Mini project after every concept</h3><p>Build something real after every phase — not just watch tutorials and forget them.</p></div>
+      <div class="feat reveal"><span class="big">04</span><div class="fnum">04</div><h3>AI code review &amp; feedback</h3><p>Submit your code and get instant AI review, so you don't quietly build bad habits.</p></div>
+      <div class="feat reveal"><span class="big">05</span><div class="fnum">05</div><h3>Weekly checkpoints</h3><p>Quick checks to make sure the concepts actually stuck before you move on.</p></div>
+      <div class="feat reveal"><span class="big">06</span><div class="fnum">06</div><h3>Capstone + GitHub portfolio</h3><p>Finish each track with capstone projects that live on a clean, shareable GitHub.</p></div>
+      <div class="feat reveal"><span class="big">07</span><div class="fnum">07</div><h3>Progress tracking + streaks</h3><p>Daily streaks and milestone tracking that keep you showing up until the end.</p></div>
+      <div class="feat reveal"><span class="big">08</span><div class="fnum">08</div><h3>All resources are free</h3><p>Every video and resource is free. You pay ₹199 for the structure and the accountability.</p></div>
+      <div class="feat reveal"><span class="big">09</span><div class="fnum">09</div><h3>More tracks every month</h3><p>Python's live now. JavaScript, Java, C++, AI/ML, DSA &amp; Web Development are coming.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== COMPARISON ====================== -->
+<section class="pad" id="compare">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Why Us</span>
+      <h2>Courses sell videos. We make sure you finish them.</h2>
+      <p>The honest comparison. A pile of tutorials isn't a plan. Placely is the system that actually gets you to the end.</p>
+    </div>
+
+    <div class="compare reveal">
+      <table>
+        <thead>
+          <tr>
+            <th>&nbsp;</th>
+            <th class="us">Placely<span>₹199 / month</span></th>
+            <th>Udemy course</th>
+            <th>YouTube alone</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Typical cost</td>
+            <td class="us"><span class="price-cell">₹199 / month</span></td>
+            <td>₹500–2,000</td>
+            <td>Free</td>
+          </tr>
+          <tr>
+            <td>Clear daily plan</td>
+            <td class="us"><span class="yes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Yes</span></td>
+            <td><span class="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg> No</span></td>
+            <td><span class="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg> No</span></td>
+          </tr>
+          <tr>
+            <td>Someone checks on you</td>
+            <td class="us"><span class="yes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Daily AI</span></td>
+            <td><span class="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg> No</span></td>
+            <td><span class="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg> No</span></td>
+          </tr>
+          <tr>
+            <td>Real projects</td>
+            <td class="us"><span class="yes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Built-in</span></td>
+            <td><span class="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg> Generic</span></td>
+            <td><span class="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg> Watch only</span></td>
+          </tr>
+          <tr>
+            <td>Code feedback</td>
+            <td class="us"><span class="yes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> AI review</span></td>
+            <td><span class="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg> No</span></td>
+            <td><span class="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg> No</span></td>
+          </tr>
+          <tr>
+            <td>Finish rate</td>
+            <td class="us"><span class="yes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> High</span></td>
+            <td><span class="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg> ~3%</span></td>
+            <td><span class="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg> ~5%</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== PRICING ====================== -->
+<section class="pad pricing-sec" id="pricing">
+  <div class="wrap">
+    <div class="sec-head reveal" style="text-align:center; margin-left:auto; margin-right:auto;">
+      <span class="eyebrow" style="justify-content:center;">Pricing</span>
+      <h2>One price. Any track. No excuses.</h2>
+    </div>
+
+    <div class="price-wrap reveal">
+      <div class="price-card">
+        <div class="price-glow"></div>
+        <span class="ribbon">Launch pricing</span>
+        <div class="price-amt">
+          <span class="cur">₹</span><span class="val">199</span><span class="per">/month</span>
+        </div>
+        <p class="price-sub">Cancel anytime. Start with Python today — more tracks unlocking every month.</p>
+
+        <ul class="price-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Access to your chosen track's full roadmap</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Daily WhatsApp AI mentor check-ins</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Mini projects + AI code review</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Weekly checkpoints</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Resume-ready GitHub portfolio</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> All learning resources free</li>
+        </ul>
+
+        <a href="#join" class="btn btn-primary" data-pay>Start learning — ₹199 →</a>
+        <div class="price-foot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          Cancel anytime. No lock-in, no contracts.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== WAITLIST FORM ====================== -->
+<section class="pad" id="join">
+  <div class="wrap">
+    <div class="form-layout">
+      <div class="form-copy reveal">
+        <span class="eyebrow">Get started</span>
+        <h2>Start your track today.</h2>
+        <p>Pick Python, pay ₹199, and your AI mentor starts checking in tomorrow morning. Cancel anytime.</p>
+      </div>
+
+      <div class="form-card reveal" style="display:flex; gap:20px; flex-wrap:wrap; background:transparent; border:none; padding:0;">
+        
+        <!-- Standard Tier -->
+        <div class="join-pay" style="flex:1; min-width:280px; background:var(--bg-2); border-radius:var(--radius-lg); padding:32px; border:1px solid var(--border);">
+          <div class="join-price"><span class="cur">₹</span><span class="amt">199</span><span class="per">/month</span></div>
+          <p class="join-sub"><b>Standard:</b> Everything included — your full roadmap, daily WhatsApp check-ins, mini projects, weekly checkpoints and a GitHub portfolio.</p>
+          <button type="button" class="btn btn-primary" data-pay data-skill="python">Start Standard — ₹199
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+        
+        <!-- Pro Tier -->
+        <div class="join-pay" style="flex:1; min-width:280px; background:var(--bg-2); border-radius:var(--radius-lg); padding:32px; border:2px solid var(--primary); position:relative;">
+          <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--primary); color:white; padding:4px 12px; border-radius:12px; font-size:12px; font-weight:bold; letter-spacing:1px; white-space:nowrap;">RECOMMENDED</span>
+          <div class="join-price"><span class="cur">₹</span><span class="amt">499</span><span class="per">/month</span></div>
+          <p class="join-sub"><b>Pro:</b> Everything in Standard, PLUS our exclusive <b>DSA Platform</b> with AI Code Reviews and plain-English interview prep.</p>
+          <button type="button" class="btn btn-primary" data-pay data-skill="python-dsa">Start Pro — ₹499
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+        
+        <p class="form-note" style="width:100%; text-align:center;">Secure payment via Razorpay · cancel anytime · all learning resources are free.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== FAQ ====================== -->
+<section class="pad faq-sec" id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal" style="text-align:center; margin:0 auto 56px;">
+      <span class="eyebrow" style="justify-content:center;">FAQ</span>
+      <h2>Questions, answered straight.</h2>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item reveal">
+        <button class="faq-q">Is ₹199/month really all I pay? <span class="ico"></span></button>
+        <div class="faq-a"><div class="inner">Yes. All learning resources are free YouTube videos. You pay ₹199 for the structure, the accountability, and the AI mentor that makes sure you finish.</div></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">What track should I start with? <span class="ico"></span></button>
+        <div class="faq-a"><div class="inner">Python if you're a complete beginner. It's the only one live right now — more tracks (JavaScript, Java, C++, AI/ML, DSA, Web Development) launch soon.</div></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">What if I miss a day? <span class="ico"></span></button>
+        <div class="faq-a"><div class="inner">Your mentor will notice and nudge you. Life happens — you can pause and resume anytime without losing your progress.</div></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">Do I need a laptop? <span class="ico"></span></button>
+        <div class="faq-a"><div class="inner">Yes, for the coding itself. The daily WhatsApp check-ins work on any phone, so you're never out of the loop.</div></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">What happens after I finish a track? <span class="ico"></span></button>
+        <div class="faq-a"><div class="inner">You get a GitHub portfolio of everything you built, and you can start the next track the moment it launches.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== FINAL CTA ====================== -->
+<section class="pad" id="final-cta">
+  <div class="wrap">
+    <div class="sec-head reveal" style="text-align:center; margin-left:auto; margin-right:auto;">
+      <h2>Stop saying you'll learn it tomorrow.</h2>
+      <p style="margin-left:auto; margin-right:auto;">₹199. Your AI mentor starts today.</p>
+      <div style="margin-top:34px;">
+        <a href="#join" class="btn btn-primary" data-pay>Start now
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== FOOTER ====================== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a href="#home" class="brand"><span class="dot"></span>Placely</a>
+        <p>AI-powered upskilling accountability. Pick a track, follow a daily roadmap with free resources, and an AI mentor checks in until you finish.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h4>Product</h4>
+          <a href="#how">How it works</a>
+          <a href="#features">What's inside</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="foot-col">
+          <h4>Company</h4>
+          <a href="#problem">The problem</a>
+          <a href="#gallery">Tracks</a>
+          <a href="#compare">Why us</a>
+        </div>
+        <div class="foot-col">
+          <h4>Get started</h4>
+          <a href="#join">Start learning</a>
+          <a href="mailto:hello@placely.co.in">hello@placely.co.in</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year"></span> Placely — All rights reserved.</span>
+      <span class="made">Made in India 🇮🇳 for students who actually want to finish.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ====================== PAYMENT MODAL (Razorpay) ====================== -->
+<div id="pay-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pay-title">
+  <div class="pay-overlay" data-pay-close></div>
+  <div class="pay-card">
+    <div class="pay-head">
+      <div>
+        <h3 id="pay-title">Start your track</h3>
+        <div class="price" id="pay-subtitle"><b>₹199/month</b> · cancel anytime · all learning resources are free</div>
+      </div>
+      <button type="button" class="pay-close" data-pay-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <form id="pay-form">
+      <div class="form-grid">
+        <div class="field">
+          <label for="pay-name">Full name</label>
+          <input id="pay-name" name="name" type="text" placeholder="Aarav Sharma" required />
+        </div>
+        <div class="field">
+          <label for="pay-whatsapp">WhatsApp number</label>
+          <input id="pay-whatsapp" name="whatsapp" type="tel" inputmode="numeric" placeholder="+91 9XXXXXXXXX" pattern="[0-9+\s]{10,15}" required />
+        </div>
+        <div class="field full">
+          <label for="pay-college">College</label>
+          <input id="pay-college" name="college" type="text" placeholder="Your engineering college" required />
+        </div>
+        <div class="field">
+          <label>Year of study</label>
+          <div class="cselect" data-placeholder="Select your year">
+            <button type="button" class="cselect-btn" aria-haspopup="listbox" aria-expanded="false">
+              <span class="cselect-value placeholder">Select your year</span>
+              <svg class="cselect-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <ul class="cselect-list" role="listbox">
+              <li role="option" data-value="1st Year">1st Year</li>
+              <li role="option" data-value="2nd Year">2nd Year</li>
+              <li role="option" data-value="3rd Year">3rd Year</li>
+              <li role="option" data-value="4th Year">4th Year</li>
+              <li role="option" data-value="Recent Graduate">Recent Graduate</li>
+            </ul>
+            <input type="hidden" name="year" value="" />
+          </div>
+        </div>
+        <div class="field">
+          <label>You are a</label>
+          <div class="cselect" data-placeholder="Select">
+            <button type="button" class="cselect-btn" aria-haspopup="listbox" aria-expanded="false">
+              <span class="cselect-value placeholder">Select</span>
+              <svg class="cselect-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <ul class="cselect-list" role="listbox">
+              <li role="option" data-value="student">Student</li>
+              <li role="option" data-value="fresher">Fresher</li>
+              <li role="option" data-value="working">Working</li>
+            </ul>
+            <input type="hidden" name="role" value="" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Target role</label>
+          <div class="cselect" data-placeholder="Select">
+            <button type="button" class="cselect-btn" aria-haspopup="listbox" aria-expanded="false">
+              <span class="cselect-value placeholder">Select</span>
+              <svg class="cselect-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <ul class="cselect-list" role="listbox">
+              <li role="option" data-value="Frontend Developer">Frontend Developer</li>
+              <li role="option" data-value="Backend Developer">Backend Developer</li>
+              <li role="option" data-value="Full-Stack Developer">Full-Stack Developer</li>
+              <li role="option" data-value="Data / ML Engineer">Data / ML Engineer</li>
+              <li role="option" data-value="Mobile Developer">Mobile Developer</li>
+              <li role="option" data-value="Not sure yet">Not sure yet</li>
+            </ul>
+            <input type="hidden" name="target_role" value="" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="pay-skills">Your skills</label>
+          <input id="pay-skills" name="skills" type="text" placeholder="e.g. React, Node.js, Python, SQL" required />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" id="pay-submit">Pay ₹199 &amp; start
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <div class="pay-secure">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Secure payment via Razorpay
+      </div>
+    </form>
+
+    <!-- shown instead of the form when a generic CTA has no known track intent -->
+    <div class="track-pick" id="track-picker">
+      <p class="track-pick-intro">Which track do you want to start?</p>
+      <div class="track-pick-list">
+        <button type="button" class="track-pick-opt" data-pick-skill="python">
+          <span class="tp-emoji">🐍</span>
+          <span class="tp-info"><span class="tp-name">Python</span><span class="tp-meta">22 days · beginner friendly</span></span>
+          <svg class="tp-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <button type="button" class="track-pick-opt" data-pick-skill="web-dev-part-1">
+          <span class="tp-emoji">🌐</span>
+          <span class="tp-info"><span class="tp-name">Web Development — Part 1</span><span class="tp-meta">29 days · HTML &amp; CSS</span></span>
+          <svg class="tp-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- shown before checkout when the visitor already has a DIFFERENT track
+         active — single-active-skill enrollment means starting this one will
+         deactivate (not delete) that one. Same-track advancement (e.g. Web
+         Dev Part 1 -> Part 2) skips this and goes straight to the form. -->
+    <div class="pay-state" id="pay-confirm-switch">
+      <div class="ic" style="background:var(--amber-dim);color:var(--amber)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="30" height="30"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+      </div>
+      <h3>Switch your active track?</h3>
+      <p id="pay-confirm-msg"></p>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:22px;">
+        <button type="button" class="btn btn-ghost" id="pay-confirm-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="pay-confirm-continue">Yes, switch</button>
+      </div>
+    </div>
+
+    <!-- shown at submit-time when a gated part's prerequisite isn't
+         complete yet for this whatsapp number. Advisory only -- the real
+         gate is enforced server-side in /create-order either way. -->
+    <div class="pay-state" id="pay-locked">
+      <div class="ic" style="background:rgba(239,68,68,0.12);color:#ef4444">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="30" height="30"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      </div>
+      <h3>Not unlocked yet</h3>
+      <p id="pay-locked-msg"></p>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:22px;">
+        <button type="button" class="btn btn-ghost" data-pay-close>Close</button>
+        <button type="button" class="btn btn-primary" id="pay-locked-pick-other">Choose another track</button>
+      </div>
+    </div>
+
+    <div class="pay-state ok" id="pay-success">
+      <div class="ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="30" height="30"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h3>You're in! 🎉</h3>
+      <p id="pay-success-msg">Payment successful!</p>
+      <a id="pay-success-wa" class="btn btn-primary" href="https://wa.me/919391595257?text=hi" target="_blank" style="margin-top:10px; display:inline-block;">Tap to message us on WhatsApp and activate your account</a>
+      <a id="pay-success-dash" class="btn btn-ghost" href="dashboard.html" style="display:none; margin-top:10px;">Go to my dashboard →</a>
+      <button type="button" class="btn btn-ghost" data-pay-close style="margin-top:10px;">Done</button>
+    </div>
+
+    <div class="pay-state err" id="pay-error">
+      <div class="ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="30" height="30"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>
+      <h3>Payment failed</h3>
+      <p id="pay-error-msg">Your payment didn't go through. No money was deducted — please try again.</p>
+      <button type="button" class="btn btn-primary" id="pay-retry">Try again</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== LOGIN MODAL (WhatsApp OTP) ====================== -->
+<div id="login-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="login-title">
+  <div class="pay-overlay" data-login-close></div>
+  <div class="pay-card">
+    <div class="pay-head">
+      <div>
+        <h3 id="login-title">Log in</h3>
+        <div class="price">Already enrolled? Verify your WhatsApp number to get back into your dashboard.</div>
+      </div>
+      <button type="button" class="pay-close" data-login-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <form id="login-phone-form">
+      <div class="form-grid">
+        <div class="field full">
+          <label for="login-whatsapp">WhatsApp number</label>
+          <input id="login-whatsapp" name="whatsapp" type="tel" inputmode="numeric" placeholder="+91 9XXXXXXXXX" pattern="[0-9+\s]{10,15}" required />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" id="login-send-btn">Send code
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <p class="form-note">We'll WhatsApp you a 6-digit code. It expires in 10 minutes.</p>
+    </form>
+
+    <div class="pay-state" id="login-code-state">
+      <div class="ic" style="background:var(--amber-dim);color:var(--amber)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="30" height="30"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      </div>
+      <h3>Enter your code</h3>
+      <p id="login-code-msg">We sent a 6-digit code to your WhatsApp.</p>
+      <form id="login-code-form" style="margin-top:18px;">
+        <div class="form-grid">
+          <div class="field full">
+            <label for="login-code">6-digit code</label>
+            <input id="login-code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="123456" required autocomplete="one-time-code" />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="login-verify-btn">Verify &amp; log in
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+      <button type="button" class="btn btn-ghost" id="login-back-btn" style="margin-top:10px;">Use a different number</button>
+    </div>
+
+    <div class="pay-state err" id="login-error">
+      <div class="ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="30" height="30"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>
+      <h3>Couldn't log you in</h3>
+      <p id="login-error-msg">That code is invalid or expired. Please try again.</p>
+      <button type="button" class="btn btn-primary" id="login-retry-btn">Try again</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== SCRIPTS ====================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const hasGSAP = typeof gsap !== "undefined";
+  const hasST = typeof ScrollTrigger !== "undefined";
+  const hasLenis = typeof Lenis !== "undefined";
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  /* ============================================================
+     0. SUPABASE CLIENT
+     ============================================================ */
+  const SUPABASE_URL = "https://iraxbolxtfynhghrwhly.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyYXhib2x4dGZ5bmhnaHJ3aGx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MzQwMzYsImV4cCI6MjA5NzIxMDAzNn0.YBhEVYAZ4IQUWuj-iMRhxJzyU7wNlWxJuZPQWYwwSG0";
+  let supabaseClient = null;
+  if (window.supabase && window.supabase.createClient) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+
+  /* ============================================================
+     1. LENIS  +  GSAP TICKER SYNC
+     ============================================================ */
+  let lenis = null;
+  if (hasLenis && !prefersReduced) {
+    lenis = new Lenis({
+      duration: 1.15,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 1.4,
+    });
+
+    window.lenis = lenis; // exposed for debugging / programmatic scroll
+
+    // Keep ScrollTrigger in sync with Lenis on every scroll
+    if (hasST) lenis.on("scroll", ScrollTrigger.update);
+
+    // Drive Lenis from GSAP's ticker so animations & scroll share one clock
+    if (hasGSAP) {
+      gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+      gsap.ticker.lagSmoothing(0);
+    } else {
+      function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
+      requestAnimationFrame(raf);
+    }
+
+    // Smooth-scroll for nav anchor links via Lenis
+    document.querySelectorAll('a[href^="#"]').forEach((a) => {
+      a.addEventListener("click", (e) => {
+        const id = a.getAttribute("href");
+        if (id.length > 1 && document.querySelector(id)) {
+          e.preventDefault();
+          lenis.scrollTo(id, { offset: -70, duration: 1.2 });
+        }
+      });
+    });
+  }
+
+  if (hasGSAP && hasST) gsap.registerPlugin(ScrollTrigger);
+
+  /* ============================================================
+     2. NAV scrolled state
+     ============================================================ */
+  const nav = document.getElementById("nav");
+  const onScrollNav = () => {
+    if (window.scrollY > 30) nav.classList.add("scrolled");
+    else nav.classList.remove("scrolled");
+  };
+  window.addEventListener("scroll", onScrollNav, { passive: true });
+  onScrollNav();
+
+  /* ============================================================
+     3. HERO ENTRANCE (played once the preloader lifts)
+     ============================================================ */
+  function playHero() {
+    if (hasGSAP && !prefersReduced) {
+      const items = [".hero-badge", ".hero h1", ".hero-guarantee", ".hero .lead", ".hero-actions"];
+      // explicit baseline so the entrance can never resolve to opacity:0
+      gsap.set(".hero .reveal", { opacity: 1 });
+      gsap.set(items, { opacity: 0, y: 32 });
+      gsap.set(".hero-stats .stat", { opacity: 0, y: 26 });
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      tl.to(".hero-badge", { opacity: 1, y: 0, duration: 0.7 })
+        .to(".hero h1", { opacity: 1, y: 0, duration: 0.9 }, "-=0.4")
+        .to(".hero-guarantee", { opacity: 1, y: 0, duration: 0.7 }, "-=0.55")
+        .to(".hero .lead", { opacity: 1, y: 0, duration: 0.8 }, "-=0.5")
+        .to(".hero-actions", { opacity: 1, y: 0, duration: 0.7 }, "-=0.5")
+        .to(".hero-stats .stat", { opacity: 1, y: 0, duration: 0.7, stagger: 0.08 }, "-=0.45");
+    } else {
+      document.querySelectorAll(".hero .reveal").forEach((el) => (el.style.opacity = 1));
+    }
+  }
+
+  /* ============================================================
+     4. HERO PARALLAX
+     ============================================================ */
+  if (hasGSAP && hasST && !prefersReduced) {
+    gsap.to(".hero-glow", {
+      yPercent: 40, ease: "none",
+      scrollTrigger: { trigger: "#home", start: "top top", end: "bottom top", scrub: true },
+    });
+    gsap.fromTo("#hero-canvas", { opacity: 1, yPercent: 0 }, {
+      yPercent: 18, opacity: 0.2, ease: "none",
+      scrollTrigger: { trigger: "#home", start: "top top", end: "bottom top", scrub: true },
+    });
+    gsap.to(".hero-grid", {
+      yPercent: 24, ease: "none",
+      scrollTrigger: { trigger: "#home", start: "top top", end: "bottom top", scrub: true },
+    });
+  }
+
+  /* ============================================================
+     5. TYPEWRITER  "And actually finish." / "And don't quit." / ...
+     ============================================================ */
+  (function typewriter() {
+    const el = document.getElementById("cycle-word");
+    if (!el) return;
+    const words = ["And actually finish.", "And actually ship it.", "And don't quit this time."];
+    let w = 0, c = 0, deleting = false;
+    function tick() {
+      const word = words[w];
+      if (!deleting) {
+        c++;
+        el.textContent = word.slice(0, c);
+        if (c === word.length) { deleting = true; return setTimeout(tick, 1600); }
+      } else {
+        c--;
+        el.textContent = word.slice(0, c);
+        if (c === 0) { deleting = false; w = (w + 1) % words.length; }
+      }
+      setTimeout(tick, deleting ? 55 : 110);
+    }
+    setTimeout(tick, 900);
+  })();
+
+  /* ============================================================
+     6. COUNT-UP NUMBERS (trigger on scroll into view)
+     ============================================================ */
+  function animateCount(el) {
+    const target = parseFloat(el.getAttribute("data-count"));
+    const valEl = el.querySelector(".val");
+    if (!valEl) return;
+    if (prefersReduced || !hasGSAP) { valEl.textContent = target.toLocaleString("en-IN"); return; }
+    const obj = { n: 0 };
+    gsap.to(obj, {
+      n: target, duration: 1.6, ease: "power2.out",
+      onUpdate: () => { valEl.textContent = Math.round(obj.n).toLocaleString("en-IN"); },
+    });
+  }
+
+  document.querySelectorAll("[data-count]").forEach((el) => {
+    if (hasST && !prefersReduced) {
+      ScrollTrigger.create({
+        trigger: el, start: "top 88%", once: true,
+        onEnter: () => animateCount(el),
+      });
+    } else {
+      animateCount(el);
+    }
+  });
+
+  /* ============================================================
+     7. SECTION REVEALS (stagger as you scroll in)
+     ============================================================ */
+  if (hasGSAP && hasST && !prefersReduced) {
+    // generic reveals (outside hero)
+    gsap.utils.toArray(".reveal").forEach((el) => {
+      if (el.closest(".hero")) return;
+      gsap.fromTo(el, { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.85, ease: "power3.out",
+        scrollTrigger: { trigger: el, start: "top 86%", once: true },
+      });
+    });
+
+    // staggered grids
+    const stagger = (selector, items) => {
+      document.querySelectorAll(selector).forEach((grid) => {
+        gsap.fromTo(grid.querySelectorAll(items), { y: 40, opacity: 0 }, {
+          y: 0, opacity: 1, duration: 0.7, ease: "power3.out", stagger: 0.09,
+          scrollTrigger: { trigger: grid, start: "top 82%", once: true },
+        });
+      });
+    };
+    stagger(".prob-grid", ".prob-card");
+    stagger(".feat-grid", ".feat");
+    stagger(".price-list", "li");
+    stagger(".wa-points", "li");
+  } else {
+    document.querySelectorAll(".reveal").forEach((el) => (el.style.opacity = 1));
+  }
+
+  /* ============================================================
+     8. HOW IT WORKS — horizontal pinned scroll
+        (vertical stack on phones for performance/usability)
+     ============================================================ */
+  if (hasGSAP && hasST && !prefersReduced && !window.matchMedia("(max-width:760px)").matches) {
+    const track = document.getElementById("htrack");
+    const section = document.getElementById("how");
+    if (track && section) {
+      const amount = () => Math.max(0, track.scrollWidth - window.innerWidth + 28);
+      const horiz = gsap.to(track, {
+        x: () => -amount(), ease: "none",
+        scrollTrigger: {
+          trigger: section, start: "top top", end: () => "+=" + amount(),
+          pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
+        },
+      });
+      // cards rise in as they slide horizontally into view
+      gsap.utils.toArray(".hp-step").forEach((card) => {
+        gsap.from(card, {
+          y: 60, opacity: 0, duration: 0.8, ease: "power3.out",
+          scrollTrigger: { trigger: card, containerAnimation: horiz, start: "left 88%" },
+        });
+      });
+    }
+  }
+
+  /* ============================================================
+     9. WHATSAPP CHAT — reveal bubbles on scroll
+     ============================================================ */
+  if (hasGSAP && hasST && !prefersReduced) {
+    const msgs = gsap.utils.toArray("#wa-body .wa-msg");
+    gsap.set(msgs, { opacity: 0, y: 14 });
+    ScrollTrigger.create({
+      trigger: "#wa-body", start: "top 75%", once: true,
+      onEnter: () => {
+        gsap.to(msgs, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out", stagger: 0.35 });
+      },
+    });
+  }
+
+  /* ============================================================
+     10. GSAP MARQUEE (infinite horizontal auto-scroll)
+     ============================================================ */
+  if (hasGSAP && !prefersReduced) {
+    const marquee = document.getElementById("marquee");
+    const track = marquee.querySelector(".track");
+    const loopW = track.offsetWidth;
+    const mq = gsap.to(marquee, {
+      x: -loopW, duration: 18, ease: "none", repeat: -1,
+      modifiers: { x: gsap.utils.unitize((x) => parseFloat(x) % loopW) },
+    });
+    marquee.addEventListener("mouseenter", () => mq.timeScale(0.25));
+    marquee.addEventListener("mouseleave", () => mq.timeScale(1));
+    window.addEventListener("resize", () => { /* loop width handled by modulo */ });
+  }
+
+  /* ============================================================
+     11. FAQ ACCORDION
+     ============================================================ */
+  document.querySelectorAll(".faq-item").forEach((item) => {
+    const q = item.querySelector(".faq-q");
+    const a = item.querySelector(".faq-a");
+    q.addEventListener("click", () => {
+      const isOpen = item.classList.contains("open");
+      // close siblings
+      document.querySelectorAll(".faq-item.open").forEach((other) => {
+        if (other !== item) {
+          other.classList.remove("open");
+          if (hasGSAP) gsap.to(other.querySelector(".faq-a"), { height: 0, duration: 0.35, ease: "power2.inOut" });
+          else other.querySelector(".faq-a").style.height = "0px";
+        }
+      });
+      if (isOpen) {
+        item.classList.remove("open");
+        if (hasGSAP) gsap.to(a, { height: 0, duration: 0.35, ease: "power2.inOut" });
+        else a.style.height = "0px";
+      } else {
+        item.classList.add("open");
+        const target = a.querySelector(".inner").offsetHeight;
+        if (hasGSAP) gsap.fromTo(a, { height: a.offsetHeight }, { height: target, duration: 0.4, ease: "power2.out", onComplete: () => { a.style.height = "auto"; } });
+        else a.style.height = target + "px";
+      }
+      if (lenis) setTimeout(() => ScrollTrigger && ScrollTrigger.refresh(), 420);
+    });
+  });
+
+  /* ============================================================
+     12a. CUSTOM DROPDOWNS (replace native <select> for reliable styling)
+     ============================================================ */
+  document.querySelectorAll(".cselect").forEach((cs) => {
+    const btn = cs.querySelector(".cselect-btn");
+    const valEl = cs.querySelector(".cselect-value");
+    const list = cs.querySelector(".cselect-list");
+    const hidden = cs.querySelector("input[type=hidden]");
+    const opts = Array.from(cs.querySelectorAll("li[role=option]"));
+
+    const close = () => { cs.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); };
+    const open = () => {
+      document.querySelectorAll(".cselect.open").forEach((o) => { if (o !== cs) { o.classList.remove("open"); o.querySelector(".cselect-btn").setAttribute("aria-expanded", "false"); } });
+      cs.classList.add("open"); btn.setAttribute("aria-expanded", "true");
+    };
+
+    btn.addEventListener("click", (e) => { e.stopPropagation(); cs.classList.contains("open") ? close() : open(); });
+    opts.forEach((li) => {
+      li.addEventListener("click", () => {
+        valEl.textContent = li.dataset.value;
+        valEl.classList.remove("placeholder");
+        hidden.value = li.dataset.value;
+        cs.classList.remove("invalid");
+        opts.forEach((o) => o.classList.remove("active"));
+        li.classList.add("active");
+        close();
+      });
+    });
+  });
+  // close any open dropdown when clicking elsewhere / pressing Escape
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".cselect.open").forEach((o) => { o.classList.remove("open"); o.querySelector(".cselect-btn").setAttribute("aria-expanded", "false"); });
+  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") document.querySelectorAll(".cselect.open").forEach((o) => o.classList.remove("open")); });
+
+  /* ============================================================
+     12. WAITLIST FORM — insert into Supabase "waitlist" table
+     ============================================================ */
+  const form = document.getElementById("waitlist-form");
+  if (form) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // validate the custom dropdowns (hidden inputs aren't covered by `required`)
+      let firstMissing = null;
+      form.querySelectorAll(".cselect input[type=hidden]").forEach((h) => {
+        const cs = h.closest(".cselect");
+        if (!h.value) { cs.classList.add("invalid"); if (!firstMissing) firstMissing = cs; }
+      });
+      if (firstMissing) {
+        firstMissing.querySelector(".cselect-btn").focus();
+        if (lenis) lenis.scrollTo(firstMissing, { offset: -120, duration: 0.8 });
+        return;
+      }
+
+      const btn = document.getElementById("submit-btn");
+      const original = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = "Joining…";
+
+      // read the six field values (match the actual ids / names in the form)
+      const get = (sel) => { const el = form.querySelector(sel); return el ? el.value.trim() : ""; };
+      const payload = {
+        name: get("#name"),
+        college: get("#college"),
+        year: get("input[name=year]"),
+        role: get("input[name=role]"),
+        skills: get("#skills"),
+        whatsapp: get("#whatsapp"),
+      };
+
+      try {
+        if (!supabaseClient) throw new Error("Supabase client not initialised");
+        const { error } = await supabaseClient.from("waitlist").insert([payload]);
+        if (error) throw error;
+
+        // success — hide the form and reveal the existing confirmation message
+        form.style.display = "none";
+        document.getElementById("form-success").classList.add("show");
+        if (hasGSAP) gsap.from("#form-success", { y: 20, opacity: 0, duration: 0.6, ease: "power3.out" });
+        if (lenis) setTimeout(() => ScrollTrigger && ScrollTrigger.refresh(), 300);
+
+        // keep any localStorage-based waitlist counter in sync (no-op if none on page)
+        const counterEl = document.querySelector("[data-waitlist-count]");
+        if (counterEl) {
+          const next = (parseInt(localStorage.getItem("waitlistCount") || counterEl.textContent, 10) || 0) + 1;
+          localStorage.setItem("waitlistCount", String(next));
+          counterEl.textContent = next;
+        }
+      } catch (err) {
+        console.error("Supabase insert error:", err);
+        btn.disabled = false;
+        btn.innerHTML = original;
+        alert("Something went wrong, please try again");
+      }
+    });
+  }
+
+  /* ============================================================
+     12b. RAZORPAY PAYMENT — enrollment modal + checkout flow
+     ============================================================ */
+  (function payment() {
+    const modal = document.getElementById("pay-modal");
+    const payForm = document.getElementById("pay-form");
+    if (!modal || !payForm) return;
+
+    const PAY_AMOUNT = 19900; // paise = ₹199
+    const BACKEND = "https://placely-backend-production.up.railway.app";
+
+    const successEl = document.getElementById("pay-success");
+    const errorEl = document.getElementById("pay-error");
+    const errorMsg = document.getElementById("pay-error-msg");
+    const submitBtn = document.getElementById("pay-submit");
+    const submitOriginal = submitBtn.innerHTML;
+    const picker = document.getElementById("track-picker");
+    const confirmSwitchEl = document.getElementById("pay-confirm-switch");
+    const lockedEl = document.getElementById("pay-locked");
+
+    const showState = (which) => {
+      payForm.style.display = which === "form" ? "" : "none";
+      if (picker) picker.classList.toggle("show", which === "picker");
+      if (confirmSwitchEl) confirmSwitchEl.classList.toggle("show", which === "confirm");
+      if (lockedEl) lockedEl.classList.toggle("show", which === "locked");
+      successEl.classList.toggle("show", which === "success");
+      errorEl.classList.toggle("show", which === "error");
+    };
+    const resetSubmit = () => { submitBtn.disabled = false; submitBtn.innerHTML = submitOriginal; };
+
+    // The student record is created server-side by the Razorpay webhook (async),
+    // so the browser never receives a student_id directly. Poll the backend by
+    // whatsapp until the student is provisioned (≈ up to 30s). On success the
+    // backend also sets a real, persistent session cookie (credentials:
+    // 'include' is required for the browser to store it, since this is a
+    // cross-origin request to the Railway API) -- a verified Razorpay
+    // payment IS the login verification here, so no separate OTP step is
+    // needed right after checkout.
+    async function resolveStudentId(whatsapp) {
+      const wa = encodeURIComponent(whatsapp);
+      // poll every 3s, up to 10 attempts (≈30s) while the webhook provisions the student
+      for (let i = 0; i < 10; i++) {
+        try {
+          const r = await fetch(BACKEND + "/api/student/by-whatsapp/" + wa, { credentials: "include" });
+          if (r.ok) { const d = await r.json(); if (d && d.student_id) return d.student_id; }
+        } catch (e) { /* keep polling */ }
+        await new Promise((res) => setTimeout(res, 3000));
+      }
+      return null;
+    }
+
+    // Which track is being purchased.
+    // Specific CTAs (the track gallery cards) always carry data-skill and go
+    // straight to that track's form. Generic CTAs (nav/hero/pricing/join/final
+    // CTA) carry no data-skill, so we try to infer intent before ever
+    // defaulting to a track:
+    //   1) a ?track= / ?skill= URL query param on this page load (e.g. a
+    //      Web-Dev-specific link shared to a visitor)
+    //   2) the last specific track the visitor deliberately chose this
+    //      session (clicked a track card, or landed via #1) — sessionStorage
+    //   3) unknown -> show a track picker instead of silently assuming Python
+    // track: null = standalone skill; a shared string = same multi-part
+    // track, so buying the next part while a sibling is active is silent
+    // advancement, not a track switch (see the purchase-context gate below).
+    const SKILLS = {
+      "python": { name: "Python", track: null },
+      "python-dsa": { name: "Python + DSA", track: null },
+      "web-dev-part-1": { name: "Web Development — Part 1: HTML & CSS", track: "web-dev" },
+      "web-dev-part-2": { name: "Web Development — Part 2: JavaScript", track: "web-dev" },
+      "web-dev-part-3": { name: "Web Development — Part 3: Backend Development", track: "web-dev" },
+      "web-dev-part-4": { name: "Web Development — Part 4: React & Next.js", track: "web-dev" },
+    };
+    // Mirrors services/tracks.py's PART_PREREQUISITES — advisory only, the
+    // real gate is enforced server-side in /create-order regardless of
+    // what this client-side check decides.
+    const PART_PREREQUISITES = {
+      "web-dev-part-2": "web-dev-part-1",
+      "web-dev-part-3": "web-dev-part-2",
+      "web-dev-part-4": "web-dev-part-3",
+    };
+    const INTENT_KEY = "placely_track_intent";
+
+    const rememberIntent = (slug) => {
+      if (slug && SKILLS[slug]) { try { sessionStorage.setItem(INTENT_KEY, slug); } catch (e) {} }
+    };
+    const readUrlIntent = () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const slug = params.get("track") || params.get("skill");
+        return (slug && SKILLS[slug]) ? slug : null;
+      } catch (e) { return null; }
+    };
+    const readSessionIntent = () => {
+      try {
+        const slug = sessionStorage.getItem(INTENT_KEY);
+        return (slug && SKILLS[slug]) ? slug : null;
+      } catch (e) { return null; }
+    };
+
+    // A URL-borne intent wins immediately and is remembered for the rest of
+    // the session (so later generic-CTA clicks keep honoring it).
+    const urlIntent = readUrlIntent();
+    if (urlIntent) rememberIntent(urlIntent);
+
+    let selectedSkill = "python";
+
+    // Commit to a specific track and show the actual purchase form for it.
+    const startTrack = (skillSlug) => {
+      selectedSkill = (skillSlug && SKILLS[skillSlug]) ? skillSlug : "python";
+      rememberIntent(selectedSkill);
+      const titleEl = document.getElementById("pay-title");
+      if (titleEl) titleEl.textContent = "Start the " + SKILLS[selectedSkill].name + " track";
+      const subtitleEl = document.getElementById("pay-subtitle");
+      if (subtitleEl) {
+        if (selectedSkill.includes("dsa")) {
+          subtitleEl.innerHTML = "<b>₹499/month</b> · cancel anytime · all learning resources are free";
+        } else {
+          subtitleEl.innerHTML = "<b>₹199/month</b> · cancel anytime · all learning resources are free";
+        }
+      }
+      showState("form");
+    };
+
+    const openModal = (skillSlug) => {
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      if (lenis) lenis.stop();
+
+      if (skillSlug && SKILLS[skillSlug]) {
+        // an explicit track card was clicked — go straight to its form
+        startTrack(skillSlug);
+        return;
+      }
+
+      // generic CTA — use inferred intent if we have one, else ask
+      const intent = urlIntent || readSessionIntent();
+      if (intent) startTrack(intent);
+      else showState("picker");
+    };
+    const closeModal = () => {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      if (lenis) lenis.start();
+    };
+
+    // open from any CTA flagged data-pay (href="#join" is a no-JS fallback);
+    // data-skill picks the track directly, absent means "figure it out".
+    document.querySelectorAll("[data-pay]").forEach((el) => {
+      el.addEventListener("click", (e) => { e.preventDefault(); openModal(el.getAttribute("data-skill")); });
+    });
+    // track picker options — shown when a generic CTA had no known intent
+    if (picker) {
+      picker.querySelectorAll("[data-pick-skill]").forEach((el) => {
+        el.addEventListener("click", () => startTrack(el.getAttribute("data-pick-skill")));
+      });
+    }
+    modal.querySelectorAll("[data-pay-close]").forEach((el) => el.addEventListener("click", closeModal));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
+    document.getElementById("pay-retry").addEventListener("click", () => showState("form"));
+
+    // Deep link support: ?track=web-dev-part-2&autostart=1#join opens the
+    // purchase form for that track immediately, pre-selected — used by the
+    // dashboard's "Start Part N" unlock banner so finishing a part and
+    // continuing to the next one doesn't require an extra click here.
+    try {
+      if (urlIntent && new URLSearchParams(window.location.search).get("autostart") === "1") {
+        openModal(urlIntent);
+      }
+    } catch (e) { /* ignore */ }
+
+    // Single-active-skill enrollment: purchasing a track that's a DIFFERENT
+    // track than the visitor's current active skill will deactivate that
+    // one (progress preserved, switchable back anytime in Settings). Buying
+    // the next part of the SAME multi-part track (e.g. Web Dev Part 1 -> 2)
+    // is silent advancement, not a switch, so it skips this prompt entirely.
+    let pendingDetails = null;
+
+    // One fetch, used to answer both "does this need a switch-confirm?" and
+    // "is this gated part unlocked for this whatsapp number yet?". Fails
+    // open (returns null) on any error — this check is advisory only, the
+    // real enforcement for both is server-side (single-active-skill
+    // deactivation happens in the webhook regardless; the part-sequencing
+    // gate is enforced in /create-order regardless of what this returns).
+    async function fetchPurchaseContext(whatsapp) {
+      try {
+        const res = await fetch(BACKEND + "/student/purchase-context/" + encodeURIComponent(whatsapp));
+        if (!res.ok) return null;
+        return await res.json();
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function needsSwitchConfirm(ctx) {
+      if (!ctx || !ctx.has_active_skill) return null;
+      const newTrack = (SKILLS[selectedSkill] && SKILLS[selectedSkill].track) || null;
+      if (ctx.active_track === newTrack) return null; // same track (or both standalone) -> silent advance
+      return ctx.active_skill_slug || null;
+    }
+
+    // If selectedSkill is a gated part (Part 2/3), is its prerequisite in
+    // ctx.completed_skill_slugs? A missing/failed ctx fails OPEN client-side
+    // (don't block on a network hiccup) -- /create-order still enforces
+    // the real rule server-side either way.
+    function lockedReason(ctx) {
+      const prereq = PART_PREREQUISITES[selectedSkill];
+      if (!prereq) return null;
+      if (!ctx) return null;
+      const completed = ctx.completed_skill_slugs || [];
+      if (completed.indexOf(prereq) !== -1) return null;
+      return prereq;
+    }
+
+    function showSwitchConfirm(activeSlug, newSlug) {
+      const activeName = (SKILLS[activeSlug] && SKILLS[activeSlug].name) || "your current track";
+      const newName = (SKILLS[newSlug] && SKILLS[newSlug].name) || "this track";
+      const msgEl = document.getElementById("pay-confirm-msg");
+      if (msgEl) {
+        msgEl.innerHTML = "You currently have <b>" + activeName + "</b> active. Starting <b>" + newName +
+          "</b> will make it your new active track — <b>" + activeName + "</b> will be hidden from your " +
+          "dashboard and WhatsApp check-ins, but your progress is saved. You can switch back anytime in Settings.";
+      }
+      const continueBtn = document.getElementById("pay-confirm-continue");
+      if (continueBtn) continueBtn.textContent = "Yes, switch to " + newName;
+      showState("confirm");
+    }
+
+    function showLocked(prereqSlug) {
+      const prereqName = (SKILLS[prereqSlug] && SKILLS[prereqSlug].name) || "the previous part";
+      const targetName = (SKILLS[selectedSkill] && SKILLS[selectedSkill].name) || "this part";
+      const msgEl = document.getElementById("pay-locked-msg");
+      if (msgEl) {
+        msgEl.innerHTML = "<b>" + targetName + "</b> unlocks once you've completed <b>" + prereqName + "</b>. Keep going on your current track — we'll message you on WhatsApp the moment it's ready.";
+      }
+      showState("locked");
+    }
+
+    async function proceedToCreateOrder(details) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = "Creating order…";
+
+      try {
+        if (typeof Razorpay === "undefined") throw new Error("Razorpay SDK not loaded");
+
+        // 1) create the order on the backend
+        const res = await fetch(BACKEND + "/create-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: PAY_AMOUNT, skill_slug: selectedSkill, ...details }),
+        });
+        if (!res.ok) {
+          // surface the server's own message when it has one (e.g. the
+          // part-sequencing gate's "Complete X before purchasing Y.")
+          let serverMsg = null;
+          try { const errBody = await res.json(); serverMsg = errBody && errBody.error; } catch (e) {}
+          const orderErr = new Error(serverMsg || ("create-order failed (HTTP " + res.status + ")"));
+          // Only mark this safe-to-show-verbatim when the backend actually
+          // sent its own explicit reason -- NOT the generic HTTP-status
+          // fallback text above, which isn't a real server-authored message.
+          if (serverMsg) orderErr.isServerMessage = true;
+          throw orderErr;
+        }
+        const data = await res.json();
+        const orderId = data.order_id || data.id || data.orderId || (data.order && data.order.id);
+        if (!orderId) throw new Error("No order id in response");
+
+        // The backend's field is razorpay_key_id (routes/payments.py). No
+        // hardcoded fallback key: opening the modal under a key that doesn't
+        // match the one the order was created under makes every payment fail
+        // -- better to stop loudly here than fail confusingly in the modal.
+        const rzpKey = data.razorpay_key_id || data.key || data.key_id;
+        if (!rzpKey) throw new Error("No payment key in response");
+
+        // 2) open Razorpay checkout with the returned order
+        const rzp = new Razorpay({
+          key: rzpKey,
+          amount: data.amount || PAY_AMOUNT,
+          currency: data.currency || "INR",
+          order_id: orderId,
+          name: "Placely",
+          description: "Placely — daily AI mentor until you finish your track",
+          prefill: { name: details.name, contact: details.whatsapp },
+          theme: { color: "#f59e0b" },
+          // 3) payment success → real session cookie gets set by
+          //    resolveStudentId (credentials:'include'), then go to the
+          //    dashboard. localStorage is kept only as a same-tab UI
+          //    convenience (e.g. avoiding a flash of "logged out" before the
+          //    dashboard's own /api/auth/session check resolves) -- it is
+          //    NOT what grants access; the httpOnly session cookie is.
+          handler: async function () {
+            showState("success");
+            if (hasGSAP) gsap.from("#pay-success", { y: 18, opacity: 0, duration: 0.5, ease: "power3.out" });
+            const msgEl = document.getElementById("pay-success-msg");
+            const dashLink = document.getElementById("pay-success-dash");
+
+            // Establish the real session cookie. resolveStudentId polls
+            // by-whatsapp with credentials:'include' until the Razorpay
+            // webhook has provisioned the student.
+            let sid = null;
+            try { sid = await resolveStudentId(details.whatsapp); }
+            catch (e) { console.error("student resolve failed:", e); }
+            if (sid) { try { localStorage.setItem("placely_student_id", sid); } catch (e) {} }
+
+            if (msgEl) {
+              msgEl.innerHTML = sid
+                ? "Payment received! 🎉 Please <b>tap the button below</b> to activate your account on WhatsApp."
+                : "Payment successful! Please <b>tap the button below</b> to activate your account on WhatsApp.";
+            }
+            if (dashLink && sid) dashLink.style.display = "";
+          },
+          modal: { ondismiss: resetSubmit },
+        });
+
+        // 4) payment failure → error + retry
+        rzp.on("payment.failed", function (resp) {
+          if (errorMsg && resp && resp.error && resp.error.description) {
+            errorMsg.textContent = resp.error.description + " — no money was deducted. Please try again.";
+          }
+          showState("error");
+        });
+
+        rzp.open();
+        resetSubmit();
+      } catch (err) {
+        console.error("Payment error:", err);
+        if (errorMsg) {
+          // Only ever show err.message when it's the backend's own
+          // explicitly-constructed reason (tagged above) -- never raw
+          // network/SDK/parse error text, which isn't meant for students.
+          errorMsg.textContent = (err && err.isServerMessage && err.message)
+            ? err.message
+            : "We couldn't start the payment. Please check your connection and try again.";
+        }
+        showState("error");
+        resetSubmit();
+      }
+    }
+
+    const confirmCancelBtn = document.getElementById("pay-confirm-cancel");
+    const confirmContinueBtn = document.getElementById("pay-confirm-continue");
+    if (confirmCancelBtn) confirmCancelBtn.addEventListener("click", () => { pendingDetails = null; showState("form"); });
+    if (confirmContinueBtn) confirmContinueBtn.addEventListener("click", () => {
+      if (pendingDetails) proceedToCreateOrder(pendingDetails);
+    });
+    const lockedPickOtherBtn = document.getElementById("pay-locked-pick-other");
+    if (lockedPickOtherBtn) lockedPickOtherBtn.addEventListener("click", () => { pendingDetails = null; showState("picker"); });
+
+    payForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // validate the custom dropdowns (hidden inputs aren't covered by `required`)
+      let firstMissing = null;
+      payForm.querySelectorAll(".cselect input[type=hidden]").forEach((h) => {
+        const cs = h.closest(".cselect");
+        if (!h.value) { cs.classList.add("invalid"); if (!firstMissing) firstMissing = cs; }
+      });
+      if (firstMissing) { firstMissing.querySelector(".cselect-btn").focus(); return; }
+
+      const get = (sel) => { const el = payForm.querySelector(sel); return el ? el.value.trim() : ""; };
+      const details = {
+        name: get("#pay-name"),
+        college: get("#pay-college"),
+        year: get("input[name=year]"),
+        role: get("input[name=role]"),
+        target_role: get("input[name=target_role]"),
+        skills: get("#pay-skills"),
+        whatsapp: get("#pay-whatsapp"),
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = "Checking…";
+      const ctx = await fetchPurchaseContext(details.whatsapp);
+      resetSubmit();
+
+      // gated part (Web Dev Part 2/3) not unlocked yet for this whatsapp
+      // number -> block here. Advisory only; /create-order enforces this
+      // for real regardless of what this check decides.
+      const missingPrereq = lockedReason(ctx);
+      if (missingPrereq) {
+        showLocked(missingPrereq);
+        return;
+      }
+
+      const conflictingSlug = needsSwitchConfirm(ctx);
+      if (conflictingSlug) {
+        pendingDetails = details;
+        showSwitchConfirm(conflictingSlug, selectedSkill);
+        return;
+      }
+
+      await proceedToCreateOrder(details);
+    });
+  })();
+
+  /* ============================================================
+     12b. LOGIN (WhatsApp OTP) — real, persistent, cookie-backed session.
+     Replaces the old model where any string a visitor put in localStorage
+     under "placely_student_id" was sufficient to view someone's dashboard.
+     A student who closes their browser, clears storage, or switches
+     devices now logs back in with their WhatsApp number instead of being
+     locked out of their own (still-intact) enrollment.
+     ============================================================ */
+  (function auth() {
+    const BACKEND = "https://placely-backend-production.up.railway.app";
+    const modal = document.getElementById("login-modal");
+    if (!modal) return;
+
+    const phoneForm = document.getElementById("login-phone-form");
+    const codeState = document.getElementById("login-code-state");
+    const codeForm = document.getElementById("login-code-form");
+    const errorState = document.getElementById("login-error");
+    const errorMsg = document.getElementById("login-error-msg");
+    const codeMsg = document.getElementById("login-code-msg");
+    const sendBtn = document.getElementById("login-send-btn");
+    const verifyBtn = document.getElementById("login-verify-btn");
+    const navLoginBtn = document.getElementById("nav-login-btn");
+    const navCtaBtn = document.getElementById("nav-cta-btn");
+
+    let pendingWhatsapp = null;
+
+    const showLoginState = (which) => {
+      phoneForm.style.display = which === "phone" ? "" : "none";
+      codeState.classList.toggle("show", which === "code");
+      errorState.classList.toggle("show", which === "error");
+    };
+
+    const openLogin = () => {
+      showLoginState("phone");
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      if (window.lenis) window.lenis.stop();
+    };
+    const closeLogin = () => {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      if (window.lenis) window.lenis.start();
+    };
+
+    if (navLoginBtn) navLoginBtn.addEventListener("click", openLogin);
+
+    // Deep link: dashboard.html sends an expired/missing session here as
+    // ?login=1 so the visitor lands with the login modal already open,
+    // instead of a bare marketing page with no obvious way back in.
+    try {
+      if (new URLSearchParams(window.location.search).get("login") === "1") openLogin();
+    } catch (e) { /* ignore */ }
+    modal.querySelectorAll("[data-login-close]").forEach((el) => el.addEventListener("click", closeLogin));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && modal.classList.contains("open")) closeLogin(); });
+    document.getElementById("login-back-btn").addEventListener("click", () => showLoginState("phone"));
+    document.getElementById("login-retry-btn").addEventListener("click", () => showLoginState("phone"));
+
+    phoneForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const whatsapp = document.getElementById("login-whatsapp").value.trim();
+      if (!whatsapp) return;
+      pendingWhatsapp = whatsapp;
+
+      sendBtn.disabled = true;
+      const original = sendBtn.innerHTML;
+      sendBtn.innerHTML = "Sending…";
+      try {
+        await fetch(BACKEND + "/api/auth/request-otp", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ whatsapp }),
+        });
+        // Deliberately generic regardless of the response: the backend
+        // never reveals whether a number has an account, so neither do we.
+        codeMsg.innerHTML = "We sent a 6-digit code to " + whatsapp + " on WhatsApp.<br><br><span style='font-size:0.9em; opacity:0.8;'>Not receiving it? Make sure to <a href='https://wa.me/919391595257?text=hi' target='_blank' style='text-decoration:underline;'>send us a message</a> first so we can reply.</span>";
+        showLoginState("code");
+      } catch (err) {
+        errorMsg.textContent = "Couldn't reach the server. Check your connection and try again.";
+        showLoginState("error");
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = original;
+      }
+    });
+
+    codeForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const code = document.getElementById("login-code").value.trim();
+      if (!code || !pendingWhatsapp) return;
+
+      verifyBtn.disabled = true;
+      const original = verifyBtn.innerHTML;
+      verifyBtn.innerHTML = "Verifying…";
+      try {
+        const res = await fetch(BACKEND + "/api/auth/verify-otp", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ whatsapp: pendingWhatsapp, code }),
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          errorMsg.textContent = body.error || "That code is invalid or expired. Please try again.";
+          showLoginState("error");
+          return;
+        }
+        const data = await res.json();
+        // Logging in ALWAYS means an existing paid account (verify-otp only
+        // ever succeeds for a paid student) -- so this always goes straight
+        // to the dashboard, never to a purchase flow.
+        if (data && data.student_id) {
+          try { localStorage.setItem("placely_student_id", data.student_id); } catch (ex) {}
+        }
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        errorMsg.textContent = "Couldn't reach the server. Check your connection and try again.";
+        showLoginState("error");
+      } finally {
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = original;
+      }
+    });
+
+    // On load: if this visitor already has a valid session, don't dangle a
+    // "Start learning" purchase CTA in front of them -- send them to their
+    // dashboard instead, and hide the redundant "Log in" button.
+    (async function checkExistingSession() {
+      try {
+        const res = await fetch(BACKEND + "/api/auth/session", { credentials: "include" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && data.logged_in) {
+          if (navLoginBtn) navLoginBtn.style.display = "none";
+          if (navCtaBtn) {
+            navCtaBtn.removeAttribute("data-pay");
+            navCtaBtn.href = "dashboard.html";
+            navCtaBtn.innerHTML = "My Dashboard" + navCtaBtn.innerHTML.replace(/^[^<]*/, "");
+          }
+        }
+      } catch (e) { /* not logged in / network hiccup — leave the default purchase CTA */ }
+    })();
+  })();
+
+  /* ============================================================
+     13. THREE.JS — subtle student↔company network field
+        Lazy-init when hero in view · capped DPR · pause when hidden
+     ============================================================ */
+  function initThree() {
+    if (typeof THREE === "undefined") return;
+    const canvas = document.getElementById("hero-canvas");
+    if (!canvas) return;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); // cap DPR for budget phones
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+    camera.position.z = 26;
+
+    const group = new THREE.Group();
+    scene.add(group);
+
+    // ---- points (students = white, companies = amber) ----
+    const COUNT = window.innerWidth < 768 ? 42 : 56; // low particle count
+    const SPREAD = 30;
+    const positions = new Float32Array(COUNT * 3);
+    const colors = new Float32Array(COUNT * 3);
+    const drift = [];
+    const white = new THREE.Color(0xeef1f7);
+    const amber = new THREE.Color(0xf59e0b);
+
+    for (let i = 0; i < COUNT; i++) {
+      const x = (Math.random() - 0.5) * SPREAD;
+      const y = (Math.random() - 0.5) * SPREAD * 0.62;
+      const z = (Math.random() - 0.5) * SPREAD * 0.5;
+      positions[i * 3] = x; positions[i * 3 + 1] = y; positions[i * 3 + 2] = z;
+      const isCompany = Math.random() < 0.32;
+      const col = isCompany ? amber : white;
+      colors[i * 3] = col.r; colors[i * 3 + 1] = col.g; colors[i * 3 + 2] = col.b;
+      drift.push({
+        ox: x, oy: y, oz: z,
+        sx: Math.random() * Math.PI * 2, sy: Math.random() * Math.PI * 2,
+        sp: 0.2 + Math.random() * 0.3, amp: 0.6 + Math.random() * 1.1,
+      });
+    }
+
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    pGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    const pMat = new THREE.PointsMaterial({
+      size: 0.72, vertexColors: true, transparent: true, opacity: 1,
+      sizeAttenuation: true, depthWrite: false,
+    });
+    const points = new THREE.Points(pGeo, pMat);
+    group.add(points);
+
+    // ---- lines between near points (thin, faint) ----
+    const MAX_DIST = 8.5;
+    const linePositions = [];
+    for (let i = 0; i < COUNT; i++) {
+      for (let j = i + 1; j < COUNT; j++) {
+        const dx = positions[i * 3] - positions[j * 3];
+        const dy = positions[i * 3 + 1] - positions[j * 3 + 1];
+        const dz = positions[i * 3 + 2] - positions[j * 3 + 2];
+        if (Math.sqrt(dx * dx + dy * dy + dz * dz) < MAX_DIST) {
+          linePositions.push(i, j);
+        }
+      }
+    }
+    const lineArr = new Float32Array(linePositions.length * 3);
+    const lGeo = new THREE.BufferGeometry();
+    lGeo.setAttribute("position", new THREE.BufferAttribute(lineArr, 3));
+    const lMat = new THREE.LineBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.28 });
+    const lines = new THREE.LineSegments(lGeo, lMat);
+    group.add(lines);
+
+    function rebuildLines() {
+      const posAttr = pGeo.attributes.position.array;
+      const la = lGeo.attributes.position.array;
+      for (let k = 0; k < linePositions.length; k += 2) {
+        const a = linePositions[k] * 3, b = linePositions[k + 1] * 3;
+        const o = (k / 2) * 6;
+        la[o] = posAttr[a]; la[o + 1] = posAttr[a + 1]; la[o + 2] = posAttr[a + 2];
+        la[o + 3] = posAttr[b]; la[o + 4] = posAttr[b + 1]; la[o + 5] = posAttr[b + 2];
+      }
+      lGeo.attributes.position.needsUpdate = true;
+    }
+
+    // ---- sizing ----
+    function resize() {
+      const w = canvas.clientWidth || window.innerWidth;
+      const h = canvas.clientHeight || window.innerHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    // ---- gentle pointer parallax ----
+    let mx = 0, my = 0, tmx = 0, tmy = 0;
+    window.addEventListener("pointermove", (e) => {
+      tmx = (e.clientX / window.innerWidth - 0.5) * 0.5;
+      tmy = (e.clientY / window.innerHeight - 0.5) * 0.5;
+    }, { passive: true });
+
+    // ---- animation loop with visibility pause ----
+    let running = true;
+    let rafId = null;
+    const clock = new THREE.Clock();
+
+    function frame() {
+      if (!running) return;
+      const t = clock.getElapsedTime();
+      const posAttr = pGeo.attributes.position.array;
+      for (let i = 0; i < COUNT; i++) {
+        const d = drift[i];
+        posAttr[i * 3]     = d.ox + Math.sin(t * d.sp + d.sx) * d.amp;
+        posAttr[i * 3 + 1] = d.oy + Math.cos(t * d.sp + d.sy) * d.amp;
+        posAttr[i * 3 + 2] = d.oz + Math.sin(t * d.sp * 0.7 + d.sx) * d.amp * 0.6;
+      }
+      pGeo.attributes.position.needsUpdate = true;
+      rebuildLines();
+
+      mx += (tmx - mx) * 0.04; my += (tmy - my) * 0.04;
+      group.rotation.y = t * 0.05 + mx;
+      group.rotation.x = my * 0.6;
+
+      renderer.render(scene, camera);
+      rafId = requestAnimationFrame(frame);
+    }
+
+    function start() { if (!running) { running = true; clock.start(); frame(); } }
+    function stop() { running = false; if (rafId) cancelAnimationFrame(rafId); }
+
+    // Pause render loop when tab is hidden (saves battery on phones)
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") stop();
+      else start();
+    });
+
+    // Also pause when hero scrolls fully out of view
+    if (hasST) {
+      ScrollTrigger.create({
+        trigger: "#home", start: "top top", end: "bottom top",
+        onLeave: stop, onEnterBack: start,
+      });
+    }
+
+    canvas.classList.add("ready");
+    frame();
+  }
+
+  // Lazy-init Three.js only once the hero is actually in the viewport
+  (function lazyThree() {
+    const hero = document.getElementById("home");
+    if (!hero) return;
+    if (prefersReduced) return; // skip 3D entirely for reduced-motion users
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver((entries, obs) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) { initThree(); obs.disconnect(); }
+        });
+      }, { rootMargin: "100px" });
+      io.observe(hero);
+    } else {
+      window.addEventListener("load", initThree);
+    }
+  })();
+
+  /* ============================================================
+     14. SPLIT-LINE HEADING REVEALS (mask + rise on scroll)
+     ============================================================ */
+  if (hasGSAP && hasST && !prefersReduced) {
+    const splitLines = (el) => {
+      const text = el.textContent.replace(/\s+/g, " ").trim();
+      const words = text.split(" ");
+      el.setAttribute("aria-label", text);
+      el.innerHTML = "";
+      words.forEach((wd, i) => {
+        const s = document.createElement("span");
+        s.className = "w"; s.style.display = "inline-block"; s.textContent = wd;
+        el.appendChild(s);
+        if (i < words.length - 1) el.appendChild(document.createTextNode(" "));
+      });
+      // group words into visual lines by their vertical offset
+      const lines = []; let cur = []; let top = null;
+      el.querySelectorAll(".w").forEach((s) => {
+        const t = s.offsetTop;
+        if (top === null) top = t;
+        if (t - top > 2) { lines.push(cur); cur = []; top = t; }
+        cur.push(s.textContent);
+      });
+      if (cur.length) lines.push(cur);
+      // rebuild as masked lines
+      el.innerHTML = "";
+      const inners = [];
+      lines.forEach((lw) => {
+        const mask = document.createElement("span"); mask.className = "line-mask";
+        const inner = document.createElement("span"); inner.className = "line-inner";
+        inner.textContent = lw.join(" ");
+        mask.appendChild(inner); el.appendChild(mask);
+        inners.push(inner);
+      });
+      return inners;
+    };
+    document.querySelectorAll(".sec-head h2, .wa-copy h2, .form-copy h2, .hp-intro h2").forEach((h) => {
+      const inners = splitLines(h);
+      gsap.set(inners, { yPercent: 120 });
+      ScrollTrigger.create({
+        trigger: h, start: "top 90%", once: true,
+        onEnter: () => gsap.to(inners, { yPercent: 0, duration: 1, ease: "power4.out", stagger: 0.1 }),
+      });
+    });
+  }
+
+  /* ============================================================
+     15. CUSTOM CURSOR (fine-pointer devices only)
+     ============================================================ */
+  (function customCursor() {
+    if (!window.matchMedia("(pointer:fine)").matches) return;
+    const dot = document.getElementById("cursor-dot");
+    const ring = document.getElementById("cursor-ring");
+    if (!dot || !ring) return;
+    document.body.classList.add("has-cursor");
+    let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my, active = false;
+    addEventListener("pointermove", (e) => {
+      mx = e.clientX; my = e.clientY;
+      if (!active) { active = true; document.body.classList.add("cursor-active"); }
+      dot.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
+    }, { passive: true });
+    (function loop() {
+      rx += (mx - rx) * 0.2; ry += (my - ry) * 0.2;
+      ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+      requestAnimationFrame(loop);
+    })();
+    const sel = "a,button,.btn,input,select,textarea,.faq-q,.prob-card,.feat,.hp-step";
+    document.querySelectorAll(sel).forEach((el) => {
+      el.addEventListener("pointerenter", () => ring.classList.add("hover"));
+      el.addEventListener("pointerleave", () => ring.classList.remove("hover"));
+    });
+  })();
+
+  /* ============================================================
+     16. MAGNETIC BUTTONS
+     ============================================================ */
+  (function magnetic() {
+    if (!window.matchMedia("(pointer:fine)").matches || !hasGSAP) return;
+    document.querySelectorAll(".btn").forEach((el) => {
+      el.addEventListener("pointermove", (e) => {
+        const r = el.getBoundingClientRect();
+        gsap.to(el, {
+          x: (e.clientX - (r.left + r.width / 2)) * 0.35,
+          y: (e.clientY - (r.top + r.height / 2)) * 0.5,
+          duration: 0.4, ease: "power3.out",
+        });
+      });
+      el.addEventListener("pointerleave", () => gsap.to(el, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1,0.4)" }));
+    });
+  })();
+
+  /* ============================================================
+     18. TECH GALLERY — circular orbit driven by scroll + simultaneous text
+        Cards sit evenly around an ellipse; the whole ring rotates as you
+        scroll, plus a gentle idle spin. Front cards are larger/brighter.
+     ============================================================ */
+  (function gallery() {
+    const stage = document.getElementById("gstage");
+    if (!stage || !hasGSAP) return;
+    const cards = gsap.utils.toArray("#gstage .g-card");
+    const N = cards.length;
+
+    // responsive ring radii (ellipse that fits the section)
+    let RX = 480, RY = 300;
+    function computeRadius() {
+      RX = Math.min(window.innerWidth * 0.34, 560);
+      RY = Math.min(window.innerHeight * 0.32, 320);
+    }
+    computeRadius();
+    window.addEventListener("resize", computeRadius);
+
+    let scrollRot = 0;            // added by scroll position
+    let autoRot = 0;             // gentle idle spin so it's alive at rest
+    let active = true;
+    let mx = 0, my = 0, tmx = 0, tmy = 0;
+
+    function render() {
+      if (!active) return;
+      autoRot += 0.0017;
+      mx += (tmx - mx) * 0.06; my += (tmy - my) * 0.06;
+      const base = scrollRot + autoRot;
+      for (let i = 0; i < N; i++) {
+        const ang = (i / N) * Math.PI * 2 + base;
+        const x = Math.cos(ang) * RX + mx * 30;
+        const y = Math.sin(ang) * RY + my * 22;
+        const depth = (Math.sin(ang) + 1) / 2;          // 0 = back/top, 1 = front/bottom
+        const scale = 0.66 + depth * 0.5;
+        const c = cards[i];
+        c.style.transform = "translate(-50%,-50%) translate3d(" + x.toFixed(1) + "px," + y.toFixed(1) + "px,0) scale(" + scale.toFixed(3) + ")";
+        c.style.opacity = (0.4 + depth * 0.6).toFixed(3);
+        c.style.zIndex = (depth * 10) | 0;
+      }
+    }
+
+    // static ring for reduced-motion users — no spinning, no scroll work
+    if (prefersReduced) {
+      render();
+      gsap.set(".gallery-h2 .line-inner", { yPercent: 0 });
+      return;
+    }
+
+    gsap.ticker.add(render);
+    render();
+
+    if (hasST) {
+      // scroll rotates the ring + toggles the render loop when on/off screen
+      ScrollTrigger.create({
+        trigger: "#gallery", start: "top bottom", end: "bottom top", scrub: true,
+        onUpdate: (self) => { scrollRot = self.progress * Math.PI * 2; },
+        onToggle: (self) => { active = self.isActive; },
+        onRefresh: (self) => { active = self.isActive; render(); },
+      });
+
+      // headline rises with scroll — arrives together with the rotating ring
+      gsap.fromTo(".gallery-h2 .line-inner",
+        { yPercent: 120 },
+        {
+          yPercent: 0, ease: "none", stagger: 0.06,
+          scrollTrigger: { trigger: "#gallery", start: "top 85%", end: "top 35%", scrub: 0.6 },
+        }
+      );
+    } else {
+      gsap.set(".gallery-h2 .line-inner", { yPercent: 0 });
+    }
+
+    // mouse parallax — nudges the whole ring toward the cursor (desktop only)
+    if (window.matchMedia("(pointer:fine)").matches) {
+      const sec = document.getElementById("gallery");
+      sec.addEventListener("pointermove", (e) => {
+        const r = sec.getBoundingClientRect();
+        tmx = (e.clientX - r.left) / r.width - 0.5;
+        tmy = (e.clientY - r.top) / r.height - 0.5;
+      }, { passive: true });
+      sec.addEventListener("pointerleave", () => { tmx = 0; tmy = 0; });
+    }
+  })();
+
+  /* ============================================================
+     17. INTRO SPLASH — BlurText-style "Placely" reveal (~2s)
+     ============================================================ */
+  (function intro() {
+    const intro = document.getElementById("intro");
+    const word = intro ? intro.querySelector(".intro-word") : null;
+
+    const done = () => {
+      if (intro && intro.parentNode) intro.remove();
+      document.body.style.overflow = "";
+      if (lenis) lenis.start();
+      if (hasST) ScrollTrigger.refresh();
+      playHero();
+    };
+
+    if (!intro || !word) { if (lenis) lenis.start(); playHero(); return; }
+
+    // build per-letter spans from data-text
+    const txt = word.getAttribute("data-text") || "Placely";
+    word.innerHTML = "";
+    const letters = [];
+    txt.split("").forEach((ch) => {
+      const s = document.createElement("span");
+      s.className = "il";
+      s.textContent = ch === " " ? " " : ch;
+      word.appendChild(s);
+      letters.push(s);
+    });
+
+    if (prefersReduced || !hasGSAP) { done(); return; }
+
+    document.body.style.overflow = "hidden";
+    if (lenis) lenis.stop();
+    // safety net: never trap the page if something stalls
+    const safety = setTimeout(done, 6000);
+
+    // BlurText defaults: blur(10px)/opacity 0/y-50 -> blur(5px)/0.5/y5 -> blur(0)/1/y0
+    gsap.set(letters, { filter: "blur(10px)", opacity: 0, y: -50 });
+    gsap.timeline({ onComplete: () => { clearTimeout(safety); done(); } })
+      .to(letters, {
+        keyframes: [
+          { filter: "blur(5px)", opacity: 0.5, y: 5, duration: 0.3, ease: "power2.out" },
+          { filter: "blur(0px)", opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }
+        ],
+        stagger: 0.13
+      })
+      .to(intro, { opacity: 0, duration: 0.45, ease: "power2.inOut" }, "+=0.3");
+  })();
+
+  // Refresh ScrollTrigger after everything (fonts/images) settles
+  window.addEventListener("load", () => { if (hasST) ScrollTrigger.refresh(); });
+
+})();
+</script>
+</body>
+</html>

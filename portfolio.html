@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portfolio | Placely</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --card: #141414;
+            --border: #262626;
+            --accent: #6c63ff;
+            --text: #ffffff;
+            --text-dim: #a3a3a3;
+            --success: #22c55e;
+            --font-main: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .avatar-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #ff63c3);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            font-family: var(--font-display);
+        }
+        h1 {
+            font-family: var(--font-display);
+            font-size: 36px;
+            margin: 0 0 10px 0;
+        }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .stat-badge {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .stat-badge span.fire { color: #ff7a18; font-weight: bold; }
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 24px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        .project-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s;
+        }
+        .project-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+        .project-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            margin: 0 0 10px 0;
+        }
+        .project-desc {
+            color: var(--text-dim);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+        .btn {
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: inline-block;
+            transition: opacity 0.2s;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-dim);
+            background: var(--card);
+            border: 1px dashed var(--border);
+            border-radius: 16px;
+        }
+        #loading {
+            text-align: center;
+            padding: 100px 0;
+            color: var(--text-dim);
+        }
+        #content {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="loading">Loading portfolio...</div>
+    
+    <div id="content">
+        <div class="header">
+            <div class="avatar-placeholder" id="avatarInitials">?</div>
+            <h1 id="studentName">Student Name</h1>
+            <p style="color: var(--text-dim);">Placely Graduate</p>
+            
+            <div class="stats">
+                <div class="stat-badge">
+                    <span class="fire">🔥</span> <span id="streakCount">0</span> Day Streak
+                </div>
+                <div class="stat-badge" id="skillsCompleted">
+                    0 Tracks Completed
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Major Projects</h2>
+        <div class="projects-grid" id="projectsGrid">
+            <!-- Projects injected via JS -->
+        </div>
+    </div>
+</div>
+
+<script>
+    async function loadPortfolio() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let phone = urlParams.get('phone');
+        
+        if(!phone) {
+            document.getElementById('loading').innerText = "Student ID missing from URL.";
+            return;
+        }
+
+        try {
+            const res = await fetch(`http://127.0.0.1:5000/api/portfolio/${encodeURIComponent(phone)}`);
+            if(!res.ok) throw new Error("Portfolio not found");
+            const data = await res.json();
+            
+            document.getElementById('studentName').innerText = data.name;
+            document.getElementById('avatarInitials').innerText = data.name ? data.name.charAt(0).toUpperCase() : '?';
+            document.getElementById('streakCount').innerText = data.streak || 0;
+            
+            const numSkills = data.completed_skills ? data.completed_skills.length : 0;
+            document.getElementById('skillsCompleted').innerHTML = `<strong>${numSkills}</strong> Tracks Completed`;
+
+            const grid = document.getElementById('projectsGrid');
+            if(data.projects && data.projects.length > 0) {
+                grid.innerHTML = data.projects.map(p => `
+                    <div class="project-card">
+                        <h3 class="project-title">${p.title}</h3>
+                        <p class="project-desc">${p.description}</p>
+                        <div class="project-meta">
+                            <span style="color: var(--text-dim); text-transform: uppercase;">${p.difficulty}</span>
+                            <a href="${p.github_url}" target="_blank" class="btn">View on GitHub</a>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                grid.innerHTML = `<div class="empty-state">No major projects completed yet.</div>`;
+            }
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+
+        } catch(e) {
+            console.error(e);
+            if (e.message === "Portfolio not found") {
+                document.getElementById('loading').innerText = "Student not found or hasn't started yet.";
+            } else {
+                document.getElementById('loading').innerText = "Network error while loading portfolio. Please try again.";
+            }
+        }
+    }
+
+    loadPortfolio();
+</script>
+</body>
+</html>
