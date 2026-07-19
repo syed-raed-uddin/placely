@@ -2113,8 +2113,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return;
       }
 
-      // generic CTA — use inferred intent if we have one, else ask
-      const intent = urlIntent || readSessionIntent();
+      // generic CTA — only use URL intent if we have one, else ALWAYS ask
+      // so the user isn't locked into a choice they made earlier in the session.
+      const intent = urlIntent;
       if (intent) startTrack(intent);
       else showState("picker");
     };
