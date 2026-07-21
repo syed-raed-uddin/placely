@@ -375,7 +375,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   "use strict";
 
   const API = "https://placely-backend-production.up.railway.app";
-  const TOTAL_DAYS_DEFAULT = 22;
+  const TOTAL_DAYS_DEFAULT = 30;
 
   /* ---------- 3. AUTH GUARD ----------
      Real, server-verified session (httpOnly cookie), not a bare localStorage
@@ -549,8 +549,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (!url) return;
     
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/submit-project", {
+      const res = await fetch(API + "/api/submit-project", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           student_id: DASH.student.phone,
