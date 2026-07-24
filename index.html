@@ -12,7 +12,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Placely | AI Coding Mentor & Accountability Partner | Learn to Code</title>
 <meta name="description" content="Learn to code with a daily AI mentor on WhatsApp. Get a structured roadmap, free coding resources, and a coding accountability partner to ensure you actually finish. Start with Python today." />
-<meta name="theme-color" content="#07090f" />
+<meta name="theme-color" content="#6c63ff" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
 
 <!-- Canonical URL -->
 <link rel="canonical" href="https://www.placely.co.in/" />
@@ -1952,7 +1954,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (!modal || !payForm) return;
 
     const PAY_AMOUNT = 19900; // paise = ₹199
-    const BACKEND = "https://placely-backend-production.up.railway.app";
+    const BACKEND = "http://127.0.0.1:5000";
 
     const successEl = document.getElementById("pay-success");
     const errorEl = document.getElementById("pay-error");
@@ -2356,7 +2358,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
      locked out of their own (still-intact) enrollment.
      ============================================================ */
   (function auth() {
-    const BACKEND = "https://placely-backend-production.up.railway.app";
+    const BACKEND = "http://127.0.0.1:5000";
     const modal = document.getElementById("login-modal");
     if (!modal) return;
 
@@ -2891,6 +2893,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   window.addEventListener("load", () => { if (hasST) ScrollTrigger.refresh(); });
 
 })();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(() => console.log('SW registered')).catch(e => console.warn('SW fail:', e));
+}
 </script>
 </body>
 </html>

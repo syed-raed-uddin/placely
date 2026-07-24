@@ -11,6 +11,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Placely — DSA Platform</title>
+<meta name="theme-color" content="#6c63ff" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -202,7 +205,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script>
-  const API = "https://placely-backend-production.up.railway.app";
+  const API = "http://127.0.0.1:5000";
   const studentId = localStorage.getItem("placely_student_id");
   let currentProblemId = null;
 
@@ -342,6 +345,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   loadProblems();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(() => console.log('SW registered')).catch(e => console.warn('SW fail:', e));
+}
 </script>
 </body>
 </html>
