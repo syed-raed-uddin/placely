@@ -766,9 +766,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="#how"><span class="num">(2)</span> How It Works</a>
     <a href="#join"><span class="num">(3)</span> Pricing &amp; Join</a>
   </div>
-  <div class="nav-cta">
     <a href="#how" class="btn btn-ghost">How it works</a>
     <button type="button" class="btn btn-ghost" id="nav-login-btn">Log in</button>
+    <button type="button" class="btn btn-secondary" id="nav-install-btn" style="display: none;">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Install App
+    </button>
     <a href="#join" class="btn btn-primary" data-pay id="nav-cta-btn">Start learning
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
@@ -2898,6 +2901,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').then(() => console.log('SW registered')).catch(e => console.warn('SW fail:', e));
 }
+
+// PWA Install Prompt Logic
+let deferredPrompt;
+const installBtn = document.getElementById('nav-install-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome from automatically showing the prompt on mobile
+  e.preventDefault();
+  // Stash the event so it can be triggered later
+  deferredPrompt = e;
+  // Show our custom install button
+  if (installBtn) installBtn.style.display = 'inline-flex';
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install prompt: ${outcome}`);
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+  });
+}
+window.addEventListener('appinstalled', () => {
+  console.log('Placely PWA was installed');
+  if (installBtn) installBtn.style.display = 'none';
+});
 </script>
 </body>
 </html>
