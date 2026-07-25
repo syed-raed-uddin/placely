@@ -214,7 +214,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   async function api(path, opts) {
-    const res = await fetch(API + path, { credentials: "include", ...(opts || {}) });
+    const token = localStorage.getItem("placely_token");
+    const headers = { ...((opts || {}).headers || {}) };
+    if (token) headers["Authorization"] = "Bearer " + token;
+    
+    const res = await fetch(API + path, { credentials: "include", ...(opts || {}), headers });
     let body = null;
     try { body = await res.json(); } catch (e) {}
     if (!res.ok) {

@@ -2466,7 +2466,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // ever succeeds for a paid student) -- so this always goes straight
         // to the dashboard, never to a purchase flow.
         if (data && data.student_id) {
-          try { localStorage.setItem("placely_student_id", data.student_id); } catch (ex) {}
+          try { 
+            localStorage.setItem("placely_student_id", data.student_id); 
+            if (data.token) localStorage.setItem("placely_token", data.token);
+          } catch (ex) {}
         }
         window.location.href = "dashboard.html";
       } catch (err) {
@@ -2483,7 +2486,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // dashboard instead, and hide the redundant "Log in" button.
     (async function checkExistingSession() {
       try {
-        const res = await fetch(BACKEND + "/api/auth/session", { credentials: "include" });
+        const token = localStorage.getItem("placely_token");
+        const headers = {};
+        if (token) headers["Authorization"] = "Bearer " + token;
+        const res = await fetch(BACKEND + "/api/auth/session", { credentials: "include", headers });
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.logged_in) {

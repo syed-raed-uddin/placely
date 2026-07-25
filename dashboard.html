@@ -609,7 +609,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   /* ---------- API ---------- */
   async function api(path, opts) {
-    const res = await fetch(API + path, { credentials: "include", ...(opts || {}) });
+    const token = localStorage.getItem("placely_token");
+    const headers = { ...((opts || {}).headers || {}) };
+    if (token) headers["Authorization"] = "Bearer " + token;
+    
+    const res = await fetch(API + path, { credentials: "include", ...(opts || {}), headers });
     let body = null;
     try { body = await res.json(); } catch (e) { /* ignore */ }
     if (!res.ok) {
@@ -733,10 +737,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (!url) return;
     
     try {
+      const token = localStorage.getItem("placely_token");
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = "Bearer " + token;
+
       const res = await fetch(API + "/api/submit-project", {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
         body: JSON.stringify({
           student_id: DASH.student.phone,
           project_id: projectId,
@@ -1066,9 +1074,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const original = btn.innerHTML;
     btn.disabled = true; btn.innerHTML = "Reviewing…";
     try {
+      const token = localStorage.getItem("placely_token");
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = "Bearer " + token;
+      
       const res = await api("/api/code/review", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
         body: JSON.stringify({ student_id: studentId, task_id: taskId, code: code }),
       });
       if (fb) {
@@ -1177,9 +1189,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   /* ---------- LOGOUT ---------- */
   $("#logout-btn").addEventListener("click", async () => {
     try {
-      await fetch(API + "/api/auth/logout", { method: "POST", credentials: "include" });
+      const token = localStorage.getItem("placely_token");
+      const headers = {};
+      if (token) headers["Authorization"] = "Bearer " + token;
+      await fetch(API + "/api/auth/logout", { method: "POST", credentials: "include", headers });
     } catch (e) { /* revoke best-effort — clearing local state still logs the UI out */ }
-    try { localStorage.removeItem("placely_student_id"); } catch (ex) {}
+    try { localStorage.removeItem("placely_student_id"); localStorage.removeItem("placely_token"); } catch (ex) {}
     window.location.href = "index.html";
   });
 
@@ -1331,9 +1346,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const msgs = req.result;
       for (const m of msgs) {
         try {
+          const token = localStorage.getItem("placely_token");
+          const headers = { "Content-Type": "application/json" };
+          if (token) headers["Authorization"] = "Bearer " + token;
+          
           await fetch(API + "/api/chat/message", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: headers,
             body: JSON.stringify({ message: m.text }),
             credentials: "include"
           });
@@ -1370,9 +1389,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     addMessage("student", text);
     showTyping();
     try {
+      const token = localStorage.getItem("placely_token");
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = "Bearer " + token;
+      
       const res = await fetch(API + "/api/chat/message", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
         body: JSON.stringify({ message: text }),
         credentials: "include"
       });
@@ -1631,7 +1654,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   // whatever happens to be sitting in localStorage.
   (async function bootstrap() {
     try {
-      const res = await fetch(API + "/api/auth/session", { credentials: "include" });
+      const token = localStorage.getItem("placely_token");
+      const headers = {};
+      if (token) headers["Authorization"] = "Bearer " + token;
+      const res = await fetch(API + "/api/auth/session", { credentials: "include", headers });
       if (!res.ok) throw new Error("not logged in");
       const data = await res.json();
       if (!data || !data.logged_in || !data.student_id) throw new Error("not logged in");
