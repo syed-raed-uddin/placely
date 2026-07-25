@@ -884,11 +884,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   function renderHeader() {
-    $("#student-name").textContent = (DASH.student && DASH.student.name) || "Student";
+    if ($("#student-name")) $("#student-name").textContent = (DASH.student && DASH.student.name) || "Student";
+    if ($("#hi-name")) $("#hi-name").innerHTML = `Hi, <b>${(DASH.student && DASH.student.name) || "Student"}</b>`;
     if (DASH.skill && DASH.skill.has_dsa) {
-      $("#dsa-link").style.display = "inline-flex";
+      if ($("#dsa-link")) $("#dsa-link").style.display = "inline-flex";
     } else {
-      $("#dsa-link").style.display = "none";
+      if ($("#dsa-link")) $("#dsa-link").style.display = "none";
     }
   }
 
@@ -1242,7 +1243,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   });
 
   /* ---------- SETTINGS ---------- */
-  $("#settings-btn").addEventListener("click", openSettings);
+  if ($("#settings-btn")) $("#settings-btn").addEventListener("click", openSettings);
   $("#settings-close").addEventListener("click", () => $("#settings-overlay").classList.remove("show"));
   $("#settings-overlay").addEventListener("click", (e) => {
     if (e.target === $("#settings-overlay")) $("#settings-overlay").classList.remove("show");
