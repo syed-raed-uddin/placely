@@ -1957,7 +1957,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (!modal || !payForm) return;
 
     const PAY_AMOUNT = 19900; // paise = ₹199
-    const BACKEND = "http://127.0.0.1:5000";
+    const BACKEND = "https://placely-backend-production.up.railway.app";
 
     const successEl = document.getElementById("pay-success");
     const errorEl = document.getElementById("pay-error");
@@ -2361,7 +2361,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
      locked out of their own (still-intact) enrollment.
      ============================================================ */
   (function auth() {
-    const BACKEND = "http://127.0.0.1:5000";
+    const BACKEND = "https://placely-backend-production.up.railway.app";
     const modal = document.getElementById("login-modal");
     if (!modal) return;
 
