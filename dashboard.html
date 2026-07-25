@@ -341,6 +341,38 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .focus-content { grid-template-columns: 1fr; padding: 16px; }
     .pomo-time { font-size: 56px; }
   }
+
+  /* ========== BOTTOM NAV & TABS ========== */
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); border-top: 1px solid var(--line); display: flex; justify-content: space-around; align-items: center; padding: 12px 0 calc(12px + env(safe-area-inset-bottom)); }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--muted); cursor: pointer; transition: color .2s var(--ease); flex: 1; background: transparent; border: none; font-size: 11px; font-weight: 600; }
+  .nav-item.active { color: var(--accent); }
+  .nav-item svg { width: 24px; height: 24px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeUp .3s var(--ease); }
+  @media (min-width: 768px) {
+    .bottom-nav { display: none; }
+    .desktop-tabs { display: flex; gap: 8px; margin-left: 20px; }
+    .d-tab { background: transparent; border: 1px solid transparent; color: var(--muted); padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all .2s var(--ease); }
+    .d-tab:hover { color: var(--text); background: var(--card); border-color: var(--line); }
+    .d-tab.active { color: var(--accent-2); background: var(--accent-dim); border-color: var(--accent); }
+    #app { padding-bottom: 0; }
+  }
+  @media (max-width: 767px) { .desktop-tabs { display: none; } }
+  #chat-fab { display: none !important; }
+  #chat-panel { position: relative !important; width: 100% !important; height: calc(100vh - 64px - 80px) !important; max-height: none !important; transform: none !important; box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 800px; margin: 0 auto; }
+  #tab-mentor { height: 100%; }
+  #tab-mentor .chat-panel-inner { width: 100%; height: 100%; display: flex; flex-direction: column; background: var(--bg); }
+  #tab-settings .settings-wrap { max-width: 600px; margin: 40px auto; padding: 0 20px; }
+  .set-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+  .set-card h3 { margin-bottom: 16px; font-size: 18px; }
+  .today-layer { background: linear-gradient(180deg, var(--accent-dim), var(--card)); border: 1px solid var(--accent); border-radius: var(--radius); padding: 24px; margin-top: 28px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; }
+  .today-info h3 { font-size: 22px; margin-bottom: 6px; }
+  .today-info p { color: var(--muted); font-size: 14px; }
+  .today-actions { display: flex; gap: 12px; }
+  body.pip-mode { background: #000; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: #fff; }
+  .pip-timer { font-size: 60px; font-family: 'Space Grotesk', monospace; font-weight: 700; color: var(--accent-2); }
+  .pip-controls { display: flex; gap: 16px; margin-top: 20px; }
+
 </style>
 </head>
 <body>
@@ -352,12 +384,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ============ HEADER ============ -->
 <header class="topbar">
   <div class="wrap topbar-inner">
-    <a href="index.html" class="brand"><span class="dot"></span>Placely</a>
+    <div class="brand"><div class="dot"></div> Placely</div>
+    <div class="desktop-tabs">
+      <button class="d-tab active" data-target="roadmap">Roadmap</button>
+      <button class="d-tab" data-target="mentor">AI Mentor</button>
+      <button class="d-tab" data-target="settings">Settings</button>
+    </div>
     <div class="top-right">
-      <span class="hi">Hi, <b id="student-name">…</b></span>
-      <a href="dsa.html" class="btn btn-sm" id="dsa-link" style="display:none; background:var(--accent); color:white; border:1px solid var(--accent); gap:6px;">DSA Platform <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      <button class="btn btn-sm" id="settings-btn">Settings</button>
-      <button class="btn btn-sm" id="logout-btn">Logout</button>
+      <div class="hi" id="hi-name">Hi, <b>...</b></div>
+      <button id="logout-btn" class="btn">Logout</button>
     </div>
   </div>
 </header>
@@ -502,49 +537,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- ============ FOCUS MODE ============ -->
 <div id="focus-overlay">
-  <div class="focus-header">
-    <h2>🎯 Focus Mode</h2>
-    <button class="btn btn-sm" id="focus-close">Exit Focus Mode</button>
+  <div class="focus-header" style="justify-content: flex-end; padding: 20px; border-bottom: none;">
+    <button class="btn btn-sm" id="focus-pip" style="margin-right: 12px;" title="Keep on top">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Keep on top
+    </button>
+    <button class="btn btn-sm" id="focus-close">Exit</button>
   </div>
-  <div class="focus-content">
-    <div class="focus-col">
-      <div class="focus-card">
-        <h3>⏱️ Pomodoro Timer</h3>
-        <div class="pomo-display">
-          <div class="pomo-time" id="pomo-time">25:00</div>
-          <div class="pomo-label" id="pomo-label">Focus Session</div>
-        </div>
-        <div class="pomo-controls">
-          <button id="pomo-start" class="active">Start</button>
-          <button id="pomo-pause">Pause</button>
-          <button id="pomo-reset">Reset</button>
-        </div>
+  <div class="focus-content" style="flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+    <div class="focus-card" style="background: transparent; border: none; text-align: center; max-width: 400px; width: 100%;">
+      <div class="pomo-display" style="margin-bottom: 30px;">
+        <div class="pomo-time" id="pomo-time" style="font-size: 80px; line-height: 1; font-family: 'Space Grotesk', monospace; color: var(--text);">25:00</div>
+        <div class="pomo-label" id="pomo-label" style="font-size: 16px; color: var(--muted); margin-top: 10px; text-transform: uppercase; letter-spacing: 2px;">Focus Session</div>
       </div>
-      <div class="focus-card">
-        <h3>📝 Notes</h3>
-        <textarea id="focus-notes" placeholder="Jot down ideas, pseudocode, or notes..."></textarea>
-      </div>
-    </div>
-    <div class="focus-col">
-      <div class="focus-card">
-        <h3>✅ Tasks</h3>
-        <ul class="focus-tasks" id="focus-tasks"></ul>
-        <div class="focus-add-task">
-          <input type="text" id="focus-task-input" placeholder="Add a task..." />
-          <button id="focus-task-add">Add</button>
-        </div>
-      </div>
-      <div class="focus-card">
-        <h3>🤖 Quick AI Help</h3>
-        <p class="muted" style="font-size:13px; margin-bottom:12px;">Ask Kiro anything while staying focused.</p>
-        <div style="display:flex; gap:8px;">
-          <input type="text" id="focus-ai-input" placeholder="Quick question..." style="flex:1; background:var(--card-2); border:1px solid var(--line); border-radius:8px; padding:8px 12px; color:var(--text); font-size:13px;" />
-          <button id="focus-ai-ask" style="background:var(--accent); border:none; color:#fff; border-radius:8px; padding:8px 14px; font-weight:600; font-size:13px; cursor:pointer;">Ask</button>
-        </div>
-        <div id="focus-ai-reply" class="muted" style="margin-top:10px; font-size:13px; line-height:1.5;"></div>
+      <div class="pomo-controls" style="display: flex; gap: 12px; justify-content: center;">
+        <button id="pomo-start" class="btn btn-primary" style="padding: 12px 24px; font-size: 16px;">Start</button>
+        <button id="pomo-pause" class="btn" style="padding: 12px 24px; font-size: 16px; display: none;">Pause</button>
+        <button id="pomo-reset" class="btn" style="padding: 12px; border-radius: 50%;">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        </button>
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -1476,12 +1490,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   document.getElementById("chat-focus-btn").addEventListener("click", () => {
     focusOverlay.classList.add("show");
     toggleChat(false);
-    loadFocusNotes();
-    loadFocusTasks();
-  });
+      });
   document.getElementById("focus-close").addEventListener("click", () => {
     focusOverlay.classList.remove("show");
-    saveFocusNotes();
   });
 
   function updatePomoDisplay() {
@@ -1542,72 +1553,54 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     document.getElementById("pomo-pause").classList.remove("active");
   });
 
-  // Focus tasks (localStorage-backed)
-  function loadFocusTasks() {
-    const tasks = JSON.parse(localStorage.getItem("placely_focus_tasks") || "[]");
-    const ul = document.getElementById("focus-tasks");
-    ul.innerHTML = "";
-    tasks.forEach((t, i) => {
-      const li = document.createElement("li");
-      li.innerHTML =
-        '<input type="checkbox"' + (t.done ? " checked" : "") + ' data-idx="' + i + '" />' +
-        '<span class="' + (t.done ? "done-task" : "") + '">' + esc(t.text) + '</span>';
-      ul.appendChild(li);
+
+  // Picture-in-Picture Logic
+  let pipWindow = null;
+  const btnPip = document.getElementById("focus-pip");
+  
+  if (!("documentPictureInPicture" in window)) {
+    if(btnPip) btnPip.style.display = "none";
+  } else if (btnPip) {
+    btnPip.addEventListener("click", async () => {
+      try {
+        if (pipWindow) { pipWindow.close(); return; }
+        pipWindow = await window.documentPictureInPicture.requestWindow({ width: 320, height: 200 });
+        const styles = Array.from(document.styleSheets).map(s => {
+            try { return Array.from(s.cssRules).map(r => r.cssText).join(''); } catch(e) { return ''; }
+        }).join('\n');
+        const styleEl = document.createElement('style');
+        styleEl.textContent = styles + "\nbody { background: #000; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; }";
+        pipWindow.document.head.appendChild(styleEl);
+        
+        const timeEl = document.getElementById("pomo-time");
+        const lblEl = document.getElementById("pomo-label");
+        const startBtn = document.getElementById("pomo-start");
+        const pauseBtn = document.getElementById("pomo-pause");
+        
+        const pipContainer = document.createElement("div");
+        pipContainer.style.textAlign = "center";
+        pipContainer.appendChild(timeEl);
+        pipContainer.appendChild(lblEl);
+        
+        const controls = document.createElement("div");
+        controls.style.cssText = "display:flex; gap:12px; justify-content:center; margin-top:20px;";
+        controls.appendChild(startBtn);
+        controls.appendChild(pauseBtn);
+        pipContainer.appendChild(controls);
+        
+        pipWindow.document.body.appendChild(pipContainer);
+        document.getElementById("focus-overlay").classList.remove("show");
+        
+        pipWindow.addEventListener("pagehide", () => {
+          const originalDisplay = document.querySelector(".pomo-display");
+          const originalControls = document.querySelector(".pomo-controls");
+          if(originalDisplay) { originalDisplay.prepend(lblEl); originalDisplay.prepend(timeEl); }
+          if(originalControls) { originalControls.prepend(pauseBtn); originalControls.prepend(startBtn); }
+          pipWindow = null;
+        });
+      } catch (err) { console.error("PiP failed:", err); }
     });
   }
-  document.getElementById("focus-tasks").addEventListener("change", (e) => {
-    const cb = e.target;
-    if (cb.type !== "checkbox") return;
-    const tasks = JSON.parse(localStorage.getItem("placely_focus_tasks") || "[]");
-    const idx = parseInt(cb.getAttribute("data-idx"), 10);
-    if (tasks[idx]) { tasks[idx].done = cb.checked; }
-    localStorage.setItem("placely_focus_tasks", JSON.stringify(tasks));
-    loadFocusTasks();
-  });
-  document.getElementById("focus-task-add").addEventListener("click", () => {
-    const input = document.getElementById("focus-task-input");
-    const text = input.value.trim();
-    if (!text) return;
-    const tasks = JSON.parse(localStorage.getItem("placely_focus_tasks") || "[]");
-    tasks.push({ text, done: false });
-    localStorage.setItem("placely_focus_tasks", JSON.stringify(tasks));
-    input.value = "";
-    loadFocusTasks();
-  });
-  document.getElementById("focus-task-input").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") document.getElementById("focus-task-add").click();
-  });
-
-  // Focus notes (localStorage-backed)
-  function loadFocusNotes() {
-    document.getElementById("focus-notes").value = localStorage.getItem("placely_focus_notes") || "";
-  }
-  function saveFocusNotes() {
-    localStorage.setItem("placely_focus_notes", document.getElementById("focus-notes").value);
-  }
-
-  // Focus AI quick question
-  document.getElementById("focus-ai-ask").addEventListener("click", async () => {
-    const input = document.getElementById("focus-ai-input");
-    const reply = document.getElementById("focus-ai-reply");
-    const text = input.value.trim();
-    if (!text) return;
-    reply.textContent = "Thinking...";
-    try {
-      const data = await api("/api/chat/message", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
-      });
-      reply.innerHTML = renderMarkdown(data.reply || "I'm not sure. Try rephrasing?");
-      input.value = "";
-    } catch {
-      reply.textContent = "Error — try again.";
-    }
-  });
-  document.getElementById("focus-ai-input").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") document.getElementById("focus-ai-ask").click();
-  });
 
   /* ========== PUSH NOTIFICATIONS ========== */
   async function registerPush() {
@@ -1652,6 +1645,98 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   // actual authentication check (a valid httpOnly cookie the browser holds
   // and Flask verifies against the sessions table), not a check of
   // whatever happens to be sitting in localStorage.
+
+  /* ========== TAB ROUTING & UX ========== */
+  function switchTab(target) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item, .d-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + target).classList.add('active');
+    document.querySelectorAll(`[data-target="${target}"]`).forEach(el => el.classList.add('active'));
+    window.scrollTo(0, 0);
+    if (target === 'mentor') {
+      const msgs = document.getElementById("chat-msgs");
+      if(msgs) msgs.scrollTop = msgs.scrollHeight;
+    }
+  }
+  document.querySelectorAll('.nav-item, .d-tab').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.target));
+  });
+  document.getElementById("today-cta").addEventListener("click", () => {
+    const openPhase = document.querySelector('.phase.open');
+    if (openPhase) openPhase.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    else window.scrollBy({ top: 300, behavior: 'smooth' });
+  });
+
+  /* ========== SETTINGS: NOTES & TASKS ========== */
+  const elSetNotes = document.getElementById("settings-notes");
+  const elSetTasksList = document.getElementById("settings-tasks-list");
+  const elSetNewTask = document.getElementById("settings-new-task");
+
+  function loadSettingsData() {
+    if(elSetNotes) elSetNotes.value = localStorage.getItem("placely_settings_notes") || "";
+    renderSettingsTasks();
+  }
+  if(document.getElementById("save-notes-btn")) {
+    document.getElementById("save-notes-btn").addEventListener("click", () => {
+      localStorage.setItem("placely_settings_notes", elSetNotes.value);
+      toast("Notes saved", "ok");
+    });
+  }
+  if(document.getElementById("clear-notes-btn")) {
+    document.getElementById("clear-notes-btn").addEventListener("click", () => {
+      elSetNotes.value = "";
+      localStorage.removeItem("placely_settings_notes");
+    });
+  }
+  function getSettingsTasks() {
+    try { return JSON.parse(localStorage.getItem("placely_settings_tasks") || "[]"); } catch(e) { return []; }
+  }
+  function saveSettingsTasks(tasks) {
+    localStorage.setItem("placely_settings_tasks", JSON.stringify(tasks));
+  }
+  function renderSettingsTasks() {
+    if(!elSetTasksList) return;
+    const tasks = getSettingsTasks();
+    elSetTasksList.innerHTML = "";
+    tasks.forEach((t, i) => {
+      const li = document.createElement("li");
+      li.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#141418; padding:10px 14px; border-radius:8px; border:1px solid var(--line);";
+      const txt = document.createElement("span");
+      txt.textContent = t.text;
+      txt.style.fontSize = "14px";
+      if (t.done) { txt.style.textDecoration = "line-through"; txt.style.color = "var(--muted)"; }
+      const actions = document.createElement("div");
+      actions.style.display = "flex"; actions.style.gap = "8px";
+      const toggle = document.createElement("button");
+      toggle.className = "btn btn-sm"; toggle.textContent = t.done ? "Undo" : "Done";
+      toggle.onclick = () => { tasks[i].done = !tasks[i].done; saveSettingsTasks(tasks); renderSettingsTasks(); };
+      const del = document.createElement("button");
+      del.className = "btn btn-sm"; del.textContent = "Del"; del.style.color = "var(--red)"; del.style.borderColor = "var(--red)";
+      del.onclick = () => { tasks.splice(i, 1); saveSettingsTasks(tasks); renderSettingsTasks(); };
+      actions.appendChild(toggle); actions.appendChild(del);
+      li.appendChild(txt); li.appendChild(actions);
+      elSetTasksList.appendChild(li);
+    });
+  }
+  if(document.getElementById("add-task-btn")) {
+    document.getElementById("add-task-btn").addEventListener("click", () => {
+      const text = elSetNewTask.value.trim();
+      if (!text) return;
+      const tasks = getSettingsTasks();
+      tasks.push({ text, done: false });
+      saveSettingsTasks(tasks);
+      elSetNewTask.value = "";
+      renderSettingsTasks();
+    });
+  }
+  loadSettingsData();
+
+  if(document.getElementById("start-focus-btn")) {
+    document.getElementById("start-focus-btn").addEventListener("click", () => {
+      document.getElementById("focus-overlay").classList.add("show");
+    });
+  }
+
   (async function bootstrap() {
     try {
       const token = localStorage.getItem("placely_token");
@@ -1674,5 +1759,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   })();
 })();
 </script>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-target="roadmap">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+      Roadmap
+    </button>
+    <button class="nav-item" data-target="mentor">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+      AI Mentor
+    </button>
+    <button class="nav-item" data-target="settings">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+      Settings
+    </button>
+  </nav>
+
 </body>
 </html>
