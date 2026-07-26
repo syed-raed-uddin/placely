@@ -1268,14 +1268,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   const chatInput = document.getElementById("chat-input");
   const chatSend = document.getElementById("chat-send");
   const chatSuggestions = document.getElementById("chat-suggestions");
-  let chatOpen = false;
+  let chatOpen = localStorage.getItem("placely_chat_open") === "true";
   let chatSending = false;
 
   chatFab.addEventListener("click", () => { toggleChat(); });
   document.getElementById("chat-close").addEventListener("click", () => { toggleChat(false); });
 
+  // Restore draft if any
+  const savedDraft = localStorage.getItem("placely_chat_draft");
+  if (savedDraft) {
+    chatInput.value = savedDraft;
+    chatInput.style.height = "auto";
+    chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + "px";
+    chatSend.disabled = !chatInput.value.trim();
+  }
+
   function toggleChat(force) {
     chatOpen = force !== undefined ? force : !chatOpen;
+    localStorage.setItem("placely_chat_open", chatOpen);
     chatPanel.classList.toggle("open", chatOpen);
     if (chatOpen) {
       chatFab.querySelector(".notif-dot").style.display = "none";
@@ -1284,6 +1294,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (chatMessages.children.length === 0) loadChatHistory();
     }
   }
+
+  // Restore modal state on page load
+  if (chatOpen) toggleChat(true);
 
   function scrollChat() {
     requestAnimationFrame(() => { chatMessages.scrollTop = chatMessages.scrollHeight; });
@@ -1352,18 +1365,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   async function loadChatHistory() {
+    // 1. Instantly render from local cache if available
+    const cached = localStorage.getItem("placely_chat_history");
+    if (cached) {
+      try {
+        const msgs = JSON.parse(cached);
+        renderChatMessages(msgs);
+      } catch (e) { /* ignore corrupt cache */ }
+    }
+
+    // 2. Fetch latest from API
     try {
       const data = await api("/api/chat/history?limit=50");
       const msgs = data.messages || [];
-      chatMessages.innerHTML = "";
-      if (msgs.length === 0) {
-        addMessage("kiro", "Hey! 👋 I'm **Kiro**, your AI coding mentor. Ask me anything about today's task, or tell me how your coding is going!", new Date().toISOString());
-      } else {
-        msgs.forEach(m => addMessage(m.role, m.content, m.created_at));
-      }
+      // 3. Update cache and re-render
+      localStorage.setItem("placely_chat_history", JSON.stringify(msgs));
+      renderChatMessages(msgs);
       loadSuggestions();
     } catch (err) {
-      addMessage("kiro", "I'm having trouble loading our conversation. Try refreshing the page.", new Date().toISOString());
+      if (!cached) {
+        addMessage("kiro", "I'm having trouble loading our conversation. Try refreshing the page.", new Date().toISOString());
+      }
+    }
+  }
+
+  function renderChatMessages(msgs) {
+    chatMessages.innerHTML = "";
+    if (msgs.length === 0) {
+      addMessage("kiro", "Hey! 👋 I'm **Kiro**, your AI coding mentor. Ask me anything about today's task, or tell me how your coding is going!", new Date().toISOString());
+    } else {
+      msgs.forEach(m => addMessage(m.role, m.content, m.created_at));
     }
   }
 
@@ -1439,6 +1470,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     chatSend.disabled = true;
     chatInput.value = "";
     chatInput.style.height = "auto";
+    localStorage.removeItem("placely_chat_draft");
     chatSuggestions.innerHTML = "";
     
     if (!navigator.onLine) {
@@ -1524,6 +1556,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
   chatInput.addEventListener("input", () => {
+    localStorage.setItem("placely_chat_draft", chatInput.value);
     chatSend.disabled = !chatInput.value.trim();
     chatInput.style.height = "auto";
     chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + "px";
