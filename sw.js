@@ -73,14 +73,27 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('push', (event) => {
-  const options = {
-    body: event.data ? event.data.text() : 'You have a new message from Placely!',
+  let title = 'Placely';
+  let options = {
+    body: 'You have a new message from Placely!',
     icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-192x192.png'
+    badge: '/icons/icon-192x192.png',
+    data: {}
   };
 
+  if (event.data) {
+    try {
+      const data = event.data.json();
+      if (data.title) title = data.title;
+      if (data.body) options.body = data.body;
+      if (data.url) options.data.url = data.url;
+    } catch (e) {
+      options.body = event.data.text();
+    }
+  }
+
   event.waitUntil(
-    self.registration.showNotification('Placely', options)
+    self.registration.showNotification(title, options)
   );
 });
 
@@ -89,11 +102,15 @@ self.addEventListener('notificationclick', (event) => {
   
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then((windowClients) => {
+      const urlToOpen = (event.notification.data && event.notification.data.url) ? event.notification.data.url : '/dashboard.html';
       for (let i = 0; i < windowClients.length; i++) {
         const client = windowClients[i];
-        if (client.url.includes('/dashboard.html') && 'focus' in client) {
+        if (client.url.includes(urlToOpen) && 'focus' in client) {
           return client.focus();
         }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
       }
     })
   );
