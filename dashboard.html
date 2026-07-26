@@ -1736,8 +1736,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     document.querySelectorAll(`[data-target="${target}"]`).forEach(el => el.classList.add('active'));
     window.scrollTo(0, 0);
     if (target === 'mentor') {
-      const msgs = document.getElementById("chat-msgs");
-      if(msgs) msgs.scrollTop = msgs.scrollHeight;
+      if (typeof chatMessages !== 'undefined' && chatMessages.children.length === 0) {
+        loadChatHistory();
+      }
+      if (typeof scrollChat === 'function') scrollChat();
     }
   }
   document.querySelectorAll('.nav-item, .d-tab').forEach(btn => {
