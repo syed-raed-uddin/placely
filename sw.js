@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'placely-v2';
+const CACHE_VERSION = 'placely-v3';
 const APP_SHELL = [
   '/',
   '/index.html',
