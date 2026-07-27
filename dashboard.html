@@ -812,7 +812,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         credentials: "include",
         headers: headers,
         body: JSON.stringify({
-          student_id: DASH.student.phone,
+          student_id: studentId,
           project_id: projectId,
           github_url: url
         })
@@ -1854,7 +1854,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           amount: PAY_AMOUNT, 
           skill_slug: slug,
           name: DASH.student.name || "Student",
-          whatsapp: DASH.student.phone,
+          whatsapp: DASH.student.whatsapp,
           college: "N/A",
           year: "N/A",
           role: "N/A",
@@ -1879,7 +1879,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         order_id: orderId,
         name: "Placely",
         description: name,
-        prefill: { name: DASH.student.name, contact: DASH.student.phone },
+        prefill: { name: DASH.student.name, contact: DASH.student.whatsapp },
         theme: { color: "#f59e0b" },
         handler: async function (response) {
           toast("Payment successful! Unlocking track...", "ok");
