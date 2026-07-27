@@ -600,9 +600,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="pomo-controls" style="display: flex; gap: 12px; justify-content: center;">
         <button id="pomo-start" class="btn btn-primary" style="padding: 12px 24px; font-size: 16px;">Start</button>
         <button id="pomo-pause" class="btn" style="padding: 12px 24px; font-size: 16px; display: none;">Pause</button>
-        <button id="pomo-reset" class="btn" style="padding: 12px; border-radius: 50%;">
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-        </button>
+        <button id="pomo-reset" class="btn" style="padding: 12px 24px; font-size: 16px; background: #333;">Stop</button>
       </div>
     </div>
   </div>
@@ -1852,8 +1850,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         body: JSON.stringify({ 
           amount: PAY_AMOUNT, 
           skill_slug: slug,
-          name: DASH.student.name,
-          whatsapp: DASH.student.phone
+          name: DASH.student.name || "Student",
+          whatsapp: DASH.student.phone,
+          college: "N/A",
+          year: "N/A",
+          role: "N/A",
+          skills: "N/A"
         }),
       });
       
