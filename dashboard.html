@@ -616,6 +616,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="projects.js"></script>
 <script>
 (function () {
@@ -1569,7 +1570,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   /* ========== FOCUS MODE ========== */
   const focusOverlay = document.getElementById("focus-overlay");
-  let pomoTimer = null;
+  
+  // 1. Create the inline Web Worker for background-resilient ticking
+  const workerBlob = new Blob([`
+    let interval = null;
+    self.onmessage = function(e) {
+      if (e.data === 'start') {
+        if (!interval) interval = setInterval(() => self.postMessage('tick'), 1000);
+      } else if (e.data === 'stop') {
+        if (interval) { clearInterval(interval); interval = null; }
+      }
+    };
+  `]);
+  const pomoWorker = new Worker(URL.createObjectURL(workerBlob));
+  
   let pomoSeconds = 25 * 60;
   let pomoRunning = false;
   let pomoMode = "focus"; // focus | break
@@ -1577,7 +1591,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   document.getElementById("chat-focus-btn").addEventListener("click", () => {
     focusOverlay.classList.add("show");
     toggleChat(false);
-      });
+  });
   document.getElementById("focus-close").addEventListener("click", () => {
     focusOverlay.classList.remove("show");
   });
@@ -1588,16 +1602,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     document.getElementById("pomo-time").textContent = m + ":" + s;
   }
 
-  document.getElementById("pomo-start").addEventListener("click", () => {
-    if (pomoRunning) return;
-    pomoRunning = true;
-    document.getElementById("pomo-start").classList.add("active");
-    document.getElementById("pomo-pause").classList.remove("active");
-    pomoTimer = setInterval(() => {
+  // 2. Worker tick handler (replaces setInterval callback)
+  pomoWorker.onmessage = function(e) {
+    if (e.data === 'tick') {
       if (pomoSeconds <= 0) {
-        clearInterval(pomoTimer);
+        pomoWorker.postMessage('stop');
         pomoRunning = false;
         document.getElementById("pomo-start").classList.remove("active");
+        
         if (pomoMode === "focus") {
           pomoMode = "break";
           pomoSeconds = 5 * 60;
@@ -1608,29 +1620,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           document.getElementById("pomo-label").textContent = "Focus Session";
         }
         updatePomoDisplay();
-        // Notify if supported
+        
         if (Notification.permission === "granted") {
           new Notification("Placely Timer", {
             body: pomoMode === "break" ? "Focus session done! Take a 5-min break." : "Break's over! Time to focus.",
             icon: "/icons/icon-192x192.png"
           });
         }
-        return;
+      } else {
+        pomoSeconds--;
+        updatePomoDisplay();
       }
-      pomoSeconds--;
-      updatePomoDisplay();
-    }, 1000);
+    }
+  };
+
+  document.getElementById("pomo-start").addEventListener("click", () => {
+    if (pomoRunning) return;
+    pomoRunning = true;
+    document.getElementById("pomo-start").classList.add("active");
+    document.getElementById("pomo-pause").classList.remove("active");
+    pomoWorker.postMessage('start');
   });
 
   document.getElementById("pomo-pause").addEventListener("click", () => {
-    clearInterval(pomoTimer);
+    pomoWorker.postMessage('stop');
     pomoRunning = false;
     document.getElementById("pomo-start").classList.remove("active");
     document.getElementById("pomo-pause").classList.add("active");
   });
 
   document.getElementById("pomo-reset").addEventListener("click", () => {
-    clearInterval(pomoTimer);
+    pomoWorker.postMessage('stop');
     pomoRunning = false;
     pomoMode = "focus";
     pomoSeconds = 25 * 60;
@@ -1746,10 +1766,137 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       if (typeof scrollChat === 'function') scrollChat();
     }
+    if (target === 'settings') {
+      renderCourseManagement();
+    }
   }
   document.querySelectorAll('.nav-item, .d-tab').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.target));
   });
+
+  /* ========== COURSE MANAGEMENT (SETTINGS TAB) ========== */
+  async function renderCourseManagement() {
+    const list = document.getElementById("inline-skills-list");
+    if (!list) return;
+    list.innerHTML = '<p class="muted" style="text-align:center;padding:10px 0;">Loading courses...</p>';
+    
+    try {
+      const [skillsRes, enrollRes] = await Promise.all([
+        api("/api/skills"),
+        api("/api/student/" + encodeURIComponent(studentId) + "/enrollments")
+      ]);
+      
+      const allSkills = (skillsRes && skillsRes.skills) || [];
+      const enrollments = (enrollRes && enrollRes.enrollments) || [];
+      
+      if (!allSkills.length) {
+        list.innerHTML = '<p class="muted" style="text-align:center;padding:10px 0;">No courses available.</p>';
+        return;
+      }
+
+      list.innerHTML = allSkills.map(skill => {
+        const enrollment = enrollments.find(e => e.skill_id === skill.id);
+        const isPurchased = !!enrollment;
+        const isActive = enrollment && enrollment.is_active;
+        
+        let actionBtn = '';
+        if (isActive) {
+          actionBtn = `<span class="sr-badge">Active</span>`;
+        } else if (isPurchased) {
+          actionBtn = `<button class="btn btn-primary btn-sm switch-track-btn" data-id="${skill.id}">Switch here</button>`;
+        } else {
+          actionBtn = `<button class="btn btn-outline btn-sm buy-track-btn" data-slug="${skill.slug}" data-name="${skill.name}">Buy Track</button>`;
+        }
+
+        return `
+          <div class="skill-row ${isActive ? "is-active" : ""}">
+            <div class="sr-info">
+              <div class="sr-name">${esc(skill.name)}</div>
+              <div class="sr-meta">${esc(skill.total_days)} days</div>
+            </div>
+            ${actionBtn}
+          </div>
+        `;
+      }).join("");
+      
+      // Attach Event Listeners
+      list.querySelectorAll('.switch-track-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchActiveSkill(btn.dataset.id, btn));
+      });
+      
+      list.querySelectorAll('.buy-track-btn').forEach(btn => {
+        btn.addEventListener('click', () => buyTrack(btn.dataset.slug, btn.dataset.name, btn));
+      });
+
+    } catch (err) {
+      console.error(err);
+      list.innerHTML = '<p class="muted" style="text-align:center;padding:10px 0;color:#ff5555;">Failed to load courses.</p>';
+    }
+  }
+
+  async function buyTrack(slug, name, btn) {
+    if (typeof Razorpay === "undefined") {
+      alert("Razorpay is not loaded yet. Please try again in a moment.");
+      return;
+    }
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "Creating order...";
+    btn.disabled = true;
+
+    try {
+      const PAY_AMOUNT = 19900; // Rs. 199
+      
+      const res = await fetch(API + "/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          amount: PAY_AMOUNT, 
+          skill_slug: slug,
+          name: DASH.student.name,
+          whatsapp: DASH.student.phone
+        }),
+      });
+      
+      if (!res.ok) {
+        throw new Error("create-order failed (HTTP " + res.status + ")");
+      }
+      
+      const data = await res.json();
+      const orderId = data.order_id || data.id || data.orderId || (data.order && data.order.id);
+      const rzpKey = data.razorpay_key_id || data.key || data.key_id;
+      
+      if (!orderId || !rzpKey) throw new Error("Invalid response from server");
+
+      const rzp = new Razorpay({
+        key: rzpKey,
+        amount: data.amount || PAY_AMOUNT,
+        currency: data.currency || "INR",
+        order_id: orderId,
+        name: "Placely",
+        description: name,
+        prefill: { name: DASH.student.name, contact: DASH.student.phone },
+        theme: { color: "#f59e0b" },
+        handler: async function (response) {
+          toast("Payment successful! Unlocking track...", "ok");
+          // Wait for webhook to provision, then reload dashboard
+          setTimeout(() => { window.location.reload(); }, 3000);
+        },
+        modal: { ondismiss: () => { btn.innerHTML = originalText; btn.disabled = false; } }
+      });
+      
+      rzp.on("payment.failed", function (resp) {
+        toast("Payment failed. Please try again.", "err");
+        btn.innerHTML = originalText; btn.disabled = false;
+      });
+
+      rzp.open();
+    } catch (e) {
+      console.error(e);
+      toast("Failed to initiate checkout", "err");
+      btn.innerHTML = originalText; btn.disabled = false;
+    }
+  }
+
   document.getElementById("today-cta").addEventListener("click", () => {
     const openPhase = document.querySelector('.phase.open');
     if (openPhase) openPhase.scrollIntoView({ behavior: 'smooth', block: 'start' });
