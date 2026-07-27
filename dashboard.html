@@ -691,6 +691,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     return body;
   }
+    
+    // Expose utility functions for other modules (like projects.js)
+    window.api = api;
+    window.esc = esc;
 
   // Single-active-skill enrollment: the dashboard always shows whichever
   // one enrollment is currently active server-side. There is no per-track
@@ -724,8 +728,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   function render() {
     renderHeader();
     renderHero();
-    renderUnlockBanner();
-    renderRecommendedProjects();
     renderBadges();
     renderRoadmap();
     renderCheckpoint();
