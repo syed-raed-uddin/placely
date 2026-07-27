@@ -580,10 +580,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p class="muted" style="font-size:14px; margin-bottom:16px;">Enter a distraction-free Pomodoro session.</p>
       <button id="start-focus-btn" class="btn btn-primary" style="background:var(--fire); border-color:var(--fire); color:#fff; width:100%; justify-content:center; padding:12px;">Start Focus Mode</button>
     </div>
+    </div>
+  </div> <!-- end tab-settings -->
+  
+  <!-- ============ PURCHASE ERROR MODAL ============ -->
+  <div class="overlay" id="purchase-error-overlay" style="z-index: 10000;">
+    <div class="modal" style="text-align: center; max-width: 400px;">
+      <div style="font-size: 32px; margin-bottom: 15px;">🔒</div>
+      <h3 style="margin: 0 0 10px 0; font-size: 18px;">Track Locked</h3>
+      <p id="purchase-error-msg" style="color: var(--muted); font-size: 14px; line-height: 1.5; margin-bottom: 24px;"></p>
+      <button class="btn btn-primary" id="purchase-error-close" style="width: 100%; padding: 10px;">Got it</button>
+    </div>
   </div>
-</div> <!-- end tab-settings -->
-
-<!-- ============ FOCUS MODE ============ -->
+  
+  <!-- ============ FOCUS MODE ============ -->
 <div id="focus-overlay">
   <div class="focus-header" style="justify-content: flex-end; padding: 20px; border-bottom: none;">
     <button class="btn btn-sm" id="focus-pip" style="margin-right: 12px;" title="Keep on top">
@@ -1863,6 +1873,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
       
       if (!res.ok) {
+        let serverMsg = null;
+        try {
+          const errBody = await res.json();
+          if (errBody && errBody.error) serverMsg = errBody.error;
+        } catch (e) {}
+
+        if (serverMsg) {
+          showPurchaseErrorModal(serverMsg);
+          btn.innerHTML = originalText; btn.disabled = false;
+          return;
+        }
         throw new Error("create-order failed (HTTP " + res.status + ")");
       }
       
@@ -1900,6 +1921,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       toast("Failed to initiate checkout", "err");
       btn.innerHTML = originalText; btn.disabled = false;
     }
+  }
+
+  /* ========== PURCHASE ERROR MODAL ========== */
+  function showPurchaseErrorModal(msg) {
+    const overlay = document.getElementById("purchase-error-overlay");
+    const msgEl = document.getElementById("purchase-error-msg");
+    if (overlay && msgEl) {
+      msgEl.textContent = msg;
+      overlay.classList.add("show");
+    } else {
+      alert(msg); // fallback if DOM not present
+    }
+  }
+  if (document.getElementById("purchase-error-close")) {
+    document.getElementById("purchase-error-close").addEventListener("click", () => {
+      document.getElementById("purchase-error-overlay").classList.remove("show");
+    });
   }
 
   document.getElementById("today-cta").addEventListener("click", () => {
