@@ -18,6 +18,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+<link rel="stylesheet" href="projects.css" />
 <style>
   :root {
     --bg: #0a0a0a;
@@ -547,11 +548,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- TAB: PROJECTS -->
   <div id="tab-projects" class="tab-content">
-    <div class="settings-wrap">
-      <h2>Recommended Projects</h2>
-      <p style="color:var(--muted); font-size:15px; margin-bottom:20px; line-height:1.5;">Build real-world projects to apply your skills. Complete these to build a standout portfolio.</p>
-      <div class="projects-grid" id="projects-grid"></div>
-    </div>
+    <div id="projects-app-root"></div>
   </div>
 
 <!-- TAB: SETTINGS -->
@@ -619,6 +616,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
 
+<script src="projects.js"></script>
 <script>
 (function () {
   "use strict";
