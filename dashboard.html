@@ -1761,9 +1761,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       
       const existingSub = await reg.pushManager.getSubscription();
-      if (existingSub) {
-        await existingSub.unsubscribe();
-      }
+      // Removed unsubscribe() block. Re-subscribing directly is safer to keep the endpoint valid.
       
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
