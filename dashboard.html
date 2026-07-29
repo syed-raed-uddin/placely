@@ -575,6 +575,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <ul id="settings-tasks-list" style="list-style:none; padding:0; display:flex; flex-direction:column; gap:8px;"></ul>
     </div>
+    <div class="set-card" style="margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <h3 style="margin-bottom: 4px;">Push Notifications</h3>
+        <div style="font-size: 14px; color: var(--muted);">Get AI Mentor updates directly on your device.</div>
+      </div>
+      <button class="btn btn-outline" style="padding: 8px 16px; font-size: 13px;" onclick="registerPush(true)">Enable</button>
+    </div>
+    
     <div class="set-card" style="background: linear-gradient(180deg, rgba(255,122,24,0.1), var(--card)); border-color: rgba(255,122,24,0.3);">
       <h3>Deep Work</h3>
       <p class="muted" style="font-size:14px; margin-bottom:16px;">Enter a distraction-free Pomodoro session.</p>
@@ -584,8 +592,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div> <!-- end tab-settings -->
   
   <!-- ============ PURCHASE ERROR MODAL ============ -->
-  <div class="overlay" id="purchase-error-overlay" style="z-index: 10000;">
-    <div class="modal" style="text-align: center; max-width: 400px;">
+  <div class="overlay" id="purchase-error-overlay" style="z-index: 10000; display: none; position: fixed; inset: 0; background: rgba(5,5,8,0.82); backdrop-filter: blur(8px); align-items: center; justify-content: center;">
+    <div class="modal" style="text-align: center; max-width: 400px; padding: 30px; border: 1px solid var(--line); border-radius: 20px; background: var(--card);">
       <div style="font-size: 32px; margin-bottom: 15px;">🔒</div>
       <h3 style="margin: 0 0 10px 0; font-size: 18px;">Track Locked</h3>
       <p id="purchase-error-msg" style="color: var(--muted); font-size: 14px; line-height: 1.5; margin-bottom: 24px;"></p>
@@ -2078,42 +2086,5 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   })();
 })();
 </script>
-
-    <div class="settings-head">
-      <h3>Settings</h3>
-      <button class="settings-close" onclick="closeSettings()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-    </div>
-    <div class="settings-sub">Manage your preferences and tracks.</div>
-    
-    <div style="margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--line);">
-      <div>
-        <div style="font-weight: 600; font-size: 15px;">Push Notifications</div>
-        <div style="font-size: 13px; color: var(--muted); margin-top: 4px;">Get AI Mentor updates directly on your device.</div>
-      </div>
-      <button class="btn btn-outline" style="padding: 8px 16px; font-size: 13px;" onclick="registerPush(true)">Enable</button>
-    </div>
-
-    <div id="settings-tracks"></div>
-
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <button class="nav-item active" data-target="roadmap">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-      Roadmap
-    </button>
-    <button class="nav-item" data-target="projects">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-      Projects
-    </button>
-    <button class="nav-item" data-target="mentor">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-      AI Mentor
-    </button>
-    <button class="nav-item" data-target="settings">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-      Settings
-    </button>
-  </nav>
-
 </body>
 </html>
