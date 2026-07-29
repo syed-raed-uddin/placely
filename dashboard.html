@@ -575,14 +575,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <ul id="settings-tasks-list" style="list-style:none; padding:0; display:flex; flex-direction:column; gap:8px;"></ul>
     </div>
-    <div class="set-card" style="margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
-      <div>
-        <h3 style="margin-bottom: 4px;">Push Notifications</h3>
-        <div style="font-size: 14px; color: var(--muted);">Get AI Mentor updates directly on your device.</div>
-      </div>
-      <button class="btn btn-outline" style="padding: 8px 16px; font-size: 13px;" onclick="registerPush(true)">Enable</button>
-    </div>
-    
     <div class="set-card" style="background: linear-gradient(180deg, rgba(255,122,24,0.1), var(--card)); border-color: rgba(255,122,24,0.3);">
       <h3>Deep Work</h3>
       <p class="muted" style="font-size:14px; margin-bottom:16px;">Enter a distraction-free Pomodoro session.</p>
@@ -592,8 +584,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div> <!-- end tab-settings -->
   
   <!-- ============ PURCHASE ERROR MODAL ============ -->
-  <div class="overlay" id="purchase-error-overlay" style="z-index: 10000; display: none; position: fixed; inset: 0; background: rgba(5,5,8,0.82); backdrop-filter: blur(8px); align-items: center; justify-content: center;">
-    <div class="modal" style="text-align: center; max-width: 400px; padding: 30px; border: 1px solid var(--line); border-radius: 20px; background: var(--card);">
+  <div class="overlay" id="purchase-error-overlay" style="z-index: 10000;">
+    <div class="modal" style="text-align: center; max-width: 400px;">
       <div style="font-size: 32px; margin-bottom: 15px;">🔒</div>
       <h3 style="margin: 0 0 10px 0; font-size: 18px;">Track Locked</h3>
       <p id="purchase-error-msg" style="color: var(--muted); font-size: 14px; line-height: 1.5; margin-bottom: 24px;"></p>
@@ -1729,40 +1721,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   /* ========== PUSH NOTIFICATIONS ========== */
-  window.registerPush = async function registerPush(userInitiated = false) {
-    if (!("Notification" in window) || !("serviceWorker" in navigator)) {
-      if (userInitiated) alert("Push notifications not supported by this browser.");
-      return;
-    }
-    
-    // If not user-initiated (e.g. on page load), only proceed if permission was already granted.
-    // We avoid calling requestPermission() on load because modern browsers block it silently.
-    if (!userInitiated && Notification.permission !== "granted") {
-      return;
-    }
-    
-    let perm = Notification.permission;
-    if (perm !== "granted") {
-      perm = await Notification.requestPermission();
-    }
-    
-    if (perm !== "granted") {
-      if (userInitiated) alert("Permission denied. You may need to reset site settings.");
-      return;
-    }
-    
+  async function registerPush() {
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") return;
     try {
       const reg = await navigator.serviceWorker.ready;
       // The VAPID public key will be served from the backend
       const keyResp = await api("/api/push/vapid-key");
-      if (!keyResp || !keyResp.publicKey) {
-        if (userInitiated) alert("Failed to fetch push configuration.");
-        return;
-      }
-      
-      const existingSub = await reg.pushManager.getSubscription();
-      // Removed unsubscribe() block. Re-subscribing directly is safer to keep the endpoint valid.
-      
+      if (!keyResp || !keyResp.publicKey) return;
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(keyResp.publicKey),
@@ -1772,11 +1739,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subscription: sub.toJSON() }),
       });
-      if (userInitiated) alert("Push notifications enabled!");
-    } catch (err) { 
-      console.warn("Push registration failed:", err); 
-      if (userInitiated) alert("Failed to register push notifications. Error: " + err.message);
-    }
+    } catch (err) { console.warn("Push registration failed:", err); }
   }
 
   function urlBase64ToUint8Array(base64String) {
@@ -1793,33 +1756,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     navigator.serviceWorker.register("/sw.js").then(() => {
       console.log("SW registered");
     }).catch(err => { console.warn("SW registration failed:", err); });
-    
-    navigator.serviceWorker.addEventListener("message", (event) => {
-      if (event.data && event.data.type === "FLUSH_CHAT") {
-        flushOfflineMessages();
-      } else if (event.data && event.data.type === "NEW_PUSH_MESSAGE") {
-        // A new push notification arrived!
-        loadChatHistory();
-        // Append test/push messages directly to the UI since test pushes aren't saved in the DB
-        const payload = event.data.payload;
-        if (payload && payload.body) {
-          const chatBox = document.getElementById("ai-chat-box");
-          if (chatBox) {
-            const msgDiv = document.createElement("div");
-            msgDiv.className = "chat-msg ai-msg";
-            msgDiv.innerHTML = `<div class="msg-content">${payload.body}</div><div class="msg-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>`;
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-          }
-        }
-        
-        // If the AI Mentor panel is not currently open, show a red dot indicator on the FAB
-        if (!chatPanel.classList.contains("open")) {
-          const dot = document.querySelector("#chat-fab .notif-dot");
-          if (dot) dot.style.display = "block";
-        }
-      }
-    });
   }
 
   /* ---------- GO ---------- */
@@ -2092,7 +2028,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       studentId = data.student_id;
       try { localStorage.setItem("placely_student_id", studentId); } catch (ex) {}
       loadDashboard();
-      registerPush(false); // Only subscribes if permission was already granted previously
+      registerPush(); // Request push notification permission after login
     } catch (err) {
       // No valid session -- send them to log in, not silently to the
       // marketing page with no way back into their own dashboard.
@@ -2102,5 +2038,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   })();
 })();
 </script>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-target="roadmap">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+      Roadmap
+    </button>
+    <button class="nav-item" data-target="projects">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+      Projects
+    </button>
+    <button class="nav-item" data-target="mentor">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+      AI Mentor
+    </button>
+    <button class="nav-item" data-target="settings">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+      Settings
+    </button>
+  </nav>
+
 </body>
 </html>
