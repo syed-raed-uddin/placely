@@ -94,6 +94,12 @@ self.addEventListener('push', (event) => {
 
   event.waitUntil(
     self.registration.showNotification(title, options)
+      .then(() => self.clients.matchAll({ type: 'window' }))
+      .then((clients) => {
+        clients.forEach(client => {
+          client.postMessage({ type: 'NEW_PUSH_MESSAGE', payload: options });
+        });
+      })
   );
 });
 

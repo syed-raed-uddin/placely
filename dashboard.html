@@ -1721,15 +1721,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   /* ========== PUSH NOTIFICATIONS ========== */
-  async function registerPush() {
-    if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
-    const perm = await Notification.requestPermission();
-    if (perm !== "granted") return;
+  async function registerPush(userInitiated = false) {
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) {
+      if (userInitiated) showToast("Push notifications not supported by this browser.", true);
+      return;
+    }
+    
+    // If not user-initiated (e.g. on page load), only proceed if permission was already granted.
+    // We avoid calling requestPermission() on load because modern browsers block it silently.
+    if (!userInitiated && Notification.permission !== "granted") {
+      return;
+    }
+    
+    let perm = Notification.permission;
+    if (perm !== "granted") {
+      perm = await Notification.requestPermission();
+    }
+    
+    if (perm !== "granted") {
+      if (userInitiated) showToast("Permission denied. You may need to reset site settings.", true);
+      return;
+    }
+    
     try {
       const reg = await navigator.serviceWorker.ready;
       // The VAPID public key will be served from the backend
       const keyResp = await api("/api/push/vapid-key");
-      if (!keyResp || !keyResp.publicKey) return;
+      if (!keyResp || !keyResp.publicKey) {
+        if (userInitiated) showToast("Failed to fetch push configuration.", true);
+        return;
+      }
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(keyResp.publicKey),
@@ -1739,7 +1760,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subscription: sub.toJSON() }),
       });
-    } catch (err) { console.warn("Push registration failed:", err); }
+      if (userInitiated) showToast("Push notifications enabled!");
+    } catch (err) { 
+      console.warn("Push registration failed:", err); 
+      if (userInitiated) showToast("Failed to register push notifications.", true);
+    }
   }
 
   function urlBase64ToUint8Array(base64String) {
@@ -1756,6 +1781,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     navigator.serviceWorker.register("/sw.js").then(() => {
       console.log("SW registered");
     }).catch(err => { console.warn("SW registration failed:", err); });
+    
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data && event.data.type === "FLUSH_CHAT") {
+        flushOfflineMessages();
+      } else if (event.data && event.data.type === "NEW_PUSH_MESSAGE") {
+        // A new push notification arrived! Refresh the AI Mentor chat UI.
+        loadChatHistory();
+        
+        // If the AI Mentor panel is not currently open, show a red dot indicator on the FAB
+        if (!chatPanel.classList.contains("open")) {
+          const dot = document.querySelector("#chat-fab .notif-dot");
+          if (dot) dot.style.display = "block";
+        }
+      }
+    });
   }
 
   /* ---------- GO ---------- */
@@ -2028,7 +2068,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       studentId = data.student_id;
       try { localStorage.setItem("placely_student_id", studentId); } catch (ex) {}
       loadDashboard();
-      registerPush(); // Request push notification permission after login
+      registerPush(false); // Only subscribes if permission was already granted previously
     } catch (err) {
       // No valid session -- send them to log in, not silently to the
       // marketing page with no way back into their own dashboard.
@@ -2038,6 +2078,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   })();
 })();
 </script>
+
+    <div class="settings-head">
+      <h3>Settings</h3>
+      <button class="settings-close" onclick="closeSettings()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+    </div>
+    <div class="settings-sub">Manage your preferences and tracks.</div>
+    
+    <div style="margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--line);">
+      <div>
+        <div style="font-weight: 600; font-size: 15px;">Push Notifications</div>
+        <div style="font-size: 13px; color: var(--muted); margin-top: 4px;">Get AI Mentor updates directly on your device.</div>
+      </div>
+      <button class="btn btn-outline" style="padding: 8px 16px; font-size: 13px;" onclick="registerPush(true)">Enable</button>
+    </div>
+
+    <div id="settings-tracks"></div>
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
