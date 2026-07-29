@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'placely-v5';
+const CACHE_VERSION = 'placely-v6';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -76,8 +76,6 @@ self.addEventListener('push', (event) => {
   let title = 'Placely';
   let options = {
     body: 'You have a new message from Placely!',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-192x192.png',
     data: {}
   };
 
@@ -92,15 +90,18 @@ self.addEventListener('push', (event) => {
     }
   }
 
-  event.waitUntil(
-    self.registration.showNotification(title, options)
-      .then(() => self.clients.matchAll({ type: 'window' }))
-      .then((clients) => {
-        clients.forEach(client => {
-          client.postMessage({ type: 'NEW_PUSH_MESSAGE', payload: options });
-        });
-      })
-  );
+  const promiseChain = self.registration.showNotification(title, options)
+    .catch((err) => {
+      console.error("Push notification display failed:", err);
+    })
+    .then(() => self.clients.matchAll({ type: 'window' }))
+    .then((clients) => {
+      clients.forEach(client => {
+        client.postMessage({ type: 'NEW_PUSH_MESSAGE', payload: options });
+      });
+    });
+
+  event.waitUntil(promiseChain);
 });
 
 self.addEventListener('notificationclick', (event) => {
