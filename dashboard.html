@@ -1759,6 +1759,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (userInitiated) alert("Failed to fetch push configuration.");
         return;
       }
+      
+      const existingSub = await reg.pushManager.getSubscription();
+      if (existingSub) {
+        await existingSub.unsubscribe();
+      }
+      
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(keyResp.publicKey),
@@ -1771,7 +1777,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (userInitiated) alert("Push notifications enabled!");
     } catch (err) { 
       console.warn("Push registration failed:", err); 
-      if (userInitiated) alert("Failed to register push notifications.");
+      if (userInitiated) alert("Failed to register push notifications. Error: " + err.message);
     }
   }
 
