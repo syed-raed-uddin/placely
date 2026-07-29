@@ -1800,8 +1800,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (event.data && event.data.type === "FLUSH_CHAT") {
         flushOfflineMessages();
       } else if (event.data && event.data.type === "NEW_PUSH_MESSAGE") {
-        // A new push notification arrived! Refresh the AI Mentor chat UI.
+        // A new push notification arrived!
         loadChatHistory();
+        // Append test/push messages directly to the UI since test pushes aren't saved in the DB
+        const payload = event.data.payload;
+        if (payload && payload.body) {
+          const chatBox = document.getElementById("ai-chat-box");
+          if (chatBox) {
+            const msgDiv = document.createElement("div");
+            msgDiv.className = "chat-msg ai-msg";
+            msgDiv.innerHTML = `<div class="msg-content">${payload.body}</div><div class="msg-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>`;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+          }
+        }
         
         // If the AI Mentor panel is not currently open, show a red dot indicator on the FAB
         if (!chatPanel.classList.contains("open")) {
