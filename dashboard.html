@@ -1729,7 +1729,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 
   /* ========== PUSH NOTIFICATIONS ========== */
-  async function registerPush(userInitiated = false) {
+  window.registerPush = async function registerPush(userInitiated = false) {
     if (!("Notification" in window) || !("serviceWorker" in navigator)) {
       if (userInitiated) showToast("Push notifications not supported by this browser.", true);
       return;
