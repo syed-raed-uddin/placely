@@ -1731,7 +1731,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   /* ========== PUSH NOTIFICATIONS ========== */
   window.registerPush = async function registerPush(userInitiated = false) {
     if (!("Notification" in window) || !("serviceWorker" in navigator)) {
-      if (userInitiated) showToast("Push notifications not supported by this browser.", true);
+      if (userInitiated) alert("Push notifications not supported by this browser.");
       return;
     }
     
@@ -1747,7 +1747,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     
     if (perm !== "granted") {
-      if (userInitiated) showToast("Permission denied. You may need to reset site settings.", true);
+      if (userInitiated) alert("Permission denied. You may need to reset site settings.");
       return;
     }
     
@@ -1756,7 +1756,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // The VAPID public key will be served from the backend
       const keyResp = await api("/api/push/vapid-key");
       if (!keyResp || !keyResp.publicKey) {
-        if (userInitiated) showToast("Failed to fetch push configuration.", true);
+        if (userInitiated) alert("Failed to fetch push configuration.");
         return;
       }
       const sub = await reg.pushManager.subscribe({
@@ -1768,10 +1768,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subscription: sub.toJSON() }),
       });
-      if (userInitiated) showToast("Push notifications enabled!");
+      if (userInitiated) alert("Push notifications enabled!");
     } catch (err) { 
       console.warn("Push registration failed:", err); 
-      if (userInitiated) showToast("Failed to register push notifications.", true);
+      if (userInitiated) alert("Failed to register push notifications.");
     }
   }
 
