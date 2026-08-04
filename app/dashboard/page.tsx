@@ -87,12 +87,12 @@ function mapBackendToDashboard(backendData: any): DashboardData {
     // The user wants to see real (empty) states until they actually start them.
     merged.currentProject = null as unknown as typeof merged.currentProject; 
     
-    merged.careerBreakdown = merged.careerBreakdown.map(item => ({
-      ...item,
-      percentage: 0,
-      status: 'Needs Work',
-      suggestion: 'Start learning to unlock insights',
-    }));
+    // Clear out Career Breakdown so Python students don't see "System Design"
+    merged.careerBreakdown = [];
+
+    // Clear out AI Mentor mock questions so Python students don't see "Graph Dijkstra"
+    merged.aiMentor.suggestedQuestions = [];
+    merged.aiMentor.lastMessage = "Hello! I am your AI Mentor. Let me know if you need help with your current mission.";
 
     merged.placementJourney = merged.placementJourney.map((stage, idx) => ({
       ...stage,
