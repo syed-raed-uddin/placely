@@ -2,7 +2,7 @@ const CACHE_VERSION = 'placely-v3';
 const APP_SHELL = [
   '/',
   '/index.html',
-  '/dashboard.html',
+  '/legacy-dashboard.html',
   '/dsa.html',
   '/portfolio.html',
   '/offline.html'
@@ -102,7 +102,7 @@ self.addEventListener('notificationclick', (event) => {
   
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then((windowClients) => {
-      const urlToOpen = (event.notification.data && event.notification.data.url) ? event.notification.data.url : '/dashboard.html';
+      const urlToOpen = (event.notification.data && event.notification.data.url) ? event.notification.data.url : '/legacy-dashboard.html';
       for (let i = 0; i < windowClients.length; i++) {
         const client = windowClients[i];
         if (client.url.includes(urlToOpen) && 'focus' in client) {
