@@ -1492,7 +1492,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3>You're in! 🎉</h3>
       <p id="pay-success-msg">Payment successful!</p>
       <a id="pay-success-wa" class="btn btn-primary" href="https://wa.me/919391595257?text=hi" target="_blank" style="margin-top:10px; display:inline-block;">Tap to message us on WhatsApp and activate your account</a>
-      <a id="pay-success-dash" class="btn btn-ghost" href="dashboard.html" style="display:none; margin-top:10px;">Go to my dashboard →</a>
+      <a id="pay-success-dash" class="btn btn-ghost" href="/dashboard" style="display:none; margin-top:10px;">Go to my dashboard →</a>
       <button type="button" class="btn btn-ghost" data-pay-close style="margin-top:10px;">Done</button>
     </div>
 
@@ -2400,7 +2400,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     if (navLoginBtn) navLoginBtn.addEventListener("click", openLogin);
 
-    // Deep link: dashboard.html sends an expired/missing session here as
+    // Deep link: /dashboard sends an expired/missing session here as
     // ?login=1 so the visitor lands with the login modal already open,
     // instead of a bare marketing page with no obvious way back in.
     try {
@@ -2471,7 +2471,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (data.token) localStorage.setItem("placely_token", data.token);
           } catch (ex) {}
         }
-        window.location.href = "dashboard.html";
+        window.location.href = "/dashboard";
       } catch (err) {
         errorMsg.textContent = "Couldn't reach the server. Check your connection and try again.";
         showLoginState("error");
@@ -2496,7 +2496,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           if (navLoginBtn) navLoginBtn.style.display = "none";
           if (navCtaBtn) {
             navCtaBtn.removeAttribute("data-pay");
-            navCtaBtn.href = "dashboard.html";
+            navCtaBtn.href = "/dashboard";
             navCtaBtn.innerHTML = "My Dashboard" + navCtaBtn.innerHTML.replace(/^[^<]*/, "");
           }
         }

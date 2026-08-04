@@ -26,16 +26,16 @@ export const Navbar: React.FC = () => {
           <a href="/dashboard" className="px-4 py-2 rounded-xl text-sm font-semibold text-[#FF7A00] bg-[#FF7A00]/10 border border-[#FF7A00] transition-colors">
             Dashboard
           </a>
-          <a href="/dashboard.html?tab=roadmap" className="px-4 py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-colors">
+          <a href="/legacy-dashboard.html?tab=roadmap" className="px-4 py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-colors">
             Roadmap
           </a>
-          <a href="/dashboard.html?tab=projects" className="px-4 py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-colors">
+          <a href="/legacy-dashboard.html?tab=projects" className="px-4 py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-colors">
             Projects
           </a>
-          <a href="/dashboard.html?tab=mentor" className="px-4 py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-colors">
+          <a href="/legacy-dashboard.html?tab=mentor" className="px-4 py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-colors">
             AI Mentor
           </a>
-          <a href="/dashboard.html?tab=settings" className="px-4 py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-colors">
+          <a href="/legacy-dashboard.html?tab=settings" className="px-4 py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-colors">
             Settings
           </a>
         </div>
