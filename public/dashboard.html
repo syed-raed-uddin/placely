@@ -386,6 +386,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="wrap topbar-inner">
     <div class="brand"><div class="dot"></div> Placely</div>
     <div class="desktop-tabs">
+      <a href="/dashboard" class="d-tab" style="text-decoration: none; display: flex; align-items: center;">Dashboard</a>
       <button class="d-tab active" data-target="roadmap">Roadmap</button>
       <button class="d-tab" data-target="projects">Projects</button>
       <button class="d-tab" data-target="mentor">AI Mentor</button>
@@ -1782,8 +1783,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
   }
   document.querySelectorAll('.nav-item, .d-tab').forEach(btn => {
-    btn.addEventListener('click', () => switchTab(btn.dataset.target));
+    if (btn.dataset.target) {
+      btn.addEventListener('click', () => switchTab(btn.dataset.target));
+    }
   });
+
+  // Check URL parameters for tab
+  const urlParams = new URLSearchParams(window.location.search);
+  const requestedTab = urlParams.get('tab');
+  if (requestedTab && document.getElementById('tab-' + requestedTab)) {
+    switchTab(requestedTab);
+  } else {
+    // Default tab
+    switchTab('roadmap');
+  }
 
   /* ========== COURSE MANAGEMENT (SETTINGS TAB) ========== */
   async function renderCourseManagement() {
@@ -2041,6 +2054,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
+    <a href="/dashboard" class="nav-item" style="text-decoration: none;">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+      Dashboard
+    </a>
     <button class="nav-item active" data-target="roadmap">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
       Roadmap

@@ -12,13 +12,32 @@ export const Navbar: React.FC = () => {
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#0A0A0A]/80 border-b border-white/10 px-4 md:px-8 py-3 transition-colors">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         {/* Placely Logo */}
-        <div className="flex items-center gap-3 shrink-0 cursor-pointer">
+        <div className="flex items-center gap-3 shrink-0 cursor-pointer" onClick={() => window.location.href = '/'}>
           <div className="w-9 h-9 bg-[#FF7A00] rounded-xl flex items-center justify-center font-extrabold text-white text-xl shadow-lg shadow-[#FF7A00]/20">
             P
           </div>
           <span className="text-white font-bold text-xl tracking-tight hidden sm:inline-block">
             Placely
           </span>
+        </div>
+
+        {/* Navigation Tabs (Desktop) */}
+        <div className="hidden md:flex items-center gap-2 ml-4">
+          <a href="/dashboard" className="px-4 py-2 rounded-xl text-sm font-semibold text-[#FF7A00] bg-[#FF7A00]/10 border border-[#FF7A00] transition-colors">
+            Dashboard
+          </a>
+          <a href="/dashboard.html?tab=roadmap" className="px-4 py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-colors">
+            Roadmap
+          </a>
+          <a href="/dashboard.html?tab=projects" className="px-4 py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-colors">
+            Projects
+          </a>
+          <a href="/dashboard.html?tab=mentor" className="px-4 py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-colors">
+            AI Mentor
+          </a>
+          <a href="/dashboard.html?tab=settings" className="px-4 py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white hover:bg-white/5 transition-colors">
+            Settings
+          </a>
         </div>
 
         {/* Search Bar */}
