@@ -13,6 +13,8 @@ import StreakXPCard from '@/components/dashboard/StreakXPCard';
 import { DashboardProvider } from '@/components/dashboard/DashboardProvider';
 import { fetchDashboardData } from '@/lib/api';
 import { dashboardData as fallbackData, DashboardData, TaskItem } from '@/lib/mockData';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapBackendToDashboard(backendData: any): DashboardData {
@@ -105,7 +107,15 @@ function mapBackendToDashboard(backendData: any): DashboardData {
 }
 
 export default async function DashboardPage() {
-  const backendData = await fetchDashboardData();
+  const cookieStore = cookies();
+  const studentId = cookieStore.get('placely_student_id')?.value;
+  const token = cookieStore.get('placely_token')?.value;
+
+  if (!studentId) {
+    redirect('/');
+  }
+
+  const backendData = await fetchDashboardData(studentId, token);
   const realData = mapBackendToDashboard(backendData);
 
   return (

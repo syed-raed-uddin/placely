@@ -2259,7 +2259,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             let sid = null;
             try { sid = await resolveStudentId(details.whatsapp); }
             catch (e) { console.error("student resolve failed:", e); }
-            if (sid) { try { localStorage.setItem("placely_student_id", sid); } catch (e) {} }
+            if (sid) { 
+              try { 
+                localStorage.setItem("placely_student_id", sid); 
+                document.cookie = "placely_student_id=" + sid + "; path=/; max-age=31536000";
+              } catch (e) {} 
+            }
 
             if (msgEl) {
               msgEl.innerHTML = sid
@@ -2468,7 +2473,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (data && data.student_id) {
           try { 
             localStorage.setItem("placely_student_id", data.student_id); 
-            if (data.token) localStorage.setItem("placely_token", data.token);
+            document.cookie = "placely_student_id=" + data.student_id + "; path=/; max-age=31536000";
+            if (data.token) {
+              localStorage.setItem("placely_token", data.token);
+              document.cookie = "placely_token=" + data.token + "; path=/; max-age=31536000";
+            }
           } catch (ex) {}
         }
         window.location.href = "/dashboard";
@@ -2493,6 +2502,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.logged_in) {
+          try {
+            const sid = localStorage.getItem("placely_student_id");
+            if (sid) document.cookie = "placely_student_id=" + sid + "; path=/; max-age=31536000";
+            if (token) document.cookie = "placely_token=" + token + "; path=/; max-age=31536000";
+          } catch (ex) {}
+          
           if (navLoginBtn) navLoginBtn.style.display = "none";
           if (navCtaBtn) {
             navCtaBtn.removeAttribute("data-pay");
