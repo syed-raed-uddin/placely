@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'placely-v3';
+const CACHE_VERSION = 'placely-v4';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -35,8 +35,9 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // API calls: Network only
-  if (url.pathname.startsWith('/api/')) {
+  // API calls and Next.js RSC requests: Network only
+  const isRSC = event.request.headers.has('RSC') || url.search.includes('_rsc=');
+  if (url.pathname.startsWith('/api/') || isRSC) {
     event.respondWith(fetch(event.request));
     return;
   }
