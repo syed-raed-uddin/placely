@@ -1,259 +1,72 @@
 # Original User Request
 
-## 2026-07-27T19:48:20Z
+## 2026-08-05T13:52:29Z
 
-<USER_REQUEST>
-# Teamwork Project Prompt — Draft
+Migrate the Placely student platform's legacy HTML dashboard into the existing Next.js App Router codebase, building premium React pages for every dashboard section (Roadmap, Projects, AI Mentor, Settings, and the main overview). The landing page (`public/index.html`) must NOT be touched.
 
-> Status: Ready for launch — awaiting user approval
-> Goal: Craft prompt → get user approval → delegate to teamwork_preview
-
-The Course Management section's "Buy Track" button needs to intelligently display specific server-side errors (such as prerequisite locks) using a modal popup, instead of failing silently with a generic error toast.
-
-Working directory: c:/Users/DELL/getplaced.ai
-Integrity mode: development
-
-## Requirements
-
-### R1. Display Specific Server Errors in a Modal
-When the `/create-order` API returns an error payload (e.g., a 403 Forbidden because a prerequisite track is incomplete), the frontend must parse the JSON `{"error": "..."}` response and display that exact message inside a clean, centered modal popup.
-
-### R2. Maintain Vanilla JS Architecture
-The modal must be built using the existing Vanilla JS/HTML/CSS architecture of the application. Do not introduce new UI frameworks or dependencies.
-
-## Acceptance Criteria
-
-### Error Handling & UX
-- [ ] Attempting to purchase a track with an unmet prerequisite successfully intercepts the 403 backend error without crashing the checkout flow.
-- [ ] A custom modal popup appears containing the specific error message provided by the server.
-- [ ] The modal includes a functional "Close" or "Dismiss" button that hides it from view.
-</USER_REQUEST>
-
-## 2026-07-29T17:47:22Z
-
-<USER_REQUEST>
-# Placely — Premium Student Dashboard (Next.js) — Phase 1
-
-Build a stunning, production-ready student career dashboard for Placely — an AI-powered career companion for engineering students. The dashboard must feel like a premium productivity app, not an admin panel. The student should feel motivated AND know exactly what to do within 5 seconds of opening it.
-
-Working directory: c:\Users\DELL\getplaced.ai\dashboard-next
+Working directory: `c:\Users\DELL\getplaced.ai`
 Integrity mode: development
 
 ---
 
-## Tech Stack
+## Context
 
-- Next.js 14 (App Router)
-- React 18
-- TailwindCSS
-- Shadcn UI
-- Framer Motion
-- Lucide Icons
-
----
-
-## Design System
-
-- Background: #0A0A0A
-- Primary Accent: #FF7A00 (orange)
-- White typography
-- Glassmorphism cards (backdrop-blur, white/10 borders)
-- Large rounded corners (rounded-2xl, rounded-3xl)
-- Modern sans-serif (Inter or Geist from Google Fonts)
-- Mobile-first, fully responsive (375px / 768px / 1280px)
-- Pixel-perfect, production-ready
-
----
-
-## Page Architecture: Three Zones
-
-The dashboard is organized into three vertical zones. Each zone has a clear purpose and a subtle section label in the UI.
-
-Zone 1 - TODAY'S FOCUS (Action area - What should I do today?)
-Zone 2 - CAREER PROGRESS (Progress area - How am I growing?)
-Zone 3 - MOTIVATION (Retention area - What keeps me going?)
+The project is a Next.js 14 App Router app deployed on Vercel.
+- **Backend:** Flask API on Railway → `https://placely-backend-production.up.railway.app`
+- **Auth:** `localStorage` stores `student_id` and `token`. On login, `public/index.html` also writes them to browser cookies (`placely_student_id`, `placely_token`) so Next.js Server Components can read them via `cookies()`.
+- **Existing premium dashboard:** `app/dashboard/page.tsx` already works as a polished premium page using components in `components/dashboard/` and types/data in `lib/mockData.ts`.
+- **Legacy to retire:** `public/legacy-dashboard.html` has all the other sections (Roadmap, Projects, AI Mentor, Settings) as a single giant HTML file. These need to become proper Next.js routes.
+- **DO NOT MODIFY:** `public/index.html`, `public/sw.js`, `public/manifest.webmanifest`, `public/dsa.html`, `public/portfolio.html`, `public/offline.html`, or any existing working code in `app/dashboard/page.tsx`, `components/dashboard/`, `lib/mockData.ts`, `lib/api.ts`, `app/layout.tsx`, `app/globals.css`.
 
 ---
 
 ## Requirements
 
-### R1. Project Bootstrap
+### R1. Dashboard Layout with Persistent Navbar
+Create `app/dashboard/layout.tsx` that wraps all `/dashboard/*` routes with the existing `<Navbar />` component (from `components/dashboard/Navbar.tsx`). Remove the `<Navbar />` from `app/dashboard/page.tsx` (since the layout will render it) and verify the main dashboard page still works identically. The Navbar must remain mounted during client-side navigation between dashboard tabs — no full page reloads.
 
-Initialize a Next.js 14 project with App Router inside `c:\Users\DELL\getplaced.ai\dashboard-next`. Install: TailwindCSS, Shadcn UI, Framer Motion, Lucide Icons. Configure the global design system in `tailwind.config.js` and `globals.css` with the colors and font above. The app must start with `npm run dev` on port 3000 without errors.
+### R2. Roadmap Page — `/dashboard/roadmap`
+Create a premium Next.js page at `app/dashboard/roadmap/page.tsx`. It should display the student's full learning roadmap: the phases, modules/tasks (with their completion status, day number, and type), and overall progress. Auth is read from cookies, and data is fetched from the backend at `GET /api/dashboard/{student_id}` (which returns `phases`, `enrollment`, `skill` fields). If cookies are missing, redirect to `/`. Fall back to `lib/mockData.ts` data if the API call fails. Design must match the dark, premium aesthetic of the existing dashboard (glassmorphism cards, `#FF7A00` accent, `bg-[#0A0A0A]` background, Framer Motion animations).
 
-### R2. Dynamic Data Layer
+### R3. Projects Page — `/dashboard/projects`
+Create a premium Next.js page at `app/dashboard/projects/page.tsx`. It should display the student's active project: name, progress percentage (animated circular ring), current milestone, remaining tasks, and estimated completion. It should also display a list of all past/completed projects if available from the backend. Same auth pattern and dark premium aesthetic as R2.
 
-Create `lib/mockData.ts` with a typed `DashboardData` interface. Populate it with realistic dummy data for every field used in the UI. No component file may contain hardcoded user-facing strings or numbers - all values must be imported from this file.
+### R4. AI Mentor Page — `/dashboard/mentor`
+Create a premium Next.js page at `app/dashboard/mentor/page.tsx`. It should render a full chat interface with "Kiro", the AI Mentor. The chat sends messages to the backend's streaming endpoint at `POST /api/mentor/chat` (streams SSE with `data:` lines containing JSON `{text: "..."}` chunks, ending with `[DONE]`). The `student_id` and `token` from cookies must be included in all requests. The UI must feel like a premium messaging app (chat bubbles, streaming token-by-token response display, loading indicators). Suggested quick questions from `lib/mockData.ts` (`aiMentor.suggestedQuestions`) should be displayed as chips.
 
-Required fields (minimum):
-- user.name, user.avatar, user.initials
-- careerReadiness (number 0-100), careerReadiness.nextMilestone (string)
-- todayTasks[] with fields: id, title, estimatedTime, xpReward, priority (High/Medium/Low), completed, subProgress (0-100 optional)
-- currentRoadmap.name, currentRoadmap.currentModule, currentRoadmap.modulesCompleted, currentRoadmap.totalModules, currentRoadmap.estimatedCompletion
-- currentProject.name, currentProject.progress (0-100), currentProject.currentMilestone, currentProject.remainingTasks, currentProject.estimatedCompletion
-- aiMentor.lastMessage, aiMentor.suggestedQuestions[]
-- careerBreakdown[] array with: name, icon (string), percentage, suggestion, status (On Track/Needs Work/Excellent)
-- placementJourney[] array with: stage, icon, status (Completed/Current/Locked)
-- quickActions[] array with: label, icon, color
-- placementTracker.applicationsSent, placementTracker.repliesReceived, placementTracker.interviewsScheduled, placementTracker.offers, placementTracker.responseRate, placementTracker.daysSinceLastApplication, placementTracker.aiRecommendation
-- streak.current, streak.longest, streak.weeklyActivity[] (7 booleans)
-- xp.current, xp.total, xp.level, xp.nextLevelXP
-- notifications.unreadCount
+### R5. Settings Page — `/dashboard/settings`
+Create a premium Next.js page at `app/dashboard/settings/page.tsx`. It should display the student's profile info (name, email, course/track, enrollment date) read from the backend response. Include a styled "Log Out" button that clears cookies (`placely_student_id`, `placely_token`) and redirects to `/`. This is a static display page — no editable forms required for this version.
 
-### R3. Navbar
+### R6. Navigation Wiring
+Update the Navbar in `components/dashboard/Navbar.tsx` to replace all `href="/legacy-dashboard.html?tab=..."` links with proper Next.js `<Link>` tags pointing to `/dashboard`, `/dashboard/roadmap`, `/dashboard/projects`, `/dashboard/mentor`, and `/dashboard/settings`. The active link should be highlighted based on the current pathname.
 
-Sticky top navbar. Contains: Placely logo (orange square with "P" + "Placely" wordmark), search bar (cosmetic placeholder), notifications bell icon with unread badge count, user avatar showing initials. Collapses gracefully on mobile.
-
-### R4. Zone 1 - Today's Focus
-
-Section label: "TODAY'S FOCUS" in small muted uppercase tracking-widest text.
-
-R4a. Hero / Greeting Strip:
-Full-width card. Left side: time-sensitive greeting ("Good Morning/Afternoon/Evening, {user.name}") computed from current hour, subtitle "Here's your plan for today.", a large orange "Continue Learning" CTA button. Right side: large animated circular progress ring (Apple Fitness style, SVG-based) showing careerReadiness% with label "Career Readiness" centered inside it and "Next: {nextMilestone}" below. Ring animates strokeDashoffset from 0 to target on load using Framer Motion. On mobile the ring moves below the greeting.
-
-R4b. Today's Mission:
-The most important UI element. Vertical stack of task cards.
-Each task card:
-- Circular checkbox (animated checkmark SVG draw on click)
-- Task title text
-- Estimated time chip (e.g. "45 min")
-- XP badge in orange (e.g. "+50 XP")
-- Priority label (High=red, Medium=yellow, Low=green)
-- Thin sub-progress bar if subProgress is set
-
-On task completion:
-- Checkbox fills orange with animated checkmark
-- Card gets subtle green-500/20 border + opacity-60
-- Card animates to bottom using Framer Motion AnimatePresence + layout prop
-- "+XP" floating text animates upward and fades out (absolute positioned, keyframe)
-
-R4c. Two-column row (stack on mobile):
-
-Current Roadmap card: roadmap name (header), current module title, linear progress bar with "X of Y modules" label, estimated completion date, "Continue Learning" button with arrow icon.
-
-Current Project card: project name (header), circular mini ring showing progress%, current milestone label, "X tasks remaining", estimated completion, "Open Project" button.
-
-### R5. Zone 2 - Career Progress
-
-Section label: "CAREER PROGRESS" in small muted uppercase text.
-
-R5a. Career Readiness Breakdown Grid:
-Responsive grid: 4-col desktop, 2-col tablet, 1-col mobile.
-For each item in careerBreakdown[]:
-- Icon + metric name
-- Large animated percentage number (count-up using Framer Motion useInView)
-- Color-coded progress bar (red <40%, yellow 40-69%, green >=70%)
-- Status badge (On Track / Needs Work / Excellent)
-- AI suggestion sentence in muted small text
-
-R5b. Placement Journey:
-Horizontal stepper on desktop, vertical on mobile. 7 stages from placementJourney[].
-Completed stages: green check icon, full opacity.
-Current stage: orange glow + animated pulse ring around the icon.
-Locked stages: grayscale, opacity-40.
-Connected by a line; the line fills orange from left up to current stage using Framer Motion on scroll-into-view.
-
-R5c. Placement Tracker:
-Card header: "Placement Tracker" title + "Log Application" button (right-aligned, cosmetic).
-Top: 2x3 stats grid. Each stat: large animated count-up number, small label below.
-Stats: Applications Sent, Replies Received, Interviews Scheduled, Offers, Response Rate (show as X%), Days Since Last Application.
-Bottom: AI recommendation strip with Sparkles icon + aiRecommendation text.
-
-R5d. AI Mentor Preview:
-Card with Kiro bot avatar (orange circle with bot icon), "Kiro - AI Mentor" title + "Online" green dot.
-Last message preview (2 lines, line-clamp-2).
-3 question pills as buttons (pill shaped, border, hover orange).
-"Continue Conversation" button.
-
-### R6. Zone 3 - Motivation
-
-Section label: "MOTIVATION" in small muted uppercase text.
-This zone is compact - it does not dominate the page.
-
-R6a. Quick Actions:
-2-row grid on desktop (4+3), horizontal scroll on mobile.
-7 action cards from quickActions[]. Each: large icon on top, label below, glassmorphism background. Hover: orange glow border + scale-105.
-
-R6b. Streak + XP Card:
-Single card split into two halves.
-Left: animated flame icon (Framer Motion pulse + orange-to-red color), current streak number large, "day streak" label, "Longest: X days" below. Small 7-day weekly activity bar (7 columns, filled=orange, empty=gray).
-Right: Level badge (e.g. "LVL 12" in orange pill), current XP large number, "/ {nextLevelXP} XP" label, thin XP progress bar.
-Bottom full-width: motivational message based on streak.current (0/1-6/7+/30+ days rules).
-
----
-
-## Component Architecture
-
-Create these exact files:
-- app/dashboard/page.tsx (composes all zones)
-- components/dashboard/Navbar.tsx
-- components/dashboard/HeroGreeting.tsx
-- components/dashboard/TodaysMission.tsx
-- components/dashboard/RoadmapCard.tsx
-- components/dashboard/ProjectCard.tsx
-- components/dashboard/CareerBreakdown.tsx
-- components/dashboard/PlacementJourney.tsx
-- components/dashboard/PlacementTracker.tsx
-- components/dashboard/AIMentorPreview.tsx
-- components/dashboard/QuickActions.tsx
-- components/dashboard/StreakXPCard.tsx
-- components/ui/CircularRing.tsx (reusable SVG ring component)
-- components/ui/AnimatedNumber.tsx (reusable count-up)
-- components/ui/ProgressBar.tsx (reusable animated bar)
-- lib/mockData.ts
-
-No component file should exceed 200 lines.
-
----
-
-## Animations (Framer Motion)
-
-- Hero ring: animates strokeDashoffset on mount
-- AnimatedNumber: useInView + useSpring or animate for count-up
-- Task completion: AnimatePresence + layout + floating XP text
-- Journey line: scaleX or width animation on useInView
-- Progress bars: animate width on useInView
-- Cards: fade-up stagger entrance (y: 20 to 0, opacity 0 to 1, 0.1s stagger)
-- Quick action hover: whileHover scale + glow shadow
+Update `next.config.mjs` to add permanent redirects from the legacy URLs to the new routes:
+- `/legacy-dashboard.html` → `/dashboard`
 
 ---
 
 ## Acceptance Criteria
 
-### Functional
-- `npm run dev` starts without errors at localhost:3000
-- All 11 dashboard components render with no blank areas
-- Completing a task triggers the XP float animation and task moves to bottom
-- Career readiness ring animates on load
-- PlacementTracker renders all 6 stats from mockData
-- No hardcoded user-facing strings in component files
+### Build & Safety
+- [ ] `npm run build` completes with zero errors after all changes.
+- [ ] `public/index.html` is byte-for-byte identical to before (no modifications).
+- [ ] All existing files in `components/dashboard/`, `lib/mockData.ts`, `lib/api.ts` have their data/logic preserved.
+- [ ] The existing `/dashboard` page renders correctly and all its existing components work.
 
-### Design
-- Background #0A0A0A across all viewports
-- Orange #FF7A00 for all CTAs, active states, highlights
-- All cards use glassmorphism (backdrop-blur-md, bg-white/5, border border-white/10)
-- No horizontal scrollbar at 375px
-- Navbar sticky on scroll
-- All three zone labels visible
+### New Routes
+- [ ] Navigating to `/dashboard/roadmap` renders a page (not a 404).
+- [ ] Navigating to `/dashboard/projects` renders a page (not a 404).
+- [ ] Navigating to `/dashboard/mentor` renders a page (not a 404).
+- [ ] Navigating to `/dashboard/settings` renders a page (not a 404).
+- [ ] All new pages redirect to `/` when `placely_student_id` cookie is absent.
 
-### Code Quality
-- TypeScript, no `any` types in component files
-- Every component file under 200 lines
-- TailwindCSS only, no inline styles
-- `npm run build` succeeds
+### Navigation
+- [ ] Clicking each Navbar tab navigates without a full page reload (the Navbar stays mounted — verify by checking that the page does NOT flash/reload, React state in the Navbar is preserved).
+- [ ] The active tab is visually highlighted on each page.
 
----
+### Auth & Logout
+- [ ] The Settings page "Log Out" button clears both `placely_student_id` and `placely_token` cookies and redirects to `/`.
 
-## NOT in scope
-
-Do NOT build:
-- Resume detail card
-- GitHub heatmap card
-- Mock Interview card
-- AI Insights panel
-- Activity Timeline
-- Leaderboard
-- Achievements/Badges
-- Activity Calendar
-- Notifications panel
-</USER_REQUEST>
+### Design Quality
+- [ ] All new pages use the same dark glassmorphism aesthetic as the existing dashboard (dark background, orange `#FF7A00` accent, blurred glass cards, smooth Framer Motion transitions).
+- [ ] All new pages are mobile-responsive.

@@ -1,55 +1,46 @@
-# BRIEFING — 2026-07-29T18:03:00Z
+# BRIEFING — 2026-08-05T08:50:00Z
 
 ## Mission
-Build Zone 2 & Zone 3 components for Placely Student Dashboard (Milestone 4) in `c:\Users\DELL\getplaced.ai\dashboard-next`.
+Implement Requirement R4: AI Mentor Page at `app/dashboard/mentor/page.tsx` with full chat interface, SSE streaming handler, markdown/code formatting, suggested questions, pomodoro focus mode modal, server-side auth guard check.
 
 ## 🔒 My Identity
-- Archetype: implementer / qa / specialist
+- Archetype: implementer
 - Roles: implementer, qa, specialist
 - Working directory: c:\Users\DELL\getplaced.ai\.agents\worker_m4
-- Original parent: 2ada991e-5282-44e3-ac49-b7f25759972a
-- Milestone: Milestone 4 - Zone 2 & Zone 3 Components
+- Original parent: 140e9e0f-577b-4840-9424-d08967401270
+- Milestone: Requirement R4 (AI Mentor Page)
 
 ## 🔒 Key Constraints
-- Target project directory: c:\Users\DELL\getplaced.ai\dashboard-next
-- Target components:
-  1. `CareerBreakdown.tsx` (< 200 lines)
-  2. `PlacementJourney.tsx` (< 200 lines)
-  3. `PlacementTracker.tsx` (< 200 lines)
-  4. `AIMentorPreview.tsx` (< 200 lines)
-  5. `QuickActions.tsx` (< 200 lines)
-  6. `StreakXPCard.tsx` (< 200 lines)
-- All client components (`'use client'`).
-- Build must pass (`npm run build`).
+- Exclusive file ownership: `app/dashboard/mentor/page.tsx`
+- Build must pass (`npm run build`)
+- Genuine state & logic, no cheating or hardcoded mock pass
 
 ## Current Parent
-- Conversation ID: 2ada991e-5282-44e3-ac49-b7f25759972a
-- Updated: 2026-07-29T18:03:00Z
+- Conversation ID: 140e9e0f-577b-4840-9424-d08967401270
+- Updated: 2026-08-05T08:50:00Z
 
 ## Task Summary
-- **What to build**: 6 React client components for student dashboard Zone 2 & Zone 3.
-- **Success criteria**: Functional components using framer-motion, lucide-react, dashboard data types, and UI helpers; file length strictly < 200 lines each; clean build.
-
-## Key Decisions Made
-- Used Framer Motion animations for count-up metrics, progress bar fills, pulse rings, hover scale effects, and connecting stage lines.
-- Integrated all Zone 2 & 3 components cleanly into `app/dashboard/page.tsx`.
+- **What to build**: AI Mentor Page at `app/dashboard/mentor/page.tsx`
+- **Success criteria**:
+  1. Auth guard checking `cookies().get('placely_student_id')` or next/headers cookies. Redirect to `/` if missing. Note: Next.js App Router server component or client component wrapping server check / layout check.
+  2. Full chat interface with Kiro (`🤖`, `● Online`, title "Kiro — AI Mentor").
+  3. Scrollable message history with distinct bubbles (Student right `#FF7A00`, Kiro left `glass-card`).
+  4. SSE Streaming handler: send POST to `/api/mentor/chat` or `/api/chat/message`, consume SSE (`data: {"text": "..."}` or token stream), ending in `[DONE]`.
+  5. Markdown & code block formatting with copy button.
+  6. Animated 3-dot typing indicator.
+  7. Suggested question chips.
+  8. Textarea with auto-grow and Enter key handling.
+  9. Pomodoro Focus Mode overlay modal with timer controls.
 
 ## Change Tracker
-- **Files modified/created**:
-  - `components/dashboard/CareerBreakdown.tsx` (78 lines)
-  - `components/dashboard/PlacementJourney.tsx` (119 lines)
-  - `components/dashboard/PlacementTracker.tsx` (111 lines)
-  - `components/dashboard/AIMentorPreview.tsx` (79 lines)
-  - `components/dashboard/QuickActions.tsx` (56 lines)
-  - `components/dashboard/StreakXPCard.tsx` (127 lines)
-  - `app/dashboard/page.tsx` (updated layout)
-- **Build status**: `npm run build` executed
+- **Files modified**: `app/dashboard/mentor/page.tsx`
+- **Build status**: Pending
 - **Pending issues**: None
 
 ## Quality Status
-- **Build/test result**: In progress verification
-- **Lint status**: 0 violations
-- **Tests added/modified**: Integrated in Next.js page build
+- **Build/test result**: Untested
+- **Lint status**: Clean
+- **Tests added/modified**: Pending verification
 
 ## Loaded Skills
 - None

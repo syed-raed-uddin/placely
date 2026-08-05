@@ -1,60 +1,47 @@
-# BRIEFING — 2026-07-29T12:25:00Z
+# BRIEFING — 2026-08-05T08:41:00Z
 
 ## Mission
-Initialize Next.js 14 App Router project for Placely dashboard and configure design system styling.
+Implement Milestone M1 (Persistent Dashboard Layout & Main Dashboard Refactor) for Placely Student Platform.
 
 ## 🔒 My Identity
 - Archetype: implementer
 - Roles: implementer, qa, specialist
 - Working directory: c:\Users\DELL\getplaced.ai\.agents\worker_m1
-- Original parent: 2ada991e-5282-44e3-ac49-b7f25759972a
-- Milestone: Milestone 1 - Project Initialization & Design System Setup
+- Original parent: 140e9e0f-577b-4840-9424-d08967401270
+- Milestone: M1
 
 ## 🔒 Key Constraints
-- Target directory: c:\Users\DELL\getplaced.ai\dashboard-next
-- Next.js 14 App Router with TypeScript, TailwindCSS, ESLint, App Router, `@/*` import alias.
-- Install framer-motion, lucide-react, clsx, tailwind-merge.
-- Do not hardcode test results or fabricate implementation.
+- Exclusive file ownership: `app/dashboard/layout.tsx` (create), `app/dashboard/page.tsx` (refactor)
+- Do NOT modify public static files (`public/index.html`, `public/sw.js`, `public/manifest.webmanifest`, `public/dsa.html`, `public/portfolio.html`, `public/offline.html`).
+- Preserve existing working data and logic in `app/dashboard/page.tsx`.
+- All implementations must be genuine.
 
 ## Current Parent
-- Conversation ID: 2ada991e-5282-44e3-ac49-b7f25759972a
-- Updated: 2026-07-29T12:25:00Z
+- Conversation ID: 140e9e0f-577b-4840-9424-d08967401270
+- Updated: 2026-08-05T08:41:00Z
 
 ## Task Summary
-- **What to build**: Next.js 14 App Router project with Tailwind CSS setup, dark theme (#0A0A0A), glassmorphism styles, redirect page to /dashboard, and placeholder dashboard page.
-- **Success criteria**: `npm run build` succeeds cleanly with zero errors.
-- **Interface contracts**: `/` redirects to `/dashboard`, custom colors brand.orange `#FF7A00` & dark `#0A0A0A`, glass-card class.
-- **Code layout**: `c:\Users\DELL\getplaced.ai\dashboard-next`
+- **What to build**: Next.js App Router persistent dashboard layout with server cookie auth check (`placely_student_id`), sticky `<Navbar />`, container wrapper for `{children}`, and refactored `app/dashboard/page.tsx` without duplicate `<Navbar />`.
+- **Success criteria**: Clean build with `npm run build`, layout protects `/dashboard` and subroutes, Navbar persists without re-rendering across navigation.
+- **Interface contracts**: PROJECT.md, analysis.md
 
 ## Key Decisions Made
-- Initialized Next.js 14 project at `dashboard-next` using `create-next-app@14`.
-- Installed UI libraries: `framer-motion`, `lucide-react`, `clsx`, `tailwind-merge`.
-- Configured brand tokens `#0A0A0A` and `#FF7A00` in `tailwind.config.ts`.
-- Implemented `.glass-card` utility and custom dark scrollbars in `app/globals.css`.
-- Configured root layout with Inter font, dark theme background `#0A0A0A`, and viewport settings.
-- Added root page redirect to `/dashboard` in `app/page.tsx`.
-- Created interactive placeholder dashboard at `app/dashboard/page.tsx`.
-- Executed `npm run build` verifying static page generation (6/6 routes).
-
-## Artifact Index
-- `c:\Users\DELL\getplaced.ai\.agents\worker_m1\ORIGINAL_REQUEST.md` — Original request transcript
-- `c:\Users\DELL\getplaced.ai\.agents\worker_m1\progress.md` — Execution progress log
-- `c:\Users\DELL\getplaced.ai\.agents\worker_m1\handoff.md` — Final Handoff Report
+- Created `app/dashboard/layout.tsx` with server cookie auth check (`placely_student_id`) and `<Navbar />`.
+- Refactored `app/dashboard/page.tsx` to remove duplicate `<Navbar />` import/call while preserving all data mapping and component logic.
+- Built successfully with zero compilation or type errors.
 
 ## Change Tracker
-- **Files modified**:
-  - `tailwind.config.ts` - set background #0A0A0A, foreground #FFFFFF, brand colors (orange #FF7A00, dark #0A0A0A).
-  - `app/globals.css` - defined CSS variables, `.glass-card` utility, and dark webkit/firefox scrollbars.
-  - `app/layout.tsx` - Inter font configuration, dark html class, viewport setup, dark body background.
-  - `app/page.tsx` - added `redirect('/dashboard')`.
-  - `app/dashboard/page.tsx` - created placeholder dashboard page using lucide-react and glassmorphism.
-- **Build status**: PASSED (`npm run build` succeeded cleanly).
-- **Pending issues**: None.
+- **Files modified**: `app/dashboard/layout.tsx` (created), `app/dashboard/page.tsx` (refactored)
+- **Build status**: PASS (`npm run build` succeeded)
+- **Pending issues**: None
 
 ## Quality Status
 - **Build/test result**: PASS
-- **Lint status**: PASS (checked during `next build`)
-- **Tests added/modified**: Build verification passed.
+- **Lint status**: 0 errors
+- **Tests added/modified**: Verified clean build
 
 ## Loaded Skills
 - None
+
+## Artifact Index
+- c:\Users\DELL\getplaced.ai\.agents\worker_m1\handoff.md — Handoff report
