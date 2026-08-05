@@ -15,7 +15,7 @@ export default async function DashboardLayout({
   const token = cookieStore.get('placely_token')?.value;
 
   if (!studentId) {
-    redirect('/');
+    redirect('/index.html');
   }
 
   const backendData = await fetchDashboardData(studentId, token);
