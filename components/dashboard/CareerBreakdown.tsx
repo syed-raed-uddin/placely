@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Code, Server, FolderGit2, Users, LucideIcon, Sparkles } from 'lucide-react';
+import { Code, Server, FolderGit2, Users, BookOpen, LucideIcon, Sparkles } from 'lucide-react';
 import { useDashboard } from '@/components/dashboard/DashboardProvider';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import ProgressBar from '@/components/ui/ProgressBar';
@@ -11,6 +11,7 @@ const iconMap: Record<string, LucideIcon> = {
   Server,
   FolderGit2,
   Users,
+  BookOpen,
 };
 
 const getProgressColor = (percentage: number): string => {
@@ -40,7 +41,7 @@ export const CareerBreakdown: React.FC = () => {
       <h2 className="text-xl font-bold text-white tracking-tight">Career Breakdown</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {careerBreakdown.map((item) => {
-          const IconComponent = iconMap[item.icon] || Code;
+          const IconComponent = iconMap[item.icon] || BookOpen;
           const colorClass = getProgressColor(item.percentage);
           const badgeStyle = getBadgeStyle(item.status);
 
@@ -54,18 +55,9 @@ export const CareerBreakdown: React.FC = () => {
                   <div className="p-2.5 rounded-xl bg-[#FF7A00]/10 border border-[#FF7A00]/20 text-[#FF7A00]">
                     <IconComponent className="w-5 h-5" />
                   </div>
-                  <div className="flex flex-col items-end gap-1">
-                    <span
-                      className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full border ${badgeStyle}`}
-                    >
-                      {item.status}
-                    </span>
-                    {item.name !== 'Data Structures & Algo' && (
-                      <span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-white/10 text-white/40 rounded-full border border-white/5">
-                        Preview
-                      </span>
-                    )}
-                  </div>
+                  <span className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full border ${badgeStyle}`}>
+                    {item.status}
+                  </span>
                 </div>
 
                 <div>
