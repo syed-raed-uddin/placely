@@ -4,14 +4,17 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Bot, User, Sparkles, Loader2, CornerDownRight } from 'lucide-react';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://placely-backend-production.up.railway.app/api';
+// Correct endpoint: /api/chat/message (not /api/mentor/chat)
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL ||
+  'https://placely-backend-production.up.railway.app/api';
 
 const SUGGESTED_QUESTIONS = [
-  'What should I focus on today?',
-  'Explain my current topic simply',
-  'Give me a practice problem',
-  'How do I improve my weak areas?',
-  'Am I on track for placement?',
+  "What should I focus on today?",
+  "Explain my current topic simply",
+  "Give me a practice problem",
+  "How do I improve my weak areas?",
+  "Am I on track for placement?",
 ];
 
 interface Message {
@@ -21,10 +24,10 @@ interface Message {
   timestamp: Date;
 }
 
-function getClientCookie(name: string): string | null {
-  if (typeof document === 'undefined') return null;
+function getCookie(name: string): string {
+  if (typeof document === 'undefined') return '';
   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-  return match ? decodeURIComponent(match[2]) : null;
+  return match ? decodeURIComponent(match[2]) : '';
 }
 
 function formatTime(date: Date) {
@@ -36,14 +39,15 @@ export default function MentorPage() {
     {
       id: 'welcome',
       role: 'assistant',
-      content: "Hi! I'm **Kiro**, your AI Placement Mentor 🚀\n\nI'm here to help you with your coding journey, mock interviews, system design, and placement strategy. What's on your mind today?",
+      content:
+        "Hi! I'm **Kiro**, your AI Placement Mentor 🚀\n\nI'm here to help you with your coding journey, mock interviews, system design, and placement strategy. What's on your mind today?",
       timestamp: new Date(),
     },
   ]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
+  const [conversationId, setConversationId] = useState<string | undefined>(undefined);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,70 +74,100 @@ export default function MentorPage() {
     ]);
 
     try {
-      const studentId = getClientCookie('placely_student_id') || localStorage.getItem('student_id') || '';
-      const token = getClientCookie('placely_token') || localStorage.getItem('token') || '';
+      const studentId =
+        getCookie('placely_student_id') ||
+        (typeof localStorage !== 'undefined' ? localStorage.getItem('student_id') : '') ||
+        '';
+      const token =
+        getCookie('placely_token') ||
+        (typeof localStorage !== 'undefined' ? localStorage.getItem('token') : '') ||
+        '';
 
-      const res = await fetch(`${API_BASE}/mentor/chat`, {
+      // Correct endpoint: POST /api/chat/message
+      const res = await fetch(`${API_BASE}/chat/message`, {
         method: 'POST',
+        credentials: 'include', // include session cookie
         headers: {
           'Content-Type': 'application/json',
           'x-dev-student-id': studentId,
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ message: text.trim(), student_id: studentId }),
+        body: JSON.stringify({
+          message: text.trim(),
+          student_id: studentId,
+          ...(conversationId ? { conversation_id: conversationId } : {}),
+        }),
       });
 
-      if (!res.ok || !res.body) {
-        throw new Error(`API error: ${res.status}`);
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `API error: ${res.status}`);
       }
+
+      // The backend streams SSE: data: {"text": "..."}\n\n  ...  data: [DONE]
+      if (!res.body) throw new Error('No response body');
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let fullText = '';
+      let buffer = '';
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // keep incomplete line in buffer
+
         for (const line of lines) {
-          if (line.startsWith('data:')) {
-            const dataStr = line.slice(5).trim();
-            if (dataStr === '[DONE]' || !dataStr) continue;
-            try {
-              const parsed = JSON.parse(dataStr);
-              fullText += parsed.text || parsed.chunk || parsed.reply || '';
-            } catch {
-              fullText += dataStr;
-            }
-            setMessages((prev) =>
-              prev.map((m) => (m.id === assistantId ? { ...m, content: fullText } : m))
-            );
+          const trimmed = line.trim();
+          if (!trimmed.startsWith('data:')) continue;
+          const dataStr = trimmed.slice(5).trim();
+          if (!dataStr || dataStr === '[DONE]') continue;
+
+          try {
+            const parsed = JSON.parse(dataStr);
+            // Backend sends {"text": "..."} chunks
+            const chunk = parsed.text || parsed.chunk || parsed.reply || '';
+            fullText += chunk;
+          } catch {
+            // Not JSON — treat as raw text chunk
+            fullText += dataStr;
           }
+
+          setMessages((prev) =>
+            prev.map((m) => (m.id === assistantId ? { ...m, content: fullText } : m))
+          );
         }
       }
 
-      // Fallback if streaming returned nothing
+      // If we got a non-streaming JSON response (fallback)
       if (!fullText) {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId
-              ? { ...m, content: "I'm having trouble responding right now. Please try again!" }
-              : m
-          )
-        );
+        try {
+          const text2 = await res.text();
+          const parsed = JSON.parse(text2);
+          fullText = parsed.reply || parsed.text || parsed.message || '';
+        } catch { /* ignore */ }
       }
+
+      if (!fullText) {
+        fullText = "I'm having trouble responding right now. Please try again!";
+      }
+
+      setMessages((prev) =>
+        prev.map((m) => (m.id === assistantId ? { ...m, content: fullText } : m))
+      );
+
     } catch (err) {
       console.error('Mentor chat error:', err);
+      const errorMsg =
+        err instanceof Error && err.message.includes('401')
+          ? "Session expired. Please refresh the page and log in again."
+          : "Sorry, I couldn't connect right now. Please try again!";
+
       setMessages((prev) =>
         prev.map((m) =>
-          m.id === assistantId
-            ? {
-                ...m,
-                content:
-                  "Sorry, I couldn't connect to the mentor service right now. Please check your connection and try again.",
-              }
-            : m
+          m.id === assistantId ? { ...m, content: errorMsg } : m
         )
       );
     } finally {
@@ -148,7 +182,7 @@ export default function MentorPage() {
     }
   };
 
-  // Simple markdown bold renderer
+  // Render bold markdown (**text**)
   const renderContent = (text: string) => {
     const parts = text.split(/(\*\*[^*]+\*\*)/g);
     return parts.map((part, i) =>
@@ -161,7 +195,10 @@ export default function MentorPage() {
   };
 
   return (
-    <main className="max-w-4xl mx-auto p-4 md:p-8 pb-4 flex flex-col" style={{ height: 'calc(100vh - 68px)' }}>
+    <main
+      className="max-w-4xl mx-auto p-4 md:p-8 pb-4 flex flex-col"
+      style={{ height: 'calc(100vh - 68px)' }}
+    >
       {/* Header */}
       <div className="flex items-center gap-4 mb-6 shrink-0">
         <div className="relative">
@@ -189,12 +226,13 @@ export default function MentorPage() {
               transition={{ duration: 0.25 }}
               className={`flex items-end gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
             >
-              {/* Avatar */}
-              <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mb-1 ${
-                msg.role === 'user'
-                  ? 'bg-gradient-to-tr from-[#FF7A00] to-amber-400'
-                  : 'bg-white/10 border border-white/10'
-              }`}>
+              <div
+                className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mb-1 ${
+                  msg.role === 'user'
+                    ? 'bg-gradient-to-tr from-[#FF7A00] to-amber-400'
+                    : 'bg-white/10 border border-white/10'
+                }`}
+              >
                 {msg.role === 'user' ? (
                   <User className="w-4 h-4 text-white" />
                 ) : (
@@ -202,13 +240,18 @@ export default function MentorPage() {
                 )}
               </div>
 
-              {/* Bubble */}
-              <div className={`max-w-[80%] space-y-1 ${msg.role === 'user' ? 'items-end' : 'items-start'} flex flex-col`}>
-                <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                  msg.role === 'user'
-                    ? 'bg-[#FF7A00] text-white rounded-br-sm'
-                    : 'bg-white/8 border border-white/10 text-white/90 rounded-bl-sm'
-                }`}>
+              <div
+                className={`max-w-[80%] space-y-1 flex flex-col ${
+                  msg.role === 'user' ? 'items-end' : 'items-start'
+                }`}
+              >
+                <div
+                  className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                    msg.role === 'user'
+                      ? 'bg-[#FF7A00] text-white rounded-br-sm'
+                      : 'bg-white/8 border border-white/10 text-white/90 rounded-bl-sm'
+                  }`}
+                >
                   {msg.content === '' && isStreaming ? (
                     <div className="flex items-center gap-1.5 py-0.5">
                       <span className="w-1.5 h-1.5 bg-[#FF7A00] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -227,7 +270,7 @@ export default function MentorPage() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Suggested Questions */}
+      {/* Suggested Questions (shown only at start) */}
       {messages.length <= 1 && (
         <div className="shrink-0 my-4">
           <p className="text-xs text-white/40 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
@@ -252,7 +295,6 @@ export default function MentorPage() {
       {/* Input Bar */}
       <div className="shrink-0 mt-3 flex items-end gap-3 p-3 bg-white/5 border border-white/10 rounded-2xl focus-within:border-[#FF7A00]/50 transition-colors">
         <textarea
-          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -274,7 +316,9 @@ export default function MentorPage() {
           )}
         </button>
       </div>
-      <p className="text-[10px] text-white/20 text-center mt-2 shrink-0">Press Enter to send · Shift+Enter for new line</p>
+      <p className="text-[10px] text-white/20 text-center mt-2 shrink-0">
+        Press Enter to send · Shift+Enter for new line
+      </p>
     </main>
   );
 }

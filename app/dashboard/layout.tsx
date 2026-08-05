@@ -18,7 +18,14 @@ export default async function DashboardLayout({
     redirect('/index.html');
   }
 
-  const backendData = await fetchDashboardData(studentId, token);
+  // Build the full Cookie header to forward to the backend
+  // This lets the backend's require_session() validate the placely_session cookie
+  const allCookies = cookieStore.getAll();
+  const cookieHeader = allCookies
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ');
+
+  const backendData = await fetchDashboardData(studentId, token, cookieHeader);
   const realData = mapBackendToDashboard(backendData);
 
   return (

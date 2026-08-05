@@ -1,26 +1,47 @@
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL ||
+  'https://placely-backend-production.up.railway.app/api';
 
-export async function fetchDashboardData(studentId: string, token: string | undefined) {
+/**
+ * Fetch the full dashboard payload for a student.
+ * Called from Server Components — forwards the placely_session cookie
+ * so the backend's require_session() validates it, AND sends x-dev-student-id
+ * as a guaranteed bypass (the backend accepts either one).
+ */
+export async function fetchDashboardData(
+  studentId: string,
+  token?: string,
+  cookieHeader?: string,   // full Cookie: header from Next.js cookies()
+) {
   if (!studentId) return null;
   try {
     const headers: Record<string, string> = {
-      'x-dev-student-id': studentId
+      // Dev-bypass: accepted by require_session() before cookie check
+      'x-dev-student-id': studentId,
     };
+
+    // Forward raw session cookie so the backend can validate it too
+    if (cookieHeader) {
+      headers['Cookie'] = cookieHeader;
+    }
+
+    // Also include the token as a Bearer header (accepted by require_session)
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
     const res = await fetch(`${API_BASE}/dashboard/${studentId}`, {
-      // no-store for now so we see live updates
       cache: 'no-store',
-      headers
+      headers,
     });
+
     if (!res.ok) {
-      throw new Error('Failed to fetch dashboard data');
+      console.error(`Dashboard fetch failed: ${res.status} ${res.statusText}`);
+      return null;
     }
     return await res.json();
   } catch (error) {
-    console.error('Error fetching real data:', error);
+    console.error('Error fetching dashboard data:', error);
     return null;
   }
 }
