@@ -44,4 +44,4 @@ export const fetchDashboardData = cache(async (
     console.error('Error fetching dashboard data:', error);
     return null;
   }
-}
+});
