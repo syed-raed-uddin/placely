@@ -336,7 +336,7 @@ export default function MentorPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask Kiro anything..."
+          placeholder="Ask Kiro about your course, tasks, or code..."
           rows={1}
           className="flex-1 bg-transparent text-sm text-white placeholder-white/40 resize-none focus:outline-none leading-relaxed max-h-32"
           style={{ minHeight: '24px' }}
