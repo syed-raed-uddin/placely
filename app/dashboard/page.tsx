@@ -4,7 +4,6 @@ import TodaysMission from '@/components/dashboard/TodaysMission';
 import RoadmapCard from '@/components/dashboard/RoadmapCard';
 import ProjectCard from '@/components/dashboard/ProjectCard';
 import CareerBreakdown from '@/components/dashboard/CareerBreakdown';
-import PlacementJourney from '@/components/dashboard/PlacementJourney';
 import PlacementTracker from '@/components/dashboard/PlacementTracker';
 import AIMentorPreview from '@/components/dashboard/AIMentorPreview';
 import QuickActions from '@/components/dashboard/QuickActions';
@@ -37,7 +36,6 @@ export default function DashboardPage() {
         </h2>
         <div className="space-y-6">
           <CareerBreakdown />
-          <PlacementJourney />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <PlacementTracker />
             <AIMentorPreview />
