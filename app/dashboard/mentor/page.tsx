@@ -236,10 +236,7 @@ export default function MentorPage() {
   };
 
   return (
-    <main
-      className="max-w-4xl mx-auto p-4 md:p-8 pb-4 flex flex-col"
-      style={{ height: 'calc(100vh - 68px)' }}
-    >
+    <main className="flex-1 w-full max-w-4xl mx-auto p-4 md:p-8 pb-4 flex flex-col min-h-0">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6 shrink-0">
         <div className="relative">

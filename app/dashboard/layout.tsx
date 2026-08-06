@@ -30,7 +30,7 @@ export default async function DashboardLayout({
 
   return (
     <DashboardProvider initialData={realData}>
-      <div className="min-h-screen bg-[#0A0A0A] text-white selection:bg-[#FF7A00]/30 selection:text-[#FF7A00]">
+      <div className="min-h-screen flex flex-col bg-[#0A0A0A] text-white selection:bg-[#FF7A00]/30 selection:text-[#FF7A00]">
         <Navbar />
         {children}
       </div>
