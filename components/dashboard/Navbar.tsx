@@ -19,6 +19,7 @@ export const Navbar: React.FC = () => {
   const { user, notifications } = dashboardData;
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const isActive = (link: typeof NAV_LINKS[0]) =>
     link.exact ? pathname === link.href : pathname.startsWith(link.href);
@@ -73,18 +74,49 @@ export const Navbar: React.FC = () => {
           {/* Right Side */}
           <div className="flex items-center gap-3 shrink-0">
             {/* Notifications */}
-            <button
-              type="button"
-              className="relative p-2.5 rounded-full bg-white/5 border border-white/10 text-white/80 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
-              aria-label="Notifications"
-            >
-              <Bell className="w-5 h-5" />
-              {notifications.unreadCount > 0 && (
-                <span className="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-[#FF7A00] text-white text-[10px] font-bold rounded-full border border-[#0A0A0A]">
-                  {notifications.unreadCount}
-                </span>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative p-2.5 rounded-full bg-white/5 border border-white/10 text-white/80 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                aria-label="Notifications"
+              >
+                <Bell className="w-5 h-5" />
+                {notifications.unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-[#FF7A00] text-white text-[10px] font-bold rounded-full border border-[#0A0A0A]">
+                    {notifications.unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {showNotifications && (
+                <div className="absolute right-0 mt-3 w-72 bg-[#121212] border border-white/10 rounded-2xl shadow-2xl py-2 px-2 z-50">
+                  <div className="p-3 border-b border-white/10 mb-2">
+                    <h3 className="text-sm font-bold text-white">Notifications</h3>
+                  </div>
+                  <div className="px-2 py-4 text-center">
+                    <p className="text-xs text-white/60 mb-4">Stay updated on your placement journey.</p>
+                    <button
+                      onClick={() => {
+                        if ('Notification' in window) {
+                          Notification.requestPermission().then(permission => {
+                            if (permission === 'granted') {
+                              alert('Notifications enabled!');
+                            }
+                          });
+                        } else {
+                          alert('Your browser does not support notifications.');
+                        }
+                        setShowNotifications(false);
+                      }}
+                      className="w-full py-2 bg-[#FF7A00] hover:bg-[#FF7A00]/90 text-white text-xs font-semibold rounded-xl transition-all shadow-lg shadow-[#FF7A00]/20"
+                    >
+                      Enable Notifications
+                    </button>
+                  </div>
+                </div>
               )}
-            </button>
+            </div>
 
             {/* User Avatar */}
             <div className="flex items-center gap-3 pl-2 border-l border-white/10">
