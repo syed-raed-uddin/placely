@@ -12,6 +12,8 @@ import {
   Map,
   ChevronDown,
 } from 'lucide-react';
+import { CodeReviewPanel } from '@/components/dashboard/CodeReviewPanel';
+import { MarkCompletedButton } from '@/components/dashboard/MarkCompletedButton';
 
 export default async function RoadmapPage() {
   const cookieStore = cookies();
@@ -218,11 +220,14 @@ export default async function RoadmapPage() {
                             </div>
                           </div>
 
-                          {isCurrent && (
-                            <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#FF7A00]/20 border border-[#FF7A00]/40 text-[#FF7A00] text-[10px] font-bold">
-                              TODAY
-                            </span>
-                          )}
+                          <div className="flex items-center gap-3 shrink-0">
+                            {isCurrent && (
+                              <span className="px-2 py-0.5 rounded-full bg-[#FF7A00]/20 border border-[#FF7A00]/40 text-[#FF7A00] text-[10px] font-bold">
+                                TODAY
+                              </span>
+                            )}
+                            <MarkCompletedButton taskId={task.id} isCompleted={isCompleted} isCurrent={isCurrent} />
+                          </div>
                         </summary>
 
                         {/* Expanded Task Detail */}
@@ -335,6 +340,15 @@ export default async function RoadmapPage() {
                                   {task.stretch_challenge}
                                 </p>
                               </div>
+                            )}
+
+                            {/* Code Review Panel */}
+                            {(isCurrent || isCompleted) && (
+                              <CodeReviewPanel 
+                                taskId={task.id} 
+                                taskTitle={task.title} 
+                                studentId={studentId!} 
+                              />
                             )}
                           </div>
                         )}
