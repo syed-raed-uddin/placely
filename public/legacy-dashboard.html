@@ -1901,16 +1901,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       
       const data = await res.json();
-      const orderId = data.order_id || data.id || data.orderId || (data.order && data.order.id);
+      const subId = data.subscription_id || data.id || data.subscriptionId;
+      if (!subId) throw new Error("No subscription id in response");
+
       const rzpKey = data.razorpay_key_id || data.key || data.key_id;
-      
-      if (!orderId || !rzpKey) throw new Error("Invalid response from server");
+      if (!rzpKey) throw new Error("No payment key in response");
 
       const rzp = new Razorpay({
         key: rzpKey,
         amount: data.amount || PAY_AMOUNT,
         currency: data.currency || "INR",
-        order_id: orderId,
+        subscription_id: subId,
         name: "Placely",
         description: name,
         prefill: { name: DASH.student.name, contact: DASH.student.whatsapp },
