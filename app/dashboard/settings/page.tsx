@@ -8,8 +8,11 @@ export default async function SettingsPage() {
   const studentId = cookieStore.get('placely_student_id')?.value;
   const token = cookieStore.get('placely_token')?.value;
 
+  const allCookies = cookieStore.getAll();
+  const cookieHeader = allCookies.map((c) => `${c.name}=${c.value}`).join('; ');
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const backendData: any = await fetchDashboardData(studentId!, token);
+  const backendData: any = await fetchDashboardData(studentId!, token, cookieHeader);
   const student = backendData?.student || {};
   const skill = backendData?.skill || {};
   const enrollment = backendData?.enrollment || {};

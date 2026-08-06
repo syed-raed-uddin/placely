@@ -1,18 +1,18 @@
+import { cache } from 'react';
+
 export const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ||
   'https://placely-backend-production.up.railway.app/api';
 
 /**
  * Fetch the full dashboard payload for a student.
- * Called from Server Components — forwards the placely_session cookie
- * so the backend's require_session() validates it, AND sends x-dev-student-id
- * as a guaranteed bypass (the backend accepts either one).
+ * Wrapped in React.cache() to deduplicate requests across Layouts and Pages during SSR.
  */
-export async function fetchDashboardData(
+export const fetchDashboardData = cache(async (
   studentId: string,
   token?: string,
   cookieHeader?: string,   // full Cookie: header from Next.js cookies()
-) {
+) => {
   if (!studentId) return null;
   try {
     const headers: Record<string, string> = {
