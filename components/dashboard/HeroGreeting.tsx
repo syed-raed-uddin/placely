@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { useDashboard } from '@/components/dashboard/DashboardProvider';
@@ -50,13 +51,13 @@ export const HeroGreeting: React.FC = () => {
           </p>
 
           <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-4">
-            <button
-              type="button"
+            <Link
+              href="/dashboard/roadmap"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#FF7A00] hover:bg-[#FF7A00]/90 text-white font-semibold rounded-xl text-sm transition-all shadow-lg shadow-[#FF7A00]/25 hover:scale-[1.02] active:scale-[0.98]"
             >
               <span>Continue Learning</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
         </div>
 

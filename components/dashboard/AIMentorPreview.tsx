@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Bot, MessageSquare, Sparkles, ArrowRight, CornerDownRight } from 'lucide-react';
 import { useDashboard } from '@/components/dashboard/DashboardProvider';
 
@@ -62,14 +63,14 @@ export const AIMentorPreview: React.FC = () => {
       </div>
 
       {/* Continue Conversation Button */}
-      <button
-        type="button"
+      <Link
+        href="/dashboard/mentor"
         className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#FF7A00] hover:bg-[#FF7A00]/90 text-white text-xs font-semibold transition-all shadow-lg shadow-[#FF7A00]/25 hover:scale-[1.01] active:scale-[0.99]"
       >
         <MessageSquare className="w-4 h-4" />
         <span>Continue Conversation</span>
         <ArrowRight className="w-3.5 h-3.5 ml-auto" />
-      </button>
+      </Link>
     </div>
   );
 };

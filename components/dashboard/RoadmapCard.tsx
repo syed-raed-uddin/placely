@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MapPin, Calendar, ArrowRight, BookOpen } from 'lucide-react';
 import { useDashboard } from '@/components/dashboard/DashboardProvider';
@@ -71,13 +72,13 @@ export const RoadmapCard: React.FC = () => {
           <span>Est. completion: {currentRoadmap.estimatedCompletion}</span>
         </div>
 
-        <button
-          type="button"
+        <Link
+          href="/dashboard/roadmap"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FF7A00] hover:bg-[#FF7A00]/90 text-white font-semibold text-xs transition-all shadow-md shadow-[#FF7A00]/20 hover:scale-[1.02] active:scale-[0.98]"
         >
           <span>Continue Learning</span>
           <ArrowRight className="w-3.5 h-3.5" />
-        </button>
+        </Link>
       </div>
     </motion.div>
   );
