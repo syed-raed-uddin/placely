@@ -53,6 +53,47 @@ export default function MentorPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  useEffect(() => {
+    async function fetchHistory() {
+      try {
+        const studentId =
+          getCookie('placely_student_id') ||
+          (typeof localStorage !== 'undefined' ? localStorage.getItem('student_id') : '') ||
+          '';
+        const token =
+          getCookie('placely_token') ||
+          (typeof localStorage !== 'undefined' ? localStorage.getItem('token') : '') ||
+          '';
+  
+        const res = await fetch(`${API_BASE}/chat/history`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'x-dev-student-id': studentId,
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          if (data.messages && data.messages.length > 0) {
+            // Merge welcome message with loaded history
+            const loadedMessages = data.messages.map((m: any, i: number) => ({
+              id: `hist-${i}`,
+              role: m.role === 'student' ? 'user' : 'assistant', // Map backend 'kiro'/'student' to 'assistant'/'user'
+              content: m.content,
+              timestamp: new Date(m.created_at || Date.now()),
+            }));
+            setMessages(prev => [prev[0], ...loadedMessages]);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load chat history:', err);
+      }
+    }
+    fetchHistory();
+  }, []);
+
   const sendMessage = async (text: string) => {
     if (!text.trim() || isStreaming) return;
 
