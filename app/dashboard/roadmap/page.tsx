@@ -226,7 +226,7 @@ export default async function RoadmapPage() {
                                 TODAY
                               </span>
                             )}
-                            <MarkCompletedButton taskId={task.id} isCompleted={isCompleted} isCurrent={isCurrent} />
+                            <MarkCompletedButton taskId={task.id} isCompleted={isCompleted} isCurrent={isCurrent} studentId={studentId!} />
                           </div>
                         </summary>
 

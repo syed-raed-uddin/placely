@@ -9,9 +9,10 @@ interface MarkCompletedButtonProps {
   taskId: string;
   isCompleted: boolean;
   isCurrent: boolean;
+  studentId: string;
 }
 
-export function MarkCompletedButton({ taskId, isCompleted, isCurrent }: MarkCompletedButtonProps) {
+export function MarkCompletedButton({ taskId, isCompleted, isCurrent, studentId }: MarkCompletedButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(isCompleted);
@@ -34,13 +35,10 @@ export function MarkCompletedButton({ taskId, isCompleted, isCurrent }: MarkComp
 
     setLoading(true);
     try {
-      const studentId = document.cookie.split('; ').find(row => row.startsWith('placely_student_id='))?.split('=')[1] || '';
-      const token = document.cookie.split('; ').find(row => row.startsWith('placely_token='))?.split('=')[1] || '';
       const headers: Record<string, string> = { 
         'Content-Type': 'application/json',
         'x-dev-student-id': studentId 
       };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
 
       const res = await fetch(`${API_BASE}/progress/update`, {
         method: 'POST',
@@ -52,15 +50,6 @@ export function MarkCompletedButton({ taskId, isCompleted, isCurrent }: MarkComp
       if (data.success || data.active_enrollment_id || data.milestone_hit || data.message || res.ok) {
         setDone(true);
         router.refresh(); // Re-render server component to reflect new progress
-        
-        // Fire and forget: tell the backend to Kiro-generate the next day's task
-        fetch(`${API_BASE}/chat/message`, {
-          method: 'POST',
-          headers,
-          credentials: 'include',
-          body: JSON.stringify({ student_id: studentId, message: "I've completed my task for today! Can you tell me what the next task is about?" }),
-        }).catch(console.error);
-
       } else {
         alert(data.error || 'Something went wrong');
       }
