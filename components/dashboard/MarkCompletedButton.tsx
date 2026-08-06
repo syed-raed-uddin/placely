@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { API_BASE } from '@/lib/api';
 
 interface MarkCompletedButtonProps {
   taskId: string;
@@ -33,16 +34,33 @@ export function MarkCompletedButton({ taskId, isCompleted, isCurrent }: MarkComp
 
     setLoading(true);
     try {
-      const res = await fetch('/api/backend/mark-complete', {
+      const studentId = document.cookie.split('; ').find(row => row.startsWith('placely_student_id='))?.split('=')[1] || '';
+      const token = document.cookie.split('; ').find(row => row.startsWith('placely_token='))?.split('=')[1] || '';
+      const headers: Record<string, string> = { 
+        'Content-Type': 'application/json',
+        'x-dev-student-id': studentId 
+      };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`${API_BASE}/progress/update`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         credentials: 'include',
-        body: JSON.stringify({ task_id: taskId }),
+        body: JSON.stringify({ student_id: studentId, task_id: taskId, status: 'done' }),
       });
       const data = await res.json();
-      if (data.success) {
+      if (data.success || data.active_enrollment_id || data.milestone_hit || data.message || res.ok) {
         setDone(true);
         router.refresh(); // Re-render server component to reflect new progress
+        
+        // Fire and forget: tell the backend to Kiro-generate the next day's task
+        fetch(`${API_BASE}/chat/message`, {
+          method: 'POST',
+          headers,
+          credentials: 'include',
+          body: JSON.stringify({ student_id: studentId, message: "I've completed my task for today! Can you tell me what the next task is about?" }),
+        }).catch(console.error);
+
       } else {
         alert(data.error || 'Something went wrong');
       }

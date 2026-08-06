@@ -156,10 +156,10 @@ export default async function RoadmapPage() {
                   {phaseTasks.map((task: any, taskIdx: number) => {
                     const isCompleted = task.progress?.status === 'done' || task.progress?.status === 'completed';
                     const isCurrent = task.day_number === currentDay;
-                    const isLocked = task.day_number > currentDay;
+                    const isLocked = false;
                     const resources: any[] = task.resources || [];
                     const videos = resources.filter((r: any) => r.type === 'video' || (r.url && (r.url.includes('youtube') || r.url.includes('youtu.be'))));
-                    const hasContent = task.instruction || task.real_world_context || task.optional_challenge || task.stretch_challenge;
+                    const hasContent = task.instruction || task.real_world_context || task.optional_challenge || task.stretch_challenge || videos.length > 0;
 
                     return (
                       <details

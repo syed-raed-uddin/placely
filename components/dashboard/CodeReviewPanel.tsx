@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { Code2, Loader2, ChevronDown, ChevronUp, Send, AlertCircle, Sparkles } from 'lucide-react';
+import { API_BASE } from '@/lib/api';
 
 interface CodeReviewPanelProps {
   taskId: string;
@@ -39,12 +40,20 @@ export function CodeReviewPanel({ taskId, taskTitle, studentId }: CodeReviewPane
     setErrorMsg('');
 
     try {
-      const res = await fetch('/api/backend/code-review', {
+      const studentIdToken = document.cookie.split('; ').find(row => row.startsWith('placely_student_id='))?.split('=')[1] || '';
+      const token = document.cookie.split('; ').find(row => row.startsWith('placely_token='))?.split('=')[1] || '';
+      const headers: Record<string, string> = { 
+        'Content-Type': 'application/json',
+        'x-dev-student-id': studentIdToken 
+      };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`${API_BASE}/code/review`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         credentials: 'include',
         body: JSON.stringify({
-          student_id: studentId,
+          student_id: studentIdToken || studentId,
           task_id: taskId,
           code: trimmed,
         }),
