@@ -557,6 +557,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   #login-modal .pay-card { position: relative; z-index: 1; width: 100%; max-width: 480px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--line-2); border-radius: 24px; padding: 32px; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.7); }
   #login-modal .btn-primary { width: 100%; justify-content: center; margin-top: 6px; }
   #login-modal #login-code-state, #login-modal #login-error { text-align: center; padding: 18px 6px 6px; }
+  
+  /* ensure modals have enough scroll space when a dropdown is open */
+  #pay-modal:has(.cselect.open), #login-modal:has(.cselect.open) { padding-bottom: 280px; }
+
   .pay-state { display: none; text-align: center; padding: 18px 6px 6px; }
   .pay-state.show { display: block; }
   /* ---- track picker (shown when a generic CTA has no known track intent) ---- */
