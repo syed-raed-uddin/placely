@@ -2462,8 +2462,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               document.cookie = "placely_token=" + data.token + "; path=/; max-age=31536000";
             }
           } catch (ex) {}
+          
+          if (data.has_active_enrollment) {
+            window.location.href = "/dashboard";
+          } else {
+            window.location.reload();
+          }
+        } else {
+          window.location.href = "/dashboard";
         }
-        window.location.href = "/dashboard";
       } catch (err) {
         errorMsg.textContent = "Couldn't reach the server. Check your connection and try again.";
         showLoginState("error");

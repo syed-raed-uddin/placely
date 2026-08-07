@@ -26,6 +26,12 @@ export default async function DashboardLayout({
     .join('; ');
 
   const backendData = await fetchDashboardData(studentId, token, cookieHeader);
+  
+  // If the backend returns 404 (no active enrollment), redirect them to purchase
+  if (!backendData) {
+    redirect('/index.html');
+  }
+
   const realData = mapBackendToDashboard(backendData);
 
   return (
