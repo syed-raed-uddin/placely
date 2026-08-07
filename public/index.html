@@ -535,8 +535,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   @media (max-width:480px){ .form-grid{ grid-template-columns:1fr; } }
 
   /* ---- payment modal (Razorpay enrollment) ---- */
-  #pay-modal { position: fixed; inset: 0; z-index: 12000; display: none; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  #pay-modal.open { display: flex; }
+  #pay-modal { position: fixed; inset: 0; z-index: 12000; display: none; padding: 40px 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  #pay-modal.open { display: block; }
   #pay-modal .pay-overlay { position: fixed; inset: 0; background: rgba(4,6,11,0.74); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
   #pay-modal .pay-card { position: relative; z-index: 1; width: 100%; max-width: 560px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--line-2); border-radius: 24px; padding: 32px; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.7); }
   .pay-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
@@ -551,8 +551,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .pay-secure svg { width: 14px; height: 14px; }
 
   /* ---- login modal (WhatsApp OTP) — same shell/state pattern as #pay-modal ---- */
-  #login-modal { position: fixed; inset: 0; z-index: 12000; display: none; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  #login-modal.open { display: flex; }
+  #login-modal { position: fixed; inset: 0; z-index: 12000; display: none; padding: 40px 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  #login-modal.open { display: block; }
   #login-modal .pay-overlay { position: fixed; inset: 0; background: rgba(4,6,11,0.74); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
   #login-modal .pay-card { position: relative; z-index: 1; width: 100%; max-width: 480px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--line-2); border-radius: 24px; padding: 32px; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.7); }
   #login-modal .btn-primary { width: 100%; justify-content: center; margin-top: 6px; }
