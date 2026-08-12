@@ -2357,110 +2357,200 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const modal = document.getElementById("login-modal");
     if (!modal) return;
 
+    // ── DOM refs ──────────────────────────────────────────────────────────────
     const phoneForm = document.getElementById("login-phone-form");
     const codeState = document.getElementById("login-code-state");
-    const codeForm = document.getElementById("login-code-form");
+    const codeForm  = document.getElementById("login-code-form");
     const errorState = document.getElementById("login-error");
-    const errorMsg = document.getElementById("login-error-msg");
-    const codeMsg = document.getElementById("login-code-msg");
-    const sendBtn = document.getElementById("login-send-btn");
-    const verifyBtn = document.getElementById("login-verify-btn");
+    const errorMsg   = document.getElementById("login-error-msg");
+    const codeMsg    = document.getElementById("login-code-msg");
+    const sendBtn    = document.getElementById("login-send-btn");
+    const verifyBtn  = document.getElementById("login-verify-btn");
     const navLoginBtn = document.getElementById("nav-login-btn");
-    const navCtaBtn = document.getElementById("nav-cta-btn");
+    const navCtaBtn   = document.getElementById("nav-cta-btn");
 
-    // Capture original button HTML once on setup so closeLogin() can fully
-    // restore them even if the user clicks X mid-request (while the button
-    // still says "Sending…" or "Verifying…").
-    const sendBtnOriginalHTML  = sendBtn  ? sendBtn.innerHTML  : "";
-    const verifyBtnOriginalHTML = verifyBtn ? verifyBtn.innerHTML : "";
+    // Capture original button markup once at boot so any reset path can
+    // restore exactly the correct HTML even if a request is cancelled mid-flight.
+    const SEND_BTN_HTML   = sendBtn   ? sendBtn.innerHTML   : "";
+    const VERIFY_BTN_HTML = verifyBtn ? verifyBtn.innerHTML : "";
 
-    let pendingWhatsapp = null;
+    // ── Authentication state machine ──────────────────────────────────────────
+    //
+    // States:
+    //   IDLE            – modal closed, no active auth attempt
+    //   REQUESTING_OTP  – POST /api/auth/request-otp in flight
+    //   OTP_INPUT       – OTP has been sent, waiting for user to type code
+    //   VERIFYING       – POST /api/auth/verify-otp in flight
+    //   ERROR           – a recoverable error occurred (network / 4xx / 5xx)
+    //   AUTHENTICATED   – backend confirmed successful login (isAuthenticated = true)
+    //
+    // isAuthenticated is ONLY set to true by the VERIFYING → AUTHENTICATED
+    // transition. Every other path leaves it false.
+    // localStorage / cookies are ONLY written on VERIFYING → AUTHENTICATED.
+    //
+    // Valid transitions:
+    //   IDLE            → REQUESTING_OTP   (user submits phone form)
+    //   REQUESTING_OTP  → OTP_INPUT        (OTP sent successfully)
+    //   REQUESTING_OTP  → ERROR            (network / server error)
+    //   OTP_INPUT       → VERIFYING        (user submits OTP form)
+    //   VERIFYING       → AUTHENTICATED    (backend confirms login)
+    //   VERIFYING       → ERROR            (wrong/expired OTP, network, 5xx)
+    //   ERROR           → IDLE             (user clicks "Try again" or closes modal)
+    //   ERROR           → OTP_INPUT        (user clicks "Back" from OTP error)
+    //
+    // checkExistingSession() (async, page-load only) may redirect to /dashboard
+    // but ONLY when authState === "IDLE" — i.e., the user has not opened the
+    // login modal. Once the user opens Login, they own the UI.
 
-    // --- Authentication intent guard ----------------------------------------
-    // loginFlowActive is set to true the moment the user explicitly opens the
-    // login modal. While it is true, asynchronous checkExistingSession() calls
-    // MUST NOT redirect, hide any button, or modify the login UI in any way.
-    // The user's active authentication intent takes precedence over any stale
-    // session-check result that resolves after they have already started typing.
-    let loginFlowActive = false;
-    // ------------------------------------------------------------------------
-
-    const showLoginState = (which) => {
-      phoneForm.style.display = which === "phone" ? "" : "none";
-      codeState.classList.toggle("show", which === "code");
-      errorState.classList.toggle("show", which === "error");
+    const VALID_TRANSITIONS = {
+      IDLE:           ["REQUESTING_OTP"],
+      REQUESTING_OTP: ["OTP_INPUT", "ERROR"],
+      OTP_INPUT:      ["VERIFYING"],
+      VERIFYING:      ["AUTHENTICATED", "ERROR"],
+      ERROR:          ["IDLE", "OTP_INPUT"],
+      AUTHENTICATED:  [],
     };
 
+    let authState       = "IDLE";
+    let isAuthenticated = false;   // true ONLY after VERIFYING → AUTHENTICATED
+    let pendingWhatsapp = null;    // phone number for which OTP was requested
+
+    function transition(to, opts = {}) {
+      const allowed = VALID_TRANSITIONS[authState];
+      if (!allowed || !allowed.includes(to)) {
+        // Guard: ignore invalid transitions (e.g., a stale async callback
+        // trying to transition after the user has already cancelled).
+        console.warn("[auth] ignored invalid transition", authState, "→", to);
+        return false;
+      }
+      authState = to;
+
+      if (to === "AUTHENTICATED") {
+        isAuthenticated = true;
+      }
+
+      renderState(opts);
+      return true;
+    }
+
+    // ── UI renderer — derives all DOM state from authState ────────────────────
+    function renderState(opts = {}) {
+      // Phone form: visible in IDLE / REQUESTING_OTP / ERROR→IDLE recovery
+      const showPhone = authState === "IDLE" || authState === "REQUESTING_OTP";
+      phoneForm.style.display = showPhone ? "" : "none";
+
+      // OTP entry panel
+      codeState.classList.toggle("show", authState === "OTP_INPUT" || authState === "VERIFYING");
+
+      // Error panel
+      errorState.classList.toggle("show", authState === "ERROR");
+      if (authState === "ERROR" && opts.message) {
+        errorMsg.textContent = opts.message;
+      }
+
+      // Send button loading state
+      if (sendBtn) {
+        sendBtn.disabled = authState === "REQUESTING_OTP";
+        sendBtn.innerHTML = authState === "REQUESTING_OTP" ? "Sending\u2026" : SEND_BTN_HTML;
+      }
+
+      // Verify button loading state
+      if (verifyBtn) {
+        verifyBtn.disabled = authState === "VERIFYING";
+        verifyBtn.innerHTML = authState === "VERIFYING" ? "Verifying\u2026" : VERIFY_BTN_HTML;
+      }
+    }
+
+    // ── Modal open / close ────────────────────────────────────────────────────
     const openLogin = () => {
-      // The user has expressed explicit intent to authenticate.
-      // Mark the login flow as active BEFORE any UI change so that
-      // checkExistingSession() — which may still be in-flight — cannot
-      // race ahead and redirect them away.
-      loginFlowActive = true;
-      showLoginState("phone");
+      // Transition into IDLE (the starting state for the login flow).
+      // This is intentionally NOT going through transition() because IDLE
+      // is also the default state — we just need to mark the modal as open
+      // and ensure the UI is in a clean starting state.
+      authState = "IDLE";
+      isAuthenticated = false;
+      pendingWhatsapp = null;
+      renderState();
+      clearInputs();
+
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
       if (window.lenis) window.lenis.stop();
     };
-    const closeLogin = () => {
-      // 1. Release the login flow guard. checkExistingSession() is now allowed
-      //    to redirect if a fresh session check confirms a valid session, but
-      //    only on the NEXT page load — not during this close.
-      loginFlowActive = false;
 
-      // 2. Close and fully reset the modal so re-opening it is always clean.
-      //    Do NOT rely on a page refresh to restore any of this state.
+    const closeLogin = () => {
+      // Full reset: return to IDLE, clear all transient state, restore CTA.
+      // This is the ONLY exit point from the modal. It must guarantee that:
+      //   1. authState = "IDLE" (no stale REQUESTING_OTP / VERIFYING / ERROR)
+      //   2. isAuthenticated unchanged (do NOT clear a real session)
+      //   3. pendingWhatsapp cleared
+      //   4. inputs cleared (no stale phone / OTP in fields)
+      //   5. buttons restored (re-enabled + correct HTML)
+      //   6. navLoginBtn visible (Login CTA always recoverable without refresh)
+      authState = "IDLE";
+      pendingWhatsapp = null;
+      renderState();
+      clearInputs();
+
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
       if (window.lenis) window.lenis.start();
 
-      // 3. Reset the internal OTP / phone state machine back to the start.
-      pendingWhatsapp = null;
-      showLoginState("phone");
-
-      // 4. Clear the input fields so re-opening shows a blank form, not
-      //    stale phone numbers or OTP codes from a previous failed attempt.
-      try {
-        const phoneInput = document.getElementById("login-whatsapp");
-        const codeInput  = document.getElementById("login-code");
-        if (phoneInput) phoneInput.value = "";
-        if (codeInput)  codeInput.value  = "";
-      } catch (ex) { /* ignore */ }
-
-      // 5. Restore submit buttons in case they were disabled mid-request
-      //    (user clicked X while "Sending…" or "Verifying…" was running).
-      if (sendBtn)  { sendBtn.disabled  = false; sendBtn.innerHTML  = sendBtnOriginalHTML;  }
-      if (verifyBtn){ verifyBtn.disabled = false; verifyBtn.innerHTML = verifyBtnOriginalHTML; }
-
-      // 6. Restore the Login CTA unconditionally — the user must always be
-      //    able to retry after any failure without needing a page refresh.
       if (navLoginBtn) navLoginBtn.style.display = "";
     };
 
+    function clearInputs() {
+      try {
+        const pi = document.getElementById("login-whatsapp");
+        const ci = document.getElementById("login-code");
+        if (pi) pi.value = "";
+        if (ci) ci.value = "";
+      } catch (ex) { /* ignore */ }
+    }
+
+    // ── Event wiring ──────────────────────────────────────────────────────────
     if (navLoginBtn) navLoginBtn.addEventListener("click", openLogin);
 
-    // Deep link: /dashboard sends an expired/missing session here as
-    // ?login=1 so the visitor lands with the login modal already open,
-    // instead of a bare marketing page with no obvious way back in.
+    // Deep-link: /dashboard sends expired sessions here as ?login=1
     try {
       if (new URLSearchParams(window.location.search).get("login") === "1") openLogin();
     } catch (e) { /* ignore */ }
-    modal.querySelectorAll("[data-login-close]").forEach((el) => el.addEventListener("click", closeLogin));
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && modal.classList.contains("open")) closeLogin(); });
-    document.getElementById("login-back-btn").addEventListener("click", () => showLoginState("phone"));
-    document.getElementById("login-retry-btn").addEventListener("click", () => showLoginState("phone"));
 
+    modal.querySelectorAll("[data-login-close]").forEach((el) => el.addEventListener("click", closeLogin));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.classList.contains("open")) closeLogin();
+    });
+
+    // "Back" button (OTP → phone): ERROR → OTP_INPUT is not the right transition
+    // here — this is OTP_INPUT → IDLE (user wants to change phone). We reset
+    // the state machine to IDLE directly since this is a voluntary navigation.
+    document.getElementById("login-back-btn").addEventListener("click", () => {
+      authState = "IDLE";
+      pendingWhatsapp = null;
+      renderState();
+      try { const ci = document.getElementById("login-code"); if (ci) ci.value = ""; } catch (ex) {}
+    });
+
+    // "Try again" button: ERROR → IDLE (go back to phone input to retry)
+    document.getElementById("login-retry-btn").addEventListener("click", () => {
+      if (transition("IDLE")) {
+        try { const ci = document.getElementById("login-code"); if (ci) ci.value = ""; } catch (ex) {}
+      }
+    });
+
+    // ── Phone form: IDLE → REQUESTING_OTP ────────────────────────────────────
     phoneForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const whatsapp = document.getElementById("login-whatsapp").value.trim();
       if (!whatsapp) return;
+
+      // Guard: reject double-submit (IDLE is the only valid source state)
+      if (!transition("REQUESTING_OTP")) return;
+
       pendingWhatsapp = whatsapp;
 
-      sendBtn.disabled = true;
-      const original = sendBtn.innerHTML;
-      sendBtn.innerHTML = "Sending…";
       try {
         await fetch(BACKEND + "/api/auth/request-otp", {
           method: "POST",
@@ -2468,27 +2558,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ whatsapp }),
         });
-        // Deliberately generic regardless of the response: the backend
-        // never reveals whether a number has an account, so neither do we.
-        codeMsg.innerHTML = "We sent a 6-digit code to " + whatsapp + " on WhatsApp.<br><br><span style='font-size:0.9em; opacity:0.8;'>Not receiving it? Make sure to <a href='https://wa.me/919391595257?text=hi' target='_blank' style='text-decoration:underline;'>send us a message</a> first so we can reply.</span>";
-        showLoginState("code");
+        // Deliberately generic regardless of response status: the backend
+        // must never reveal whether a number has an account, so neither do we.
+        // The OTP is either delivered or silently dropped by the backend.
+        codeMsg.innerHTML =
+          "We sent a 6-digit code to " + whatsapp + " on WhatsApp.<br><br>" +
+          "<span style='font-size:0.9em; opacity:0.8;'>Not receiving it? Make sure to " +
+          "<a href='https://wa.me/919391595257?text=hi' target='_blank' style='text-decoration:underline;'>" +
+          "send us a message</a> first so we can reply.</span>";
+        transition("OTP_INPUT");
       } catch (err) {
-        errorMsg.textContent = "Couldn't reach the server. Check your connection and try again.";
-        showLoginState("error");
-      } finally {
-        sendBtn.disabled = false;
-        sendBtn.innerHTML = original;
+        // Network failure (fetch throws) → ERROR
+        transition("ERROR", { message: "Couldn't reach the server. Check your connection and try again." });
       }
+      // NOTE: no finally needed — transition() calls renderState() which
+      // re-enables / re-labels the button based on the new state.
     });
 
+    // ── OTP form: OTP_INPUT → VERIFYING → AUTHENTICATED | ERROR ──────────────
     codeForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const code = document.getElementById("login-code").value.trim();
       if (!code || !pendingWhatsapp) return;
 
-      verifyBtn.disabled = true;
-      const original = verifyBtn.innerHTML;
-      verifyBtn.innerHTML = "Verifying…";
+      // Guard: reject double-submit
+      if (!transition("VERIFYING")) return;
+
       try {
         const res = await fetch(BACKEND + "/api/auth/verify-otp", {
           method: "POST",
@@ -2496,53 +2591,59 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ whatsapp: pendingWhatsapp, code }),
         });
+
         if (!res.ok) {
+          // 4xx (invalid/expired OTP) or 5xx (server error)
+          // isAuthenticated remains false. No localStorage write.
           const body = await res.json().catch(() => ({}));
-          errorMsg.textContent = body.error || "That code is invalid or expired. Please try again.";
-          showLoginState("error");
+          transition("ERROR", {
+            message: body.error || "That code is invalid or expired. Please try again.",
+          });
           return;
         }
+
         const data = await res.json();
-        // Logging in ALWAYS means an existing paid account (verify-otp only
-        // ever succeeds for a paid student) -- so this always goes straight
-        // to the dashboard, never to a purchase flow.
+
+        // ── AUTHENTICATED: backend confirmed successful login ──────────────
+        // This is the ONLY code path that writes to localStorage and cookies.
+        // isAuthenticated is set to true inside transition("AUTHENTICATED").
         if (data && data.student_id) {
-          try { 
-            localStorage.setItem("placely_student_id", data.student_id); 
+          transition("AUTHENTICATED");
+          try {
+            localStorage.setItem("placely_student_id", data.student_id);
             document.cookie = "placely_student_id=" + data.student_id + "; path=/; max-age=31536000";
             if (data.token) {
               localStorage.setItem("placely_token", data.token);
               document.cookie = "placely_token=" + data.token + "; path=/; max-age=31536000";
             }
           } catch (ex) {}
-          
           if (data.has_active_enrollment) {
             window.location.href = "/dashboard";
           } else {
             window.location.reload();
           }
         } else {
+          // Backend returned 200 but no student_id — treat as success and redirect.
+          transition("AUTHENTICATED");
           window.location.href = "/dashboard";
         }
       } catch (err) {
-        errorMsg.textContent = "Couldn't reach the server. Check your connection and try again.";
-        showLoginState("error");
-      } finally {
-        verifyBtn.disabled = false;
-        verifyBtn.innerHTML = original;
+        // Network failure → ERROR. isAuthenticated remains false.
+        transition("ERROR", { message: "Couldn't reach the server. Check your connection and try again." });
       }
+      // No finally needed — transition() drives all button state.
     });
 
-    // On load: if this visitor already has a valid session, redirect them
-    // directly to the dashboard. The dashboard layout re-validates the full
-    // session server-side and either lets them in or bounces them back to
-    // /index.html?login=1 (which auto-opens the modal cleanly).
+    // ── Session check on page load ────────────────────────────────────────────
+    // If the visitor already has a valid server session, redirect them to
+    // /dashboard immediately. The dashboard layout server-validates the full
+    // session and bounces back to /index.html?login=1 (which auto-opens the
+    // modal) if anything is stale.
     //
-    // IMPORTANT: We deliberately do NOT hide the Login button here.
-    // The previous approach of setting navLoginBtn.style.display = "none"
-    // created a race condition: if checkExistingSession() resolved AFTER an
-    // OTP verification failure, the Login button was permanently removed from
-    // the DOM with no recovery path — trapping the user on the landing page.
+    // RACE-CONDITION GUARD: we check authState === "IDLE" before acting.
+    // If the user has already opened the Login modal (authState !== "IDLE"),
+    // we must NOT redirect, mutate the DOM, or touch any auth state.
+    // The user's active login intent owns the UI unconditionally.
     (async function checkExistingSession() {
       try {
         const token = localStorage.getItem("placely_token");
@@ -2552,28 +2653,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.logged_in) {
-          // CRITICAL GUARD: if the user has explicitly opened the Login modal,
-          // they own the UI. A stale async session-check result must NOT:
-          //   - redirect them away from an active OTP flow
-          //   - close the modal or reset their entered phone/OTP
-          //   - overwrite their current authentication intent
-          // This covers the core race: session check in-flight when user
-          // opens modal → enters phone → OTP fails → session check resolves.
-          if (loginFlowActive) return;
+          // Only act if no login flow is in progress.
+          // authState === "IDLE" means: modal closed, no user action taken.
+          if (authState !== "IDLE") return;
 
-          // Refresh cookies from localStorage (belt-and-suspenders for the
-          // dashboard layout's server-side session validation).
+          // Belt-and-suspenders: refresh cookies from localStorage so the
+          // dashboard layout's require_session() finds them server-side.
           try {
             const sid = localStorage.getItem("placely_student_id");
             if (sid) document.cookie = "placely_student_id=" + sid + "; path=/; max-age=31536000";
             if (token) document.cookie = "placely_token=" + token + "; path=/; max-age=31536000";
           } catch (ex) {}
-          // No active login flow: redirect directly. The dashboard layout
-          // server-validates the session and bounces back to /index.html?login=1
-          // if anything has gone stale, opening the modal cleanly.
           window.location.href = "/dashboard";
         }
-      } catch (e) { /* not logged in / network hiccup — leave the default purchase CTA */ }
+      } catch (e) { /* network hiccup on session check — safe to ignore */ }
     })();
   })();
 
