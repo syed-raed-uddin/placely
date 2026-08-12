@@ -184,11 +184,11 @@ export default function CareerXRayPage() {
                   <div className="text-right">
                     <div className="text-xs font-bold uppercase tracking-wider text-white/40 mb-1">Match Score</div>
                     <div className={`text-4xl font-black ${
-                        analysis.match_score >= 80 ? 'text-green-400' :
-                        analysis.match_score >= 50 ? 'text-amber-400' :
+                        (analysis.match_score ?? 50) >= 80 ? 'text-green-400' :
+                        (analysis.match_score ?? 50) >= 50 ? 'text-amber-400' :
                         'text-red-400'
                       }`}>
-                      {analysis.match_score}%
+                      {analysis.match_score ?? (analysis.overall_status === 'strong' ? 80 : analysis.overall_status === 'partial' ? 50 : 30)}%
                     </div>
                   </div>
                 </div>
@@ -198,7 +198,7 @@ export default function CareerXRayPage() {
                 <div>
                   <h3 className="text-sm font-bold text-white/50 uppercase tracking-wider mb-3">Analysis Summary</h3>
                   <p className="text-white/90 leading-relaxed bg-black/20 p-5 rounded-2xl border border-white/5">
-                    {analysis.summary}
+                    {typeof analysis.summary === 'string' ? analysis.summary : typeof analysis.ai_explanation === 'string' ? analysis.ai_explanation : 'Career X-Ray analysis complete.'}
                   </p>
                 </div>
 
@@ -208,11 +208,14 @@ export default function CareerXRayPage() {
                       Strengths
                     </h3>
                     <ul className="space-y-2">
-                      {analysis.strengths?.map((s: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-white/80 bg-green-500/5 p-3 rounded-xl border border-green-500/10">
-                          <span className="text-green-400 mt-0.5">•</span> {s}
-                        </li>
-                      ))}
+                      {analysis.strengths?.map((s: any, i: number) => {
+                        const label = typeof s === 'string' ? s : s?.requirement?.name || s?.name || 'Strength';
+                        return (
+                          <li key={i} className="flex items-start gap-2 text-sm text-white/80 bg-green-500/5 p-3 rounded-xl border border-green-500/10">
+                            <span className="text-green-400 mt-0.5">•</span> {label}
+                          </li>
+                        );
+                      })}
                       {!analysis.strengths?.length && <li className="text-white/40 text-sm">No major strengths identified yet.</li>}
                     </ul>
                   </div>
@@ -222,11 +225,14 @@ export default function CareerXRayPage() {
                       Gaps
                     </h3>
                     <ul className="space-y-2">
-                      {analysis.gaps?.map((g: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-white/80 bg-red-500/5 p-3 rounded-xl border border-red-500/10">
-                          <span className="text-red-400 mt-0.5">•</span> {g}
-                        </li>
-                      ))}
+                      {analysis.gaps?.map((g: any, i: number) => {
+                        const label = typeof g === 'string' ? g : g?.requirement?.name || g?.name || 'Gap';
+                        return (
+                          <li key={i} className="flex items-start gap-2 text-sm text-white/80 bg-red-500/5 p-3 rounded-xl border border-red-500/10">
+                            <span className="text-red-400 mt-0.5">•</span> {label}
+                          </li>
+                        );
+                      })}
                       {!analysis.gaps?.length && <li className="text-white/40 text-sm">No major gaps identified!</li>}
                     </ul>
                   </div>
@@ -236,14 +242,17 @@ export default function CareerXRayPage() {
                   <div>
                     <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-wider mb-3 mt-4">Action Plan</h3>
                     <div className="space-y-2">
-                      {analysis.recommendations.map((r: string, i: number) => (
-                        <div key={i} className="flex items-center gap-3 p-4 bg-cyan-500/5 border border-cyan-500/10 rounded-xl text-white/90 text-sm">
-                          <div className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold shrink-0">
-                            {i + 1}
+                      {analysis.recommendations.map((r: any, i: number) => {
+                        const recText = typeof r === 'string' ? r : r?.title || r?.name || String(r);
+                        return (
+                          <div key={i} className="flex items-center gap-3 p-4 bg-cyan-500/5 border border-cyan-500/10 rounded-xl text-white/90 text-sm">
+                            <div className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold shrink-0">
+                              {i + 1}
+                            </div>
+                            {recText}
                           </div>
-                          {r}
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}
