@@ -2368,7 +2368,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const navLoginBtn = document.getElementById("nav-login-btn");
     const navCtaBtn = document.getElementById("nav-cta-btn");
 
+    // Capture original button HTML once on setup so closeLogin() can fully
+    // restore them even if the user clicks X mid-request (while the button
+    // still says "Sending…" or "Verifying…").
+    const sendBtnOriginalHTML  = sendBtn  ? sendBtn.innerHTML  : "";
+    const verifyBtnOriginalHTML = verifyBtn ? verifyBtn.innerHTML : "";
+
     let pendingWhatsapp = null;
+
+    // --- Authentication intent guard ----------------------------------------
+    // loginFlowActive is set to true the moment the user explicitly opens the
+    // login modal. While it is true, asynchronous checkExistingSession() calls
+    // MUST NOT redirect, hide any button, or modify the login UI in any way.
+    // The user's active authentication intent takes precedence over any stale
+    // session-check result that resolves after they have already started typing.
+    let loginFlowActive = false;
+    // ------------------------------------------------------------------------
 
     const showLoginState = (which) => {
       phoneForm.style.display = which === "phone" ? "" : "none";
@@ -2377,6 +2392,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     };
 
     const openLogin = () => {
+      // The user has expressed explicit intent to authenticate.
+      // Mark the login flow as active BEFORE any UI change so that
+      // checkExistingSession() — which may still be in-flight — cannot
+      // race ahead and redirect them away.
+      loginFlowActive = true;
       showLoginState("phone");
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
@@ -2384,14 +2404,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (window.lenis) window.lenis.stop();
     };
     const closeLogin = () => {
+      // 1. Release the login flow guard. checkExistingSession() is now allowed
+      //    to redirect if a fresh session check confirms a valid session, but
+      //    only on the NEXT page load — not during this close.
+      loginFlowActive = false;
+
+      // 2. Close and fully reset the modal so re-opening it is always clean.
+      //    Do NOT rely on a page refresh to restore any of this state.
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
       if (window.lenis) window.lenis.start();
-      // Safety net: always restore the Login button when the modal closes.
-      // checkExistingSession() may have hidden it asynchronously before we
-      // knew the OTP was going to fail — we must ensure there is always a
-      // re-entry point into the login flow, regardless of async resolution order.
+
+      // 3. Reset the internal OTP / phone state machine back to the start.
+      pendingWhatsapp = null;
+      showLoginState("phone");
+
+      // 4. Clear the input fields so re-opening shows a blank form, not
+      //    stale phone numbers or OTP codes from a previous failed attempt.
+      try {
+        const phoneInput = document.getElementById("login-whatsapp");
+        const codeInput  = document.getElementById("login-code");
+        if (phoneInput) phoneInput.value = "";
+        if (codeInput)  codeInput.value  = "";
+      } catch (ex) { /* ignore */ }
+
+      // 5. Restore submit buttons in case they were disabled mid-request
+      //    (user clicked X while "Sending…" or "Verifying…" was running).
+      if (sendBtn)  { sendBtn.disabled  = false; sendBtn.innerHTML  = sendBtnOriginalHTML;  }
+      if (verifyBtn){ verifyBtn.disabled = false; verifyBtn.innerHTML = verifyBtnOriginalHTML; }
+
+      // 6. Restore the Login CTA unconditionally — the user must always be
+      //    able to retry after any failure without needing a page refresh.
       if (navLoginBtn) navLoginBtn.style.display = "";
     };
 
@@ -2508,6 +2552,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.logged_in) {
+          // CRITICAL GUARD: if the user has explicitly opened the Login modal,
+          // they own the UI. A stale async session-check result must NOT:
+          //   - redirect them away from an active OTP flow
+          //   - close the modal or reset their entered phone/OTP
+          //   - overwrite their current authentication intent
+          // This covers the core race: session check in-flight when user
+          // opens modal → enters phone → OTP fails → session check resolves.
+          if (loginFlowActive) return;
+
           // Refresh cookies from localStorage (belt-and-suspenders for the
           // dashboard layout's server-side session validation).
           try {
@@ -2515,9 +2568,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (sid) document.cookie = "placely_student_id=" + sid + "; path=/; max-age=31536000";
             if (token) document.cookie = "placely_token=" + token + "; path=/; max-age=31536000";
           } catch (ex) {}
-          // Redirect to the dashboard. Do NOT mutate navLoginBtn.style.display —
-          // that mutation is irreversible and races against any in-progress login
-          // attempt on this page.
+          // No active login flow: redirect directly. The dashboard layout
+          // server-validates the session and bounces back to /index.html?login=1
+          // if anything has gone stale, opening the modal cleanly.
           window.location.href = "/dashboard";
         }
       } catch (e) { /* not logged in / network hiccup — leave the default purchase CTA */ }
