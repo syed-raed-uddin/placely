@@ -2388,6 +2388,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       modal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
       if (window.lenis) window.lenis.start();
+      // Safety net: always restore the Login button when the modal closes.
+      // checkExistingSession() may have hidden it asynchronously before we
+      // knew the OTP was going to fail — we must ensure there is always a
+      // re-entry point into the login flow, regardless of async resolution order.
+      if (navLoginBtn) navLoginBtn.style.display = "";
     };
 
     if (navLoginBtn) navLoginBtn.addEventListener("click", openLogin);
@@ -2484,9 +2489,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     });
 
-    // On load: if this visitor already has a valid session, don't dangle a
-    // "Start learning" purchase CTA in front of them -- send them to their
-    // dashboard instead, and hide the redundant "Log in" button.
+    // On load: if this visitor already has a valid session, redirect them
+    // directly to the dashboard. The dashboard layout re-validates the full
+    // session server-side and either lets them in or bounces them back to
+    // /index.html?login=1 (which auto-opens the modal cleanly).
+    //
+    // IMPORTANT: We deliberately do NOT hide the Login button here.
+    // The previous approach of setting navLoginBtn.style.display = "none"
+    // created a race condition: if checkExistingSession() resolved AFTER an
+    // OTP verification failure, the Login button was permanently removed from
+    // the DOM with no recovery path — trapping the user on the landing page.
     (async function checkExistingSession() {
       try {
         const token = localStorage.getItem("placely_token");
@@ -2496,18 +2508,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.logged_in) {
+          // Refresh cookies from localStorage (belt-and-suspenders for the
+          // dashboard layout's server-side session validation).
           try {
             const sid = localStorage.getItem("placely_student_id");
             if (sid) document.cookie = "placely_student_id=" + sid + "; path=/; max-age=31536000";
             if (token) document.cookie = "placely_token=" + token + "; path=/; max-age=31536000";
           } catch (ex) {}
-          
-          if (navLoginBtn) navLoginBtn.style.display = "none";
-          if (navCtaBtn) {
-            navCtaBtn.removeAttribute("data-pay");
-            navCtaBtn.href = "/dashboard";
-            navCtaBtn.innerHTML = "My Dashboard" + navCtaBtn.innerHTML.replace(/^[^<]*/, "");
-          }
+          // Redirect to the dashboard. Do NOT mutate navLoginBtn.style.display —
+          // that mutation is irreversible and races against any in-progress login
+          // attempt on this page.
+          window.location.href = "/dashboard";
         }
       } catch (e) { /* not logged in / network hiccup — leave the default purchase CTA */ }
     })();
