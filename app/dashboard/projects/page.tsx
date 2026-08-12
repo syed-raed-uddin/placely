@@ -10,6 +10,7 @@ import {
   Sparkles,
   Trophy,
 } from 'lucide-react';
+import TrackProjectCard from '@/components/dashboard/TrackProjectCard';
 
 function difficultyColor(difficulty: string) {
   const d = (difficulty || '').toLowerCase();
@@ -28,8 +29,8 @@ export default async function ProjectsPage() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const backendData: any = await fetchDashboardData(studentId!, token, cookieHeader);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const projects: any[] = backendData?.recommended_projects || [];
+  const student_projects: any[] = backendData?.student_projects || [];
   const skill = backendData?.skill || {};
   const enrollment = backendData?.enrollment || {};
 
@@ -65,69 +66,11 @@ export default async function ProjectsPage() {
       ) : (
         <>
           {/* Hero Project (first one) */}
-          <div className="relative bg-gradient-to-br from-[#FF7A00]/10 via-white/5 to-transparent border border-[#FF7A00]/30 rounded-3xl p-6 md:p-8 overflow-hidden">
-            {/* Background glow */}
-            <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#FF7A00]/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="relative space-y-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs uppercase tracking-wider font-bold text-[#FF7A00]">
-                      ⭐ Recommended for You
-                    </span>
-                  </div>
-                  <h2 className="text-2xl font-extrabold text-white leading-tight">
-                    {projects[0].title}
-                  </h2>
-                </div>
-                <div className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border capitalize ${difficultyColor(projects[0].difficulty)}`}>
-                  {projects[0].difficulty || 'Intermediate'}
-                </div>
-              </div>
-
-              {projects[0].description && (
-                <p className="text-white/70 text-sm leading-relaxed">
-                  {projects[0].description}
-                </p>
-              )}
-
-              <div className="flex items-center gap-4 text-xs text-white/50">
-                {projects[0].estimated_hours && (
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5" />
-                    ~{projects[0].estimated_hours}h to build
-                  </span>
-                )}
-                <span className="flex items-center gap-1.5">
-                  <Zap className="w-3.5 h-3.5 text-[#FF7A00]" />
-                  Portfolio-ready
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3 pt-2">
-                {projects[0].github_starter_url ? (
-                  <a
-                    href={projects[0].github_starter_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FF7A00] hover:bg-[#FF7A00]/90 text-white font-semibold text-sm transition-all shadow-lg shadow-[#FF7A00]/25 hover:scale-[1.02] active:scale-[0.99]"
-                  >
-                    <GitBranch className="w-4 h-4" />
-                    Start Project
-                  </a>
-                ) : (
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FF7A00] hover:bg-[#FF7A00]/90 text-white font-semibold text-sm transition-all shadow-lg shadow-[#FF7A00]/25"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Start Project
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+          <TrackProjectCard 
+            project={projects[0]} 
+            studentProject={student_projects.find((sp: any) => sp.project_id === projects[0].id)} 
+            isHero={true} 
+          />
 
           {/* Other Projects */}
           {projects.length > 1 && (
@@ -135,54 +78,11 @@ export default async function ProjectsPage() {
               <h2 className="text-sm font-bold text-white/60 uppercase tracking-wider">More Projects</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {projects.slice(1).map((project: any, idx: number) => (
-                  <div
+                  <TrackProjectCard 
                     key={project.id || idx}
-                    className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4 hover:border-white/20 transition-all group"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="w-10 h-10 rounded-xl bg-[#FF7A00]/10 border border-[#FF7A00]/20 flex items-center justify-center shrink-0">
-                        <FolderGit2 className="w-5 h-5 text-[#FF7A00]" />
-                      </div>
-                      <span className={`text-[10px] font-bold border px-2 py-0.5 rounded-full capitalize ${difficultyColor(project.difficulty)}`}>
-                        {project.difficulty || 'Intermediate'}
-                      </span>
-                    </div>
-
-                    <div className="space-y-1">
-                      <h3 className="font-bold text-white text-sm group-hover:text-[#FF7A00] transition-colors">
-                        {project.title}
-                      </h3>
-                      {project.description && (
-                        <p className="text-xs text-white/50 line-clamp-2 leading-relaxed">
-                          {project.description}
-                        </p>
-                      )}
-                    </div>
-
-                    {project.estimated_hours && (
-                      <div className="flex items-center gap-1.5 text-xs text-white/40">
-                        <Clock className="w-3 h-3" />
-                        ~{project.estimated_hours}h
-                      </div>
-                    )}
-
-                    {project.github_starter_url ? (
-                      <a
-                        href={project.github_starter_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF7A00] hover:text-amber-400 transition-colors"
-                      >
-                        <GitBranch className="w-3.5 h-3.5" />
-                        View Starter Code
-                      </a>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 text-xs text-white/30">
-                        <Lock className="w-3 h-3" />
-                        Starter code coming soon
-                      </span>
-                    )}
-                  </div>
+                    project={project}
+                    studentProject={student_projects.find((sp: any) => sp.project_id === project.id)}
+                  />
                 ))}
               </div>
             </div>

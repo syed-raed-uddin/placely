@@ -110,10 +110,12 @@ export interface DashboardData {
   streak: StreakInfo;
   xp: XPInfo;
   notifications: NotificationInfo;
+  isPro?: boolean;
 }
 
 export const dashboardData: DashboardData = {
   user: { name: "Syed Raed", avatar: "/avatar.png", initials: "SR" },
+  isPro: false,
   careerReadiness: { score: 78, nextMilestone: "Mock Interview Round 2" },
   todayTasks: [
     { id: "task-1", title: "Solve 3 Hard Graph DP Problems on LeetCode", estimatedTime: "45 mins", xpReward: 150, priority: "High", completed: false, subProgress: 66 },

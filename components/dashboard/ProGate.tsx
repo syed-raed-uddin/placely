@@ -1,0 +1,91 @@
+'use client';
+
+import React from 'react';
+import { useDashboard } from './DashboardProvider';
+import { Lock, Sparkles, Code2, Target, Trophy } from 'lucide-react';
+
+interface ProGateProps {
+  children: React.ReactNode;
+  featureName: string;
+}
+
+export default function ProGate({ children, featureName }: ProGateProps) {
+  const { data, loading } = useDashboard();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#FF7A00]"></div>
+      </div>
+    );
+  }
+
+  if (data.isPro) {
+    return <>{children}</>;
+  }
+
+  return (
+    <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm p-8 max-w-4xl mx-auto my-8">
+      {/* Background glow effects */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-lg bg-[#FF7A00]/20 blur-[100px] pointer-events-none rounded-full" />
+      
+      <div className="relative z-10 flex flex-col items-center text-center space-y-6">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF7A00] to-[#E66A00] flex items-center justify-center shadow-lg shadow-[#FF7A00]/25">
+          <Lock className="w-8 h-8 text-white" />
+        </div>
+        
+        <div className="space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight text-white flex items-center justify-center gap-2">
+            Unlock {featureName}
+            <Sparkles className="w-6 h-6 text-[#FF7A00]" />
+          </h2>
+          <p className="text-gray-400 max-w-lg mx-auto text-lg">
+            This feature requires Placely Pro. Upgrade today to supercharge your placement preparation.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mt-8">
+          <div className="bg-black/40 border border-white/5 rounded-xl p-4 flex flex-col items-center text-center gap-3">
+            <div className="p-3 bg-blue-500/10 rounded-lg">
+              <Code2 className="w-6 h-6 text-blue-400" />
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-200">Unlimited DSA</h4>
+              <p className="text-sm text-gray-500">Practice 500+ curated questions</p>
+            </div>
+          </div>
+          
+          <div className="bg-black/40 border border-white/5 rounded-xl p-4 flex flex-col items-center text-center gap-3">
+            <div className="p-3 bg-[#FF7A00]/10 rounded-lg">
+              <Target className="w-6 h-6 text-[#FF7A00]" />
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-200">AI Code Mentor</h4>
+              <p className="text-sm text-gray-500">Get instant, personalized feedback</p>
+            </div>
+          </div>
+          
+          <div className="bg-black/40 border border-white/5 rounded-xl p-4 flex flex-col items-center text-center gap-3">
+            <div className="p-3 bg-purple-500/10 rounded-lg">
+              <Trophy className="w-6 h-6 text-purple-400" />
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-200">Global Battles</h4>
+              <p className="text-sm text-gray-500">Compete with peers worldwide</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-6 w-full flex justify-center">
+          <a
+            href="#"
+            className="group relative inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold text-white transition-all duration-200 bg-[#FF7A00] border border-transparent rounded-full hover:bg-[#E66A00] hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF7A00] focus:ring-offset-gray-900"
+          >
+            Upgrade to Placely Pro — ₹499/mo
+            <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[#FF7A00] to-[#FF9E40] opacity-20 group-hover:opacity-40 blur transition duration-200"></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}

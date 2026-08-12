@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { fetchDashboardData } from '@/lib/api';
+import { fetchDashboardData, fetchSubscriptionStatus } from '@/lib/api';
 import { mapBackendToDashboard } from '@/lib/mapBackendToDashboard';
 import { DashboardProvider } from '@/components/dashboard/DashboardProvider';
 import Navbar from '@/components/dashboard/Navbar';
@@ -26,6 +26,7 @@ export default async function DashboardLayout({
     .join('; ');
 
   const backendData = await fetchDashboardData(studentId, token, cookieHeader);
+  const subscriptionData = await fetchSubscriptionStatus(cookieHeader);
   
   // If the backend returns 404 (no active enrollment), redirect them to purchase
   if (!backendData) {
@@ -33,6 +34,7 @@ export default async function DashboardLayout({
   }
 
   const realData = mapBackendToDashboard(backendData);
+  realData.isPro = subscriptionData?.is_pro || false;
 
   return (
     <DashboardProvider initialData={realData}>
