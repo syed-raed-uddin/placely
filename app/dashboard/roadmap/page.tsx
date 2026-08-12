@@ -24,7 +24,9 @@ export default async function RoadmapPage() {
   const cookieHeader = allCookies.map((c) => `${c.name}=${c.value}`).join('; ');
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const backendData: any = await fetchDashboardData(studentId!, token, cookieHeader);
+  const dashResult = await fetchDashboardData(studentId!, token, cookieHeader);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const backendData: any = dashResult.data;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const phases: any[] = backendData?.phases || [];
   const skill = backendData?.skill || { name: 'Learning Track', total_days: 0 };

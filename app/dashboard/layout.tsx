@@ -25,13 +25,36 @@ export default async function DashboardLayout({
     .map((c) => `${c.name}=${c.value}`)
     .join('; ');
 
-  const backendData = await fetchDashboardData(studentId, token, cookieHeader);
-  const subscriptionData = await fetchSubscriptionStatus(cookieHeader);
+  const result = await fetchDashboardData(studentId, token, cookieHeader);
+  const { data: backendData, status, error: errorMsg, isProRequired } = result;
   
-  // If the backend returns 404 (no active enrollment), redirect them to purchase
-  if (!backendData) {
+  // Explicit HTTP status handling:
+  // 401: Session unauthenticated or expired -> redirect to login
+  if (status === 401) {
+    redirect('/index.html?login=1');
+  }
+
+  // 403: Distinguish identity/session mismatch vs PRO_REQUIRED feature access
+  if (status === 403) {
+    if (!isProRequired) {
+      // Identity or student ownership mismatch -> redirect to login
+      redirect('/index.html?login=1');
+    }
+    // If isProRequired is true, DO NOT redirect to login!
+    // The session is valid; preserving session lets ProGate render the ₹499/mo upgrade CTA.
+  }
+
+  // 404: Student has no active enrollment -> redirect to purchase/onboarding
+  if (status === 404) {
     redirect('/index.html');
   }
+
+  // 500+ / 0 (Network error): Server issue -> render app/dashboard/error.tsx (NO redirect)
+  if (status >= 500 || status === 0 || (!backendData && !isProRequired)) {
+    throw new Error(errorMsg || `Backend server unavailable (HTTP ${status})`);
+  }
+
+  const subscriptionData = await fetchSubscriptionStatus(cookieHeader);
 
   const realData = mapBackendToDashboard(backendData);
   realData.isPro = subscriptionData?.is_pro || false;

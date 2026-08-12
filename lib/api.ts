@@ -47,6 +47,13 @@ export async function apiClient<T>(
   }
 }
 
+export interface DashboardFetchResult {
+  data: any | null;
+  status: number;
+  error?: string;
+  isProRequired?: boolean;
+}
+
 /**
  * Fetch the full dashboard payload for a student.
  * Wrapped in React.cache() to deduplicate requests across Layouts and Pages during SSR.
@@ -55,8 +62,8 @@ export const fetchDashboardData = cache(async (
   studentId: string,
   token?: string,
   cookieHeader?: string,
-) => {
-  if (!studentId) return null;
+): Promise<DashboardFetchResult> => {
+  if (!studentId) return { data: null, status: 401, error: 'No student ID' };
   try {
     const headers: Record<string, string> = {
       'x-dev-student-id': studentId,
@@ -77,12 +84,26 @@ export const fetchDashboardData = cache(async (
 
     if (!res.ok) {
       console.error(`Dashboard fetch failed: ${res.status} ${res.statusText}`);
-      return null;
+      let errorMsg = res.statusText;
+      let isProRequired = false;
+      try {
+        const errJson = await res.json();
+        errorMsg = errJson.error || errJson.message || errorMsg;
+        if (
+          errJson.error === 'PRO_REQUIRED' ||
+          (typeof errorMsg === 'string' && errorMsg.includes('PRO_REQUIRED'))
+        ) {
+          isProRequired = true;
+        }
+      } catch (_) {}
+      return { data: null, status: res.status, error: errorMsg, isProRequired };
     }
-    return await res.json();
+
+    const data = await res.json();
+    return { data, status: res.status };
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
-    return null;
+    return { data: null, status: 0, error: String(error) };
   }
 });
 
