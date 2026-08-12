@@ -20,9 +20,33 @@ export async function apiClient<T>(
     headers.set('Content-Type', 'application/json');
   }
 
-  // To forward cookies in SSR, Server Components must explicitly pass them in options.headers
-  // Client fetches will automatically include them if credentials: 'include' is set or if same-origin.
-  
+  // Client-side auth header injection for cross-origin backend requests
+  if (typeof window !== 'undefined') {
+    if (!headers.has('Authorization')) {
+      const token =
+        localStorage.getItem('placely_token') ||
+        document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('placely_token='))
+          ?.split('=')[1];
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+    }
+
+    if (!headers.has('x-dev-student-id')) {
+      const studentId =
+        localStorage.getItem('placely_student_id') ||
+        document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('placely_student_id='))
+          ?.split('=')[1];
+      if (studentId) {
+        headers.set('x-dev-student-id', studentId);
+      }
+    }
+  }
+
   const res = await fetch(url, {
     credentials: 'include',
     ...options,
@@ -43,7 +67,7 @@ export async function apiClient<T>(
   try {
     return await res.json() as T;
   } catch (e) {
-    throw new Error('Failed to parse API response');
+    return {} as T;
   }
 }
 
@@ -118,6 +142,14 @@ export const fetchSubscriptionStatus = cache(async (
 
     if (cookieHeader) {
       headers['Cookie'] = cookieHeader;
+      const matchId = cookieHeader.match(/placely_student_id=([^;]+)/);
+      if (matchId && matchId[1]) {
+        headers['x-dev-student-id'] = matchId[1];
+      }
+      const matchToken = cookieHeader.match(/placely_token=([^;]+)/);
+      if (matchToken && matchToken[1]) {
+        headers['Authorization'] = `Bearer ${matchToken[1]}`;
+      }
     }
 
     const res = await fetch(`${API_BASE}/subscription`, {

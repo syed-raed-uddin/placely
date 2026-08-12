@@ -248,8 +248,8 @@ export default function MentorPage() {
           <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#0A0A0A] rounded-full" />
         </div>
         <div>
-          <h1 className="text-xl font-extrabold text-white tracking-tight">Kiro — AI Mentor</h1>
-          <p className="text-xs text-emerald-400 font-medium">● Online · 24/7 Placement Advisor</p>
+          <h1 className="text-xl font-extrabold text-white tracking-tight">Kiro — Your AI Placement Mentor</h1>
+          <p className="text-xs text-white/60 font-medium">Get personalized guidance based on your roadmap, projects, DSA progress, and placement goals.</p>
         </div>
       </div>
 
