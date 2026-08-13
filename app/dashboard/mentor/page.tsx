@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Bot, User, Sparkles, Loader2, CornerDownRight } from 'lucide-react';
+import AITransparencyBadge from '@/components/ui/AITransparencyBadge';
 
 // Correct endpoint: /api/chat/message (not /api/mentor/chat)
 const API_BASE =
@@ -248,8 +249,14 @@ export default function MentorPage() {
           <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#0A0A0A] rounded-full" />
         </div>
         <div>
-          <h1 className="text-xl font-extrabold text-white tracking-tight">Kiro — Your AI Placement Mentor</h1>
-          <p className="text-xs text-white/60 font-medium">Get personalized guidance based on your roadmap, projects, DSA progress, and placement goals.</p>
+          <h1 className="text-xl font-bold text-white flex items-center gap-2">
+            Kiro — Your AI Placement Mentor
+            <Sparkles className="w-4 h-4 text-[#FF7A00]" />
+          </h1>
+          <p className="text-xs text-gray-400">
+            Get personalized guidance based on your roadmap, projects, DSA progress, and placement goals.
+          </p>
+          <AITransparencyBadge compact className="mt-1.5" />
         </div>
       </div>
 

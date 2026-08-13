@@ -7,9 +7,10 @@ import { Lock, Sparkles, Code2, Target, Trophy } from 'lucide-react';
 interface ProGateProps {
   children: React.ReactNode;
   featureName: string;
+  requiredPlan?: 'pro' | 'advanced';
 }
 
-export default function ProGate({ children, featureName }: ProGateProps) {
+export default function ProGate({ children, featureName, requiredPlan = 'pro' }: ProGateProps) {
   const { data, loading } = useDashboard();
 
   if (loading) {
@@ -20,17 +21,29 @@ export default function ProGate({ children, featureName }: ProGateProps) {
     );
   }
 
-  if (data.isPro) {
+  const userPlan = data?.userPlan || (data?.isPro ? 'pro' : 'basic');
+  const hasAccess = requiredPlan === 'advanced' 
+    ? userPlan === 'advanced'
+    : (data?.isPro || userPlan === 'pro' || userPlan === 'advanced');
+
+  if (hasAccess) {
     return <>{children}</>;
   }
 
+  const isAdvanced = requiredPlan === 'advanced';
   const isDsa = featureName.includes('DSA');
 
-  const title = isDsa ? 'Master DSA for Technical Interviews' : `Unlock ${featureName}`;
+  const title = isDsa 
+    ? 'Master DSA for Technical Interviews' 
+    : `Unlock ${featureName}`;
   const subtitle = isDsa
     ? 'Build problem-solving ability through a structured DSA system designed around the skills companies actually test.'
-    : 'This feature requires Placely Pro. Upgrade today to supercharge your placement preparation.';
-  const ctaText = isDsa ? 'Unlock Full DSA — ₹499/month' : 'Upgrade to Placely Pro — ₹499/mo';
+    : `This feature requires Placely ${isAdvanced ? 'Advanced' : 'Pro'}. Upgrade today to supercharge your placement preparation.`;
+  const ctaText = isDsa 
+    ? 'Unlock Full DSA — ₹499/month' 
+    : isAdvanced 
+      ? `Upgrade to Placely Advanced — ₹999/mo` 
+      : 'Upgrade to Placely Pro — ₹499/mo';
 
   const cards = isDsa
     ? [

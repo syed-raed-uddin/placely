@@ -86,6 +86,21 @@ assert(
   'T9: Pro entitlement logic & ₹499 pricing preserved'
 );
 
+// T10: 3-tier entitlement hierarchy supported in backend (Basic, Pro, Advanced)
+assert(
+  backendProCode.includes('get_student_plan') &&
+  backendProCode.includes('has_access') &&
+  backendProCode.includes('require_advanced'),
+  'T10: Backend services/pro.py implements unified 3-tier entitlement hierarchy (Basic, Pro, Advanced)'
+);
+
+// T11: Frontend ProGate supports requiredPlan prop and ₹999/mo Advanced CTA
+assert(
+  proGateCode.includes('requiredPlan') &&
+  proGateCode.includes('999'),
+  'T11: ProGate supports requiredPlan="pro" | "advanced" and ₹999/mo CTA for Advanced tier'
+);
+
 console.log(`\n================================================`);
 console.log(`RESULTS: ${passed} PASSED, ${failed} FAILED.`);
 

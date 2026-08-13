@@ -21,6 +21,11 @@ export function mapBackendToDashboard(backendData: any): DashboardData {
   if (!backendData) return merged;
 
   try {
+    // ── 0. Plan & Entitlement ─────────────────────────────────────────────
+    const plan = backendData.user_plan || (backendData.is_pro ? 'pro' : 'basic');
+    merged.userPlan = plan;
+    merged.isPro = backendData.is_pro || plan === 'pro' || plan === 'advanced';
+
     // ── 1. Student name & initials ────────────────────────────────────────
     if (backendData.student) {
       const name: string = backendData.student.name || '';

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api';
 import { Target, Loader2, Play, Search, BrainCircuit, Activity } from 'lucide-react';
 import Link from 'next/link';
+import AITransparencyBadge from '@/components/ui/AITransparencyBadge';
 
 export default function CareerXRayPage() {
   const router = useRouter();
@@ -200,6 +201,7 @@ export default function CareerXRayPage() {
                   <p className="text-white/90 leading-relaxed bg-black/20 p-5 rounded-2xl border border-white/5">
                     {typeof analysis.summary === 'string' ? analysis.summary : typeof analysis.ai_explanation === 'string' ? analysis.ai_explanation : 'Career X-Ray analysis complete.'}
                   </p>
+                  <AITransparencyBadge className="mt-3" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Code2, Loader2, ChevronDown, ChevronUp, Send, AlertCircle, Sparkles } from 'lucide-react';
 import { API_BASE } from '@/lib/api';
+import AITransparencyBadge from '@/components/ui/AITransparencyBadge';
 
 interface CodeReviewPanelProps {
   taskId: string;
@@ -229,6 +230,7 @@ export function CodeReviewPanel({ taskId, taskTitle, studentId }: CodeReviewPane
           <div className="bg-black/30 rounded-xl p-4 border border-white/5 space-y-1.5 max-h-80 overflow-y-auto">
             {renderReview(review)}
           </div>
+          <AITransparencyBadge className="mt-3" />
         </div>
       )}
 
