@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User, Sparkles, Loader2, CornerDownRight } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Loader2, CornerDownRight, Shield } from 'lucide-react';
 import AITransparencyBadge from '@/components/ui/AITransparencyBadge';
 
 // Correct endpoint: /api/chat/message (not /api/mentor/chat)
@@ -256,7 +256,16 @@ export default function MentorPage() {
           <p className="text-xs text-gray-400">
             Get personalized guidance based on your roadmap, projects, DSA progress, and placement goals.
           </p>
-          <AITransparencyBadge compact className="mt-1.5" />
+          <div className="flex flex-wrap items-center gap-2 mt-1.5">
+            <AITransparencyBadge compact />
+            <div
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 font-medium"
+              title="Kiro enforces Socratic hint guidance instead of raw code solution dumping."
+            >
+              <Shield className="w-3.5 h-3.5 text-amber-400" />
+              <span>Learning Firewall Active</span>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { CodeReviewPanel } from '@/components/dashboard/CodeReviewPanel';
 import { MarkCompletedButton } from '@/components/dashboard/MarkCompletedButton';
+import { TaskInteractiveBar } from '@/components/dashboard/TaskInteractiveBar';
 
 export default async function RoadmapPage() {
   const cookieStore = cookies();
@@ -346,11 +347,19 @@ export default async function RoadmapPage() {
 
                             {/* Code Review Panel */}
                             {(isCurrent || isCompleted) && (
-                              <CodeReviewPanel 
-                                taskId={task.id} 
-                                taskTitle={task.title} 
-                                studentId={studentId!} 
-                              />
+                              <div className="space-y-4">
+                                <TaskInteractiveBar
+                                  taskId={task.id}
+                                  taskTitle={task.title}
+                                  domain={(skill.slug || skill.name || 'python').toLowerCase()}
+                                  isCompleted={isCompleted}
+                                />
+                                <CodeReviewPanel 
+                                  taskId={task.id} 
+                                  taskTitle={task.title} 
+                                  studentId={studentId!} 
+                                />
+                              </div>
                             )}
                           </div>
                         )}

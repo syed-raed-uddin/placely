@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { fetchDashboardData } from '@/lib/api';
 import { LogOutButton } from './components';
+import { SkillPassport } from '@/components/dashboard/SkillPassport';
 
 
 export default async function SettingsPage() {
@@ -65,6 +66,9 @@ export default async function SettingsPage() {
           ))}
         </div>
       </div>
+
+      {/* Skill Passport Section */}
+      <SkillPassport studentId={studentId!} />
 
       {/* Logout Section */}
       <div className="bg-white/5 border border-white/10 rounded-3xl p-6 space-y-4">
