@@ -198,7 +198,12 @@ export default function ReadinessPage() {
 
   if (session && question) {
     const isMcq = question.question_type === 'deterministic_mcq';
-    const options = question.metadata?.options || [];
+    // Backend normalizes to array in both question.options and question.metadata.options
+    const rawOptions = question.options || question.metadata?.options || [];
+    // Guard: if somehow still a dict (should not happen after backend fix), extract values
+    const options: string[] = Array.isArray(rawOptions)
+      ? rawOptions
+      : Object.values(rawOptions as Record<string, string>);
 
     return (
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 space-y-6">

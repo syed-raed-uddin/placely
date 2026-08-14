@@ -146,11 +146,12 @@ export default function CareerXRayPage() {
                     <div className="flex justify-between items-center mb-1">
                       <span className="font-bold text-white text-sm">{h.career_roles?.name || 'Unknown Role'}</span>
                       <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        h.match_score === null || h.match_score === undefined ? 'bg-purple-500/20 text-purple-400' :
                         h.match_score >= 80 ? 'bg-green-500/20 text-green-400' :
                         h.match_score >= 50 ? 'bg-amber-500/20 text-amber-400' :
                         'bg-red-500/20 text-red-400'
                       }`}>
-                        {h.match_score}% Match
+                        {h.match_score !== null && h.match_score !== undefined ? `${h.match_score}% Match` : 'Insufficient Evidence'}
                       </span>
                     </div>
                     <span className="text-xs text-white/30">{new Date(h.created_at).toLocaleDateString()}</span>
@@ -184,13 +185,19 @@ export default function CareerXRayPage() {
                 <div className="flex items-center gap-4">
                   <div className="text-right">
                     <div className="text-xs font-bold uppercase tracking-wider text-white/40 mb-1">Match Score</div>
-                    <div className={`text-4xl font-black ${
-                        (analysis.match_score ?? 50) >= 80 ? 'text-green-400' :
-                        (analysis.match_score ?? 50) >= 50 ? 'text-amber-400' :
-                        'text-red-400'
-                      }`}>
-                      {analysis.match_score ?? (analysis.overall_status === 'strong' ? 80 : analysis.overall_status === 'partial' ? 50 : 30)}%
-                    </div>
+                    {analysis.match_score !== null && analysis.match_score !== undefined ? (
+                      <div className={`text-4xl font-black ${
+                          analysis.match_score >= 80 ? 'text-green-400' :
+                          analysis.match_score >= 50 ? 'text-amber-400' :
+                          'text-red-400'
+                        }`}>
+                        {analysis.match_score}%
+                      </div>
+                    ) : (
+                      <div className="text-xl font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1.5 rounded-xl">
+                        Not Yet Assessed
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

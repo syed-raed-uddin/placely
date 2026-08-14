@@ -37,6 +37,7 @@ export default function TeachBackModal({
         body: JSON.stringify({
           concept_slug: conceptSlug || 'arrays',
           explanation: explanation.trim(),
+          topic_title: conceptTitle,  // send actual task title for relevance gating
         }),
       });
       setResult(data);

@@ -42,6 +42,7 @@ export function TaskInteractiveBar({
       <QuizModal
         domain={domain}
         taskId={taskId}
+        topic={taskTitle}
         isOpen={showQuiz}
         onClose={() => setShowQuiz(false)}
       />

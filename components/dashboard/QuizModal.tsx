@@ -7,6 +7,7 @@ import { apiClient } from '@/lib/api';
 interface QuizModalProps {
   domain?: string;
   taskId?: string;
+  topic?: string;  // actual task/concept title for AI question generation
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
@@ -15,6 +16,7 @@ interface QuizModalProps {
 export default function QuizModal({
   domain = 'python',
   taskId,
+  topic,
   isOpen,
   onClose,
   onSuccess,
@@ -34,7 +36,10 @@ export default function QuizModal({
     } else {
       resetState();
     }
-  }, [isOpen, domain]);
+    // topic is intentionally included: opening the quiz for a different task (same domain)
+    // must fetch fresh topic-specific questions, not reuse the previous session's set.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, domain, topic]);
 
   const resetState = () => {
     setLoading(false);
@@ -51,9 +56,12 @@ export default function QuizModal({
     setLoading(true);
     setError(null);
     try {
+      const body: Record<string, string> = { domain: domain || 'python' };
+      if (topic) body.topic = topic;        // task-specific topic for AI generation
+      if (taskId) body.task_id = taskId;   // roadmap task reference
       const data: any = await apiClient('/quizzes/start', {
         method: 'POST',
-        body: JSON.stringify({ domain: domain || 'python' }),
+        body: JSON.stringify(body),
       });
       setSessionId(data.id || data.session_id);
       setQuestions(data.questions || []);
@@ -75,14 +83,18 @@ export default function QuizModal({
     setSubmitting(true);
     setError(null);
     try {
-      // Submit individual answers
+      // Submit individual answers (pass back question_data for AI-generated ephemeral questions)
       for (const q of questions) {
         const ans = selectedAnswers[q.id];
         if (ans) {
           try {
             await apiClient(`/quizzes/${sessionId}/submit`, {
               method: 'POST',
-              body: JSON.stringify({ question_id: q.id, answer: ans }),
+              body: JSON.stringify({
+                question_id: q.id,
+                answer: ans,
+                question_data: q.source === 'ai_generated' ? q : undefined
+              }),
             });
           } catch (_) {}
         }
@@ -131,7 +143,7 @@ export default function QuizModal({
             </div>
             <div>
               <h3 className="text-lg font-bold text-white uppercase tracking-wide">
-                Knowledge Check · {domain}
+                {topic ? `Quiz: ${topic}` : `Knowledge Check · ${domain}`}
               </h3>
               <p className="text-xs text-white/50">
                 {questions.length > 0
@@ -170,9 +182,9 @@ export default function QuizModal({
               <p className="text-sm text-white/60 mt-1">
                 You scored{' '}
                 <strong className="text-emerald-400">
-                  {Math.round((result.score || 1) * 100)}%
+                  {result.score_percent ?? Math.round((result.score || 0) * 100)}%
                 </strong>{' '}
-                on this knowledge check.
+                ({result.correct_count ?? '?'} / {result.total_questions ?? questions.length} correct)
               </p>
             </div>
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-white/50">
