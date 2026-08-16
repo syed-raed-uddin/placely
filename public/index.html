@@ -555,7 +555,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .pay-close svg { width: 18px; height: 18px; }
 
   /* Scrollable Content Region with Visible Amber Scrollbar */
-  #pay-form, #login-phone-form, #login-code-form { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+  #pay-form, #login-phone-form, #login-code-form { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: hidden; touch-action: pan-y !important; }
   .form-grid {
     flex: 1 1 auto;
     min-height: 0;
@@ -563,6 +563,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    touch-action: pan-y !important;
     padding-right: 8px;
     padding-bottom: 24px;
     scrollbar-width: thin;
@@ -1394,9 +1395,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <!-- ====================== PAYMENT MODAL (Razorpay) ====================== -->
-<div id="pay-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pay-title">
+<div id="pay-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pay-title" data-lenis-prevent>
   <div class="pay-overlay" data-pay-close></div>
-  <div class="pay-card">
+  <div class="pay-card" data-lenis-prevent>
     <div class="pay-head">
       <div>
         <h3 id="pay-title">Start your track</h3>
@@ -1407,8 +1408,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </button>
     </div>
 
-    <form id="pay-form">
-      <div class="form-grid">
+    <form id="pay-form" data-lenis-prevent>
+      <div class="form-grid" data-lenis-prevent>
         <div class="field">
           <label for="pay-name">Full name</label>
           <input id="pay-name" name="name" type="text" placeholder="Aarav Sharma" required />
@@ -1566,9 +1567,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <!-- ====================== LOGIN MODAL (WhatsApp OTP) ====================== -->
-<div id="login-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="login-title">
+<div id="login-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="login-title" data-lenis-prevent>
   <div class="pay-overlay" data-login-close></div>
-  <div class="pay-card">
+  <div class="pay-card" data-lenis-prevent>
     <div class="pay-head">
       <div>
         <h3 id="login-title">Log in</h3>
@@ -1579,8 +1580,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </button>
     </div>
 
-    <form id="login-phone-form">
-      <div class="form-grid">
+    <form id="login-phone-form" data-lenis-prevent>
+      <div class="form-grid" data-lenis-prevent>
         <div class="field full">
           <label for="login-whatsapp">WhatsApp number</label>
           <input id="login-whatsapp" name="whatsapp" type="tel" inputmode="numeric" placeholder="+91 9XXXXXXXXX" pattern="[0-9+\s]{10,15}" required />
@@ -2027,6 +2028,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const modal = document.getElementById("pay-modal");
     const payForm = document.getElementById("pay-form");
     if (!modal || !payForm) return;
+
+    // Prevent background touch/scroll listeners from intercepting modal internal scrolling
+    document.querySelectorAll('#pay-modal .pay-card, #login-modal .pay-card').forEach((card) => {
+      card.addEventListener('touchmove', (e) => { e.stopPropagation(); }, { passive: true });
+      card.addEventListener('wheel', (e) => { e.stopPropagation(); }, { passive: true });
+    });
 
     // Mobile keyboard handling: scroll focused input smoothly into view within modal
     document.querySelectorAll('#pay-modal input, #pay-modal .cselect-btn, #login-modal input').forEach((inp) => {
