@@ -1271,8 +1271,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const headers = {};
       if (token) headers["Authorization"] = "Bearer " + token;
       await fetch(API + "/api/auth/logout", { method: "POST", credentials: "include", headers });
-    } catch (e) { /* revoke best-effort — clearing local state still logs the UI out */ }
-    try { localStorage.removeItem("placely_student_id"); localStorage.removeItem("placely_token"); } catch (ex) {}
+    } catch (e) { /* revoke best-effort */ }
+    document.cookie = "placely_student_id=; max-age=0; path=/; SameSite=Lax";
+    document.cookie = "placely_token=; max-age=0; path=/; SameSite=Lax";
+    document.cookie = "placely_session=; max-age=0; path=/; SameSite=Lax";
+    try { localStorage.removeItem("placely_student_id"); localStorage.removeItem("placely_token"); sessionStorage.clear(); } catch (ex) {}
     window.location.href = "index.html";
   });
 

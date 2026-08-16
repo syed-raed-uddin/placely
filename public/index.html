@@ -2743,17 +2743,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const res = await fetch(BACKEND + "/api/auth/session", { credentials: "include", headers });
         if (!res.ok) return;
         const data = await res.json();
-        if (data && data.logged_in) {
+        if (data && data.logged_in && data.student_id) {
           // Only act if no login flow is in progress.
           // authState === "IDLE" means: modal closed, no user action taken.
           if (authState !== "IDLE") return;
 
-          // Belt-and-suspenders: refresh cookies from localStorage so the
-          // dashboard layout's require_session() finds them server-side.
+          // Populate cookies & localStorage from authoritative backend session
           try {
-            const sid = localStorage.getItem("placely_student_id");
-            if (sid) document.cookie = "placely_student_id=" + sid + "; path=/; max-age=31536000";
-            if (token) document.cookie = "placely_token=" + token + "; path=/; max-age=31536000";
+            localStorage.setItem("placely_student_id", data.student_id);
+            document.cookie = "placely_student_id=" + data.student_id + "; path=/; max-age=31536000; SameSite=Lax";
+            if (data.token) {
+              localStorage.setItem("placely_token", data.token);
+              document.cookie = "placely_token=" + data.token + "; path=/; max-age=31536000; SameSite=Lax";
+            }
           } catch (ex) {}
           window.location.href = "/dashboard";
         }
