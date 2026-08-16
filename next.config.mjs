@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/',
+          destination: '/index.html',
+        },
+      ],
+    };
+  },
   async redirects() {
     return [
       // Legacy PWA redirect — users who installed the old PWA
