@@ -50,13 +50,15 @@ interface ProjectLearningBlueprintProps {
   topics: LearningTopic[];
   activeConceptFilter?: string | null;
   onClearFilter?: () => void;
+  onGoToExecution?: () => void;
 }
 
 export default function ProjectLearningBlueprint({
   projectId,
   topics = [],
   activeConceptFilter,
-  onClearFilter
+  onClearFilter,
+  onGoToExecution
 }: ProjectLearningBlueprintProps) {
   const [expandedTopicIdx, setExpandedTopicIdx] = useState<number | null>(0);
   const [reviewedTopics, setReviewedTopics] = useState<Record<number, boolean>>({});
@@ -492,22 +494,34 @@ export default function ProjectLearningBlueprint({
                     </div>
                   )}
 
-                  {/* Bottom Action: Mark Topic Complete */}
-                  <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                  {/* Bottom Action: Mark Topic Complete & Jump to Execution */}
+                  <div className="pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-3">
                     <span className="text-xs text-white/40">
                       {isReviewed ? 'Topic marked as reviewed in your local progress.' : 'Ready to start implementing? Mark topic as reviewed.'}
                     </span>
-                    <button
-                      onClick={(e) => handleToggleReviewed(idx, e)}
-                      className={`px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                        isReviewed
-                          ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/30'
-                          : 'bg-[#FF7A00] hover:bg-[#FF7A00]/90 text-white shadow-lg shadow-[#FF7A00]/20'
-                      }`}
-                    >
-                      {isReviewed ? <CheckCircle2 className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
-                      {isReviewed ? 'Marked as Reviewed' : 'Mark Topic as Reviewed'}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => handleToggleReviewed(idx, e)}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                          isReviewed
+                            ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/30'
+                            : 'bg-white/10 hover:bg-white/20 text-white'
+                        }`}
+                      >
+                        {isReviewed ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Sparkles className="w-3.5 h-3.5" />}
+                        {isReviewed ? 'Marked as Reviewed' : 'Mark as Reviewed'}
+                      </button>
+
+                      {onGoToExecution && (
+                        <button
+                          onClick={onGoToExecution}
+                          className="px-4 py-2 rounded-xl text-xs font-extrabold bg-[#FF7A00] hover:bg-[#FF7A00]/90 text-black flex items-center gap-1.5 shadow-lg shadow-[#FF7A00]/20 transition-all"
+                        >
+                          <span>Start Building in Execution</span>
+                          <ChevronDown className="w-3.5 h-3.5 -rotate-90" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

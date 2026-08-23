@@ -101,6 +101,7 @@ interface ProjectSetupGuideProps {
   estimatedHours?: number;
   prerequisites?: Prerequisites;
   setupGuide?: SetupGuide;
+  onGoToExecution?: () => void;
 }
 
 export default function ProjectSetupGuide({
@@ -109,7 +110,8 @@ export default function ProjectSetupGuide({
   difficulty = 'Intermediate',
   estimatedHours = 10,
   prerequisites = {},
-  setupGuide = {}
+  setupGuide = {},
+  onGoToExecution
 }: ProjectSetupGuideProps) {
   const [sanityChecksState, setSanityChecksState] = useState<Record<number, boolean>>({});
   const [revealedAnswers, setRevealedAnswers] = useState<Record<number, boolean>>({});
@@ -550,6 +552,22 @@ export default function ProjectSetupGuide({
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Bottom Action: Jump to Milestone Execution */}
+        {onGoToExecution && (
+          <div className="pt-6 border-t border-white/5 flex flex-wrap items-center justify-between gap-3">
+            <span className="text-xs text-white/40">
+              Verified your local environment? You are ready to start coding.
+            </span>
+            <button
+              onClick={onGoToExecution}
+              className="px-6 py-2.5 rounded-xl text-xs font-extrabold bg-[#FF7A00] hover:bg-[#FF7A00]/90 text-black flex items-center gap-2 shadow-lg shadow-[#FF7A00]/25 transition-all"
+            >
+              <span>Start Milestone 1 Tasks</span>
+              <ChevronDown className="w-3.5 h-3.5 -rotate-90" />
+            </button>
           </div>
         )}
       </div>

@@ -295,12 +295,47 @@ export default function ProjectWorkspacePage() {
       {/* Current Objective & Next Action Guidance Card */}
       {/* ------------------------------------------------------------- */}
       {!isCompleted && (
-        <div className="p-5 md:p-6 rounded-3xl bg-gradient-to-r from-[#FF7A00]/10 via-neutral-900 to-neutral-900 border border-[#FF7A00]/30 space-y-3">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-[#FF7A00] text-black">
-              Current Objective
-            </span>
-            <span className="text-xs text-white/60 font-semibold">What to do next:</span>
+        <div className="p-5 md:p-6 rounded-3xl bg-gradient-to-r from-[#FF7A00]/10 via-neutral-900 to-neutral-900 border border-[#FF7A00]/30 space-y-4 shadow-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/5">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-[#FF7A00] text-black">
+                Current Objective
+              </span>
+              <span className="text-xs text-white/60 font-semibold">Recommended Next Step:</span>
+            </div>
+
+            {/* Dynamic 1-Click Action Button */}
+            <div>
+              {isDefenseActive || isVerified ? (
+                <button
+                  onClick={() => setIsDefenseOpen(true)}
+                  className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs inline-flex items-center gap-1.5 shadow-lg shadow-purple-600/25 transition-all"
+                >
+                  <Sparkles className="w-3.5 h-3.5" /> Start Technical Defense Interview
+                </button>
+              ) : milestones.every((m: any) => m.student_status === 'completed') ? (
+                <button
+                  onClick={() => setActiveTab('git_deploy')}
+                  className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs inline-flex items-center gap-1.5 shadow-lg shadow-cyan-500/25 transition-all"
+                >
+                  <GitBranch className="w-3.5 h-3.5" /> Go to Git &amp; Deploy
+                </button>
+              ) : progressPct === 0 && (!studentProject?.started_at || studentProject?.status === 'STARTED') ? (
+                <button
+                  onClick={() => setActiveTab('setup')}
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs inline-flex items-center gap-1.5 shadow-lg shadow-amber-500/25 transition-all"
+                >
+                  <Wrench className="w-3.5 h-3.5" /> Set Up Environment &amp; Tools
+                </button>
+              ) : (
+                <button
+                  onClick={() => setActiveTab('milestones')}
+                  className="px-4 py-2 rounded-xl bg-[#FF7A00] hover:bg-[#FF7A00]/90 text-black font-extrabold text-xs inline-flex items-center gap-1.5 shadow-lg shadow-[#FF7A00]/25 transition-all"
+                >
+                  <Layers className="w-3.5 h-3.5" /> Continue Task in Execution
+                </button>
+              )}
+            </div>
           </div>
 
           <div>
@@ -330,6 +365,64 @@ export default function ProjectWorkspacePage() {
                     return activeT ? activeT.instruction : 'Complete all required milestone tasks sequentially.';
                   })()}
             </p>
+          </div>
+
+          {/* 6-Stage Mini Beginner Workflow Roadmap */}
+          <div className="pt-2 border-t border-white/5 flex flex-wrap items-center gap-1 sm:gap-2 text-[11px] text-white/50">
+            <span className="font-semibold text-white/30 text-[10px] uppercase tracking-wider mr-1">Roadmap:</span>
+            <button
+              onClick={() => setActiveTab('setup')}
+              className={`px-2 py-1 rounded-md transition-all ${
+                activeTab === 'setup' ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'hover:text-white'
+              }`}
+            >
+              1. Setup
+            </button>
+            <span>&rarr;</span>
+            <button
+              onClick={() => setActiveTab('learning')}
+              className={`px-2 py-1 rounded-md transition-all ${
+                activeTab === 'learning' ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/40' : 'hover:text-white'
+              }`}
+            >
+              2. Learn
+            </button>
+            <span>&rarr;</span>
+            <button
+              onClick={() => setActiveTab('milestones')}
+              className={`px-2 py-1 rounded-md transition-all ${
+                activeTab === 'milestones' ? 'bg-[#FF7A00]/20 text-[#FF7A00] font-bold border border-[#FF7A00]/40' : 'hover:text-white'
+              }`}
+            >
+              3. Build
+            </button>
+            <span>&rarr;</span>
+            <button
+              onClick={() => setActiveTab('testing')}
+              className={`px-2 py-1 rounded-md transition-all ${
+                activeTab === 'testing' || activeTab === 'debugging' ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'hover:text-white'
+              }`}
+            >
+              4. Test &amp; QA
+            </button>
+            <span>&rarr;</span>
+            <button
+              onClick={() => setActiveTab('git_deploy')}
+              className={`px-2 py-1 rounded-md transition-all ${
+                activeTab === 'git_deploy' ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' : 'hover:text-white'
+              }`}
+            >
+              5. Deploy
+            </button>
+            <span>&rarr;</span>
+            <button
+              onClick={() => setActiveTab('evidence')}
+              className={`px-2 py-1 rounded-md transition-all ${
+                activeTab === 'evidence' || activeTab === 'placement' ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/40' : 'hover:text-white'
+              }`}
+            >
+              6. Prove &amp; Defend
+            </button>
           </div>
         </div>
       )}
@@ -485,6 +578,7 @@ export default function ProjectWorkspacePage() {
               topics={projectData.learning_topics || []}
               activeConceptFilter={activeConceptFilter}
               onClearFilter={() => setActiveConceptFilter(null)}
+              onGoToExecution={() => setActiveTab('milestones')}
             />
           </div>
         )}
@@ -499,6 +593,7 @@ export default function ProjectWorkspacePage() {
               estimatedHours={projectData.estimated_hours}
               prerequisites={projectData.prerequisites}
               setupGuide={projectData.setup_guide}
+              onGoToExecution={() => setActiveTab('milestones')}
             />
           </div>
         )}
