@@ -23,9 +23,12 @@ import Link from 'next/link';
 import { apiClient } from '@/lib/api';
 import ProjectMilestoneStepper from '@/components/dashboard/ProjectMilestoneStepper';
 import ProjectLearningBlueprint from '@/components/dashboard/ProjectLearningBlueprint';
+import ProjectSetupGuide from '@/components/dashboard/ProjectSetupGuide';
+import ProjectTestingGuide from '@/components/dashboard/ProjectTestingGuide';
+import ProjectDebuggingGuide from '@/components/dashboard/ProjectDebuggingGuide';
 import ProjectDefenseModal from '@/components/dashboard/ProjectDefenseModal';
 import ProjectEvidenceDrawer from '@/components/dashboard/ProjectEvidenceDrawer';
-import { Layers, Brain } from 'lucide-react';
+import { Layers, Brain, Wrench, FlaskConical, Bug } from 'lucide-react';
 
 export default function ProjectWorkspacePage() {
   const params = useParams();
@@ -39,8 +42,8 @@ export default function ProjectWorkspacePage() {
   const [defenses, setDefenses] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // Tab & concept navigation state
-  const [activeTab, setActiveTab] = useState<'milestones' | 'learning'>('milestones');
+  // Tab & concept navigation state (5 Engineering Workspaces)
+  const [activeTab, setActiveTab] = useState<'milestones' | 'learning' | 'setup' | 'testing' | 'debugging'>('milestones');
   const [activeConceptFilter, setActiveConceptFilter] = useState<string | null>(null);
 
   // Submission state
@@ -325,39 +328,86 @@ export default function ProjectWorkspacePage() {
         </div>
       )}
 
-      {/* Workspace Navigation Switcher (Milestones vs Learning Blueprint) */}
+      {/* Workspace Navigation Switcher (5 Engineering Workspaces) */}
       <div className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* 1. Build / Execution */}
             <button
               onClick={() => setActiveTab('milestones')}
-              className={`px-5 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
+              className={`px-4 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
                 activeTab === 'milestones'
                   ? 'bg-[#FF7A00] text-white shadow-lg shadow-[#FF7A00]/25'
                   : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
               }`}
             >
               <Layers className="w-4 h-4" />
-              <span>Engineering Execution ({milestones.length} Milestones)</span>
+              <span>Execution ({milestones.length} Milestones)</span>
             </button>
 
+            {/* 2. Learn / Blueprint */}
             <button
               onClick={() => setActiveTab('learning')}
-              className={`px-5 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
+              className={`px-4 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
                 activeTab === 'learning'
                   ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/25'
                   : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
               }`}
             >
               <Brain className="w-4 h-4" />
-              <span>
-                Learning Blueprint ({(projectData.learning_topics || []).length} Topics)
-              </span>
+              <span>Blueprint ({(projectData.learning_topics || []).length})</span>
+            </button>
+
+            {/* 3. Setup & Pre-Reqs */}
+            <button
+              onClick={() => setActiveTab('setup')}
+              className={`px-4 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
+                activeTab === 'setup'
+                  ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/25'
+                  : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Wrench className="w-4 h-4" />
+              <span>Setup &amp; Pre-Reqs</span>
+            </button>
+
+            {/* 4. QA & Testing */}
+            <button
+              onClick={() => setActiveTab('testing')}
+              className={`px-4 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
+                activeTab === 'testing'
+                  ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25'
+                  : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <FlaskConical className="w-4 h-4" />
+              <span>QA &amp; Testing</span>
+            </button>
+
+            {/* 5. Troubleshooting & Diagnostics */}
+            <button
+              onClick={() => setActiveTab('debugging')}
+              className={`px-4 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
+                activeTab === 'debugging'
+                  ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/25'
+                  : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Bug className="w-4 h-4" />
+              <span>Troubleshooting</span>
             </button>
           </div>
 
-          <span className="text-xs text-white/40 font-mono hidden sm:inline">
-            {activeTab === 'milestones' ? 'Execute tasks sequentially' : 'Master foundational mental models'}
+          <span className="text-xs text-white/40 font-mono hidden md:inline">
+            {activeTab === 'milestones'
+              ? 'Execute tasks sequentially'
+              : activeTab === 'learning'
+              ? 'Master foundational mental models'
+              : activeTab === 'setup'
+              ? 'Scaffold environment & toolchain'
+              : activeTab === 'testing'
+              ? 'Systematic QA test scenarios'
+              : 'Root cause analysis & failure modes'}
           </span>
         </div>
 
@@ -384,6 +434,42 @@ export default function ProjectWorkspacePage() {
               topics={projectData.learning_topics || []}
               activeConceptFilter={activeConceptFilter}
               onClearFilter={() => setActiveConceptFilter(null)}
+            />
+          </div>
+        )}
+
+        {/* Tab 3: Setup & Pre-Reqs */}
+        {activeTab === 'setup' && (
+          <div className="space-y-4">
+            <ProjectSetupGuide
+              projectId={projectData.id || projectIdOrSpId}
+              projectTitle={projectData.title || ''}
+              difficulty={projectData.difficulty}
+              estimatedHours={projectData.estimated_hours}
+              prerequisites={projectData.prerequisites}
+              setupGuide={projectData.setup_guide}
+            />
+          </div>
+        )}
+
+        {/* Tab 4: QA & Testing Guide */}
+        {activeTab === 'testing' && (
+          <div className="space-y-4">
+            <ProjectTestingGuide
+              projectId={projectData.id || projectIdOrSpId}
+              projectTitle={projectData.title || ''}
+              testingGuide={projectData.testing_guide}
+            />
+          </div>
+        )}
+
+        {/* Tab 5: Troubleshooting & Debugging Guide */}
+        {activeTab === 'debugging' && (
+          <div className="space-y-4">
+            <ProjectDebuggingGuide
+              projectId={projectData.id || projectIdOrSpId}
+              projectTitle={projectData.title || ''}
+              debuggingGuide={projectData.debugging_guide}
             />
           </div>
         )}
