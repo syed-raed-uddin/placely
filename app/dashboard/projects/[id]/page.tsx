@@ -22,8 +22,10 @@ import {
 import Link from 'next/link';
 import { apiClient } from '@/lib/api';
 import ProjectMilestoneStepper from '@/components/dashboard/ProjectMilestoneStepper';
+import ProjectLearningBlueprint from '@/components/dashboard/ProjectLearningBlueprint';
 import ProjectDefenseModal from '@/components/dashboard/ProjectDefenseModal';
 import ProjectEvidenceDrawer from '@/components/dashboard/ProjectEvidenceDrawer';
+import { Layers, Brain } from 'lucide-react';
 
 export default function ProjectWorkspacePage() {
   const params = useParams();
@@ -36,6 +38,10 @@ export default function ProjectWorkspacePage() {
   const [verifications, setVerifications] = useState<any[]>([]);
   const [defenses, setDefenses] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  // Tab & concept navigation state
+  const [activeTab, setActiveTab] = useState<'milestones' | 'learning'>('milestones');
+  const [activeConceptFilter, setActiveConceptFilter] = useState<string | null>(null);
 
   // Submission state
   const [githubUrl, setGithubUrl] = useState('');
@@ -55,7 +61,10 @@ export default function ProjectWorkspacePage() {
       try {
         const spRes: any = await apiClient(`/api/student/projects/${projectIdOrSpId}`);
         if (spRes?.data) {
-          setStudentProject(spRes.data.student_project);
+          setStudentProject({
+            ...spRes.data.student_project,
+            milestones: spRes.data.milestones || spRes.data.student_project?.milestones || []
+          });
           setProjectData(spRes.data.project);
           setVerifications(spRes.data.verifications || []);
           setDefenses(spRes.data.defenses || []);
@@ -77,7 +86,10 @@ export default function ProjectWorkspacePage() {
         });
         if (startRes?.student_project_id) {
           const spRes: any = await apiClient(`/api/student/projects/${startRes.student_project_id}`);
-          setStudentProject(spRes?.data?.student_project);
+          setStudentProject({
+            ...spRes?.data?.student_project,
+            milestones: spRes?.data?.milestones || spRes?.data?.student_project?.milestones || []
+          });
           setVerifications(spRes?.data?.verifications || []);
           setDefenses(spRes?.data?.defenses || []);
         }
@@ -313,18 +325,68 @@ export default function ProjectWorkspacePage() {
         </div>
       )}
 
-      {/* Main Execution Workspace: Milestones */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-white tracking-tight">Engineering Milestones</h2>
-          <span className="text-xs text-white/40">Complete tasks sequentially</span>
+      {/* Workspace Navigation Switcher (Milestones vs Learning Blueprint) */}
+      <div className="space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setActiveTab('milestones')}
+              className={`px-5 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
+                activeTab === 'milestones'
+                  ? 'bg-[#FF7A00] text-white shadow-lg shadow-[#FF7A00]/25'
+                  : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Layers className="w-4 h-4" />
+              <span>Engineering Execution ({milestones.length} Milestones)</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('learning')}
+              className={`px-5 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
+                activeTab === 'learning'
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/25'
+                  : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Brain className="w-4 h-4" />
+              <span>
+                Learning Blueprint ({(projectData.learning_topics || []).length} Topics)
+              </span>
+            </button>
+          </div>
+
+          <span className="text-xs text-white/40 font-mono hidden sm:inline">
+            {activeTab === 'milestones' ? 'Execute tasks sequentially' : 'Master foundational mental models'}
+          </span>
         </div>
 
-        <ProjectMilestoneStepper
-          studentProjectId={studentProject?.id}
-          milestones={milestones}
-          onStateUpdated={loadData}
-        />
+        {/* Tab 1: Engineering Execution Stepper */}
+        {activeTab === 'milestones' && (
+          <div className="space-y-4">
+            <ProjectMilestoneStepper
+              studentProjectId={studentProject?.id}
+              milestones={milestones}
+              onStateUpdated={loadData}
+              onSelectConcept={(concept) => {
+                setActiveConceptFilter(concept);
+                setActiveTab('learning');
+              }}
+            />
+          </div>
+        )}
+
+        {/* Tab 2: Learning Blueprint & Mental Models */}
+        {activeTab === 'learning' && (
+          <div className="space-y-4">
+            <ProjectLearningBlueprint
+              projectId={projectData.id || projectIdOrSpId}
+              topics={projectData.learning_topics || []}
+              activeConceptFilter={activeConceptFilter}
+              onClearFilter={() => setActiveConceptFilter(null)}
+            />
+          </div>
+        )}
       </div>
 
       {/* Layered Verification & Submission Section (Only if not completed or verifying) */}
