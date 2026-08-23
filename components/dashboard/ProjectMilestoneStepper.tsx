@@ -94,7 +94,7 @@ export default function ProjectMilestoneStepper({
         const isInProgress = m.student_status === 'in_progress';
         const isLocked = !isCompleted && !isInProgress;
         const isExpanded = !!expandedMilestones[m.id];
-        const allTasksDone = m.tasks.every((t) => t.student_status === 'completed');
+        const allTasksDone = (m.tasks || []).every((t) => t.student_status === 'completed');
 
         return (
           <div

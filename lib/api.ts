@@ -5,6 +5,24 @@ export const API_BASE =
   'https://placely-backend-production.up.railway.app/api';
 
 /**
+ * Builds a standardized API URL, avoiding double `/api/api` paths whether or not API_BASE has a trailing `/api`.
+ */
+export function buildApiUrl(endpoint: string): string {
+  if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+    return endpoint;
+  }
+  const base = (API_BASE || '').replace(/\/+$/, '');
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+
+  // If base already ends with /api and cleanEndpoint starts with /api/, strip duplicate /api
+  if (base.endsWith('/api') && cleanEndpoint.startsWith('/api/')) {
+    return `${base}${cleanEndpoint.slice(4)}`;
+  }
+
+  return `${base}${cleanEndpoint}`;
+}
+
+/**
  * Generic API Client for Placely Frontend.
  * Handles JSON serialization, authentication injection, and consistent error handling.
  */
@@ -12,7 +30,7 @@ export async function apiClient<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}${endpoint}`;
+  const url = buildApiUrl(endpoint);
 
   const headers = new Headers(options.headers);
   
@@ -101,7 +119,7 @@ export const fetchDashboardData = cache(async (
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const res = await fetch(`${API_BASE}/dashboard/${studentId}`, {
+    const res = await fetch(buildApiUrl(`/dashboard/${studentId}`), {
       cache: 'no-store',
       headers,
     });
@@ -152,7 +170,7 @@ export const fetchSubscriptionStatus = cache(async (
       }
     }
 
-    const res = await fetch(`${API_BASE}/subscription`, {
+    const res = await fetch(buildApiUrl('/subscription'), {
       cache: 'no-store',
       headers,
     });
