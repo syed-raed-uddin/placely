@@ -26,9 +26,13 @@ import ProjectLearningBlueprint from '@/components/dashboard/ProjectLearningBlue
 import ProjectSetupGuide from '@/components/dashboard/ProjectSetupGuide';
 import ProjectTestingGuide from '@/components/dashboard/ProjectTestingGuide';
 import ProjectDebuggingGuide from '@/components/dashboard/ProjectDebuggingGuide';
+import ProjectGitWorkflow from '@/components/dashboard/ProjectGitWorkflow';
+import ProjectDeploymentGuide from '@/components/dashboard/ProjectDeploymentGuide';
+import ProjectEvidencePack from '@/components/dashboard/ProjectEvidencePack';
+import ProjectPlacementImpact from '@/components/dashboard/ProjectPlacementImpact';
 import ProjectDefenseModal from '@/components/dashboard/ProjectDefenseModal';
 import ProjectEvidenceDrawer from '@/components/dashboard/ProjectEvidenceDrawer';
-import { Layers, Brain, Wrench, FlaskConical, Bug } from 'lucide-react';
+import { Layers, Brain, Wrench, FlaskConical, Bug, Rocket, PackageCheck, Target } from 'lucide-react';
 
 export default function ProjectWorkspacePage() {
   const params = useParams();
@@ -42,8 +46,10 @@ export default function ProjectWorkspacePage() {
   const [defenses, setDefenses] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // Tab & concept navigation state (5 Engineering Workspaces)
-  const [activeTab, setActiveTab] = useState<'milestones' | 'learning' | 'setup' | 'testing' | 'debugging'>('milestones');
+  // Tab & concept navigation state (8 Engineering Workspaces)
+  const [activeTab, setActiveTab] = useState<
+    'milestones' | 'learning' | 'setup' | 'testing' | 'debugging' | 'git_deploy' | 'evidence' | 'placement'
+  >('milestones');
   const [activeConceptFilter, setActiveConceptFilter] = useState<string | null>(null);
 
   // Submission state
@@ -328,77 +334,116 @@ export default function ProjectWorkspacePage() {
         </div>
       )}
 
-      {/* Workspace Navigation Switcher (5 Engineering Workspaces) */}
+      {/* Workspace Navigation Switcher (8 Engineering Workspaces) */}
       <div className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
           <div className="flex flex-wrap items-center gap-2">
             {/* 1. Build / Execution */}
             <button
               onClick={() => setActiveTab('milestones')}
-              className={`px-4 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
+              className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
                 activeTab === 'milestones'
                   ? 'bg-[#FF7A00] text-white shadow-lg shadow-[#FF7A00]/25'
                   : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
               }`}
             >
-              <Layers className="w-4 h-4" />
-              <span>Execution ({milestones.length} Milestones)</span>
+              <Layers className="w-3.5 h-3.5" />
+              <span>Execution ({milestones.length})</span>
             </button>
 
             {/* 2. Learn / Blueprint */}
             <button
               onClick={() => setActiveTab('learning')}
-              className={`px-4 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
+              className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
                 activeTab === 'learning'
                   ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/25'
                   : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
               }`}
             >
-              <Brain className="w-4 h-4" />
+              <Brain className="w-3.5 h-3.5" />
               <span>Blueprint ({(projectData.learning_topics || []).length})</span>
             </button>
 
             {/* 3. Setup & Pre-Reqs */}
             <button
               onClick={() => setActiveTab('setup')}
-              className={`px-4 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
+              className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
                 activeTab === 'setup'
                   ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/25'
                   : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
               }`}
             >
-              <Wrench className="w-4 h-4" />
-              <span>Setup &amp; Pre-Reqs</span>
+              <Wrench className="w-3.5 h-3.5" />
+              <span>Setup</span>
             </button>
 
             {/* 4. QA & Testing */}
             <button
               onClick={() => setActiveTab('testing')}
-              className={`px-4 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
+              className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
                 activeTab === 'testing'
                   ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25'
                   : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
               }`}
             >
-              <FlaskConical className="w-4 h-4" />
+              <FlaskConical className="w-3.5 h-3.5" />
               <span>QA &amp; Testing</span>
             </button>
 
             {/* 5. Troubleshooting & Diagnostics */}
             <button
               onClick={() => setActiveTab('debugging')}
-              className={`px-4 py-2.5 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-2 ${
+              className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
                 activeTab === 'debugging'
                   ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/25'
                   : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
               }`}
             >
-              <Bug className="w-4 h-4" />
+              <Bug className="w-3.5 h-3.5" />
               <span>Troubleshooting</span>
+            </button>
+
+            {/* 6. Git & Deploy */}
+            <button
+              onClick={() => setActiveTab('git_deploy')}
+              className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
+                activeTab === 'git_deploy'
+                  ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/25'
+                  : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <GitBranch className="w-3.5 h-3.5" />
+              <span>Git &amp; Deploy</span>
+            </button>
+
+            {/* 7. Evidence Pack */}
+            <button
+              onClick={() => setActiveTab('evidence')}
+              className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
+                activeTab === 'evidence'
+                  ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/25'
+                  : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <PackageCheck className="w-3.5 h-3.5" />
+              <span>Evidence Pack</span>
+            </button>
+
+            {/* 8. Placement Impact */}
+            <button
+              onClick={() => setActiveTab('placement')}
+              className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
+                activeTab === 'placement'
+                  ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/25'
+                  : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Target className="w-3.5 h-3.5" />
+              <span>Placement Impact</span>
             </button>
           </div>
 
-          <span className="text-xs text-white/40 font-mono hidden md:inline">
+          <span className="text-xs text-white/40 font-mono hidden lg:inline">
             {activeTab === 'milestones'
               ? 'Execute tasks sequentially'
               : activeTab === 'learning'
@@ -407,7 +452,13 @@ export default function ProjectWorkspacePage() {
               ? 'Scaffold environment & toolchain'
               : activeTab === 'testing'
               ? 'Systematic QA test scenarios'
-              : 'Root cause analysis & failure modes'}
+              : activeTab === 'debugging'
+              ? 'Root cause analysis & failure modes'
+              : activeTab === 'git_deploy'
+              ? 'Release discipline & live verification'
+              : activeTab === 'evidence'
+              ? '7-factor verified placement asset'
+              : 'Recruiter-calibrated resume & talking points'}
           </span>
         </div>
 
@@ -470,6 +521,56 @@ export default function ProjectWorkspacePage() {
               projectId={projectData.id || projectIdOrSpId}
               projectTitle={projectData.title || ''}
               debuggingGuide={projectData.debugging_guide}
+            />
+          </div>
+        )}
+
+        {/* Tab 6: Git Workflow & Live Deployment Guide */}
+        {activeTab === 'git_deploy' && (
+          <div className="space-y-8">
+            <ProjectDeploymentGuide
+              studentProjectId={studentProject?.id}
+              projectTitle={projectData.title || ''}
+              technologies={projectData.technologies || []}
+              projectCategory={projectData.project_category}
+              existingDeploymentUrl={studentProject?.live_demo || ''}
+              deploymentVerified={studentProject?.deployment_verified}
+              deploymentMeta={studentProject?.deployment_meta}
+              onVerificationSuccess={loadData}
+            />
+
+            <ProjectGitWorkflow
+              projectId={projectData.id || projectIdOrSpId}
+              projectTitle={projectData.title || ''}
+              gitWorkflow={projectData.git_workflow}
+            />
+          </div>
+        )}
+
+        {/* Tab 7: Evidence Pack & Audit */}
+        {activeTab === 'evidence' && (
+          <div className="space-y-4">
+            <ProjectEvidencePack
+              studentProjectId={studentProject?.id}
+              projectTitle={projectData.title || ''}
+              githubUrl={studentProject?.github_repo || githubUrl}
+              deploymentUrl={studentProject?.live_demo || liveDemoUrl}
+              deploymentVerified={studentProject?.deployment_verified}
+              onRefreshData={loadData}
+            />
+          </div>
+        )}
+
+        {/* Tab 8: Placement Impact & Interview Defense */}
+        {activeTab === 'placement' && (
+          <div className="space-y-4">
+            <ProjectPlacementImpact
+              studentProjectId={studentProject?.id}
+              projectTitle={projectData.title || ''}
+              difficulty={projectData.difficulty}
+              technologies={projectData.technologies || []}
+              skillsCovered={projectData.skills_covered || []}
+              evidenceStrength={studentProject?.evidence_strength || 0}
             />
           </div>
         )}
