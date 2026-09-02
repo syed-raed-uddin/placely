@@ -242,11 +242,14 @@ export default function ProjectMilestoneStepper({
         </div>
       )}
 
-      {milestones.map((m) => {
+      {milestones.map((m, mIdx) => {
         const isCompleted = m.student_status === 'completed';
-        const isInProgress = m.student_status === 'in_progress';
-        const isLocked = !isCompleted && !isInProgress;
-        const isExpanded = !!expandedMilestones[m.id];
+        // Milestone 1 (mIdx === 0) is accessible by default for new/pending projects.
+        // Milestone i (mIdx > 0) is accessible only if previous milestone is completed.
+        const prevMilestoneCompleted = mIdx === 0 || milestones[mIdx - 1]?.student_status === 'completed';
+        const isInProgress = m.student_status === 'in_progress' || (prevMilestoneCompleted && !isCompleted);
+        const isLocked = !prevMilestoneCompleted;
+        const isExpanded = !isLocked && !!expandedMilestones[m.id];
         const taskList = m.tasks || [];
         const completedTasksCount = taskList.filter((t) => t.student_status === 'completed').length;
         const allTasksDone = taskList.length > 0 && completedTasksCount === taskList.length;
@@ -332,12 +335,17 @@ export default function ProjectMilestoneStepper({
                     const isTaskUpdating = updatingTaskId === task.id;
                     const isTaskExpanded = expandedTaskId === task.id;
 
+                    // Sequential task access: Task 1 (tIdx === 0) is accessible if milestone is unlocked.
+                    // Task tIdx (tIdx > 0) is locked until previous task tIdx - 1 is completed.
+                    const prevTaskCompleted = tIdx === 0 || taskList[tIdx - 1]?.student_status === 'completed';
+                    const isTaskLocked = isLocked || (!isTaskCompleted && !prevTaskCompleted);
+
                     // Derive Task State
                     const taskState = isTaskCompleted
                       ? 'COMPLETED'
                       : isTaskUpdating
                       ? 'UPDATING'
-                      : isInProgress
+                      : !isTaskLocked
                       ? 'IN_PROGRESS'
                       : 'LOCKED';
 
@@ -379,28 +387,40 @@ export default function ProjectMilestoneStepper({
                             ? 'bg-emerald-500/[0.03] border-emerald-500/20'
                             : isTaskExpanded
                             ? 'bg-black/50 border-[#FF7A00]/50 shadow-lg shadow-[#FF7A00]/5'
+                            : isTaskLocked
+                            ? 'bg-black/20 border-white/5 opacity-55'
                             : 'bg-black/30 border-white/10 hover:border-white/20'
                         }`}
                       >
                         {/* Task Compact Row Header */}
                         <div
-                          onClick={() => toggleTask(task.id)}
-                          className="p-4 sm:p-5 flex items-start sm:items-center justify-between gap-3 cursor-pointer select-none hover:bg-white/[0.02] transition-colors"
+                          onClick={() => !isTaskLocked && toggleTask(task.id)}
+                          className={`p-4 sm:p-5 flex items-start sm:items-center justify-between gap-3 select-none transition-colors ${
+                            isTaskLocked ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-white/[0.02]'
+                          }`}
                         >
                           <div className="flex items-start sm:items-center gap-3.5 flex-1">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleCompleteTask(task.id, task.student_status);
+                                if (!isTaskLocked) handleCompleteTask(task.id, task.student_status);
                               }}
-                              disabled={isTaskCompleted || isTaskUpdating}
+                              disabled={isTaskCompleted || isTaskUpdating || isTaskLocked}
                               className="mt-0.5 sm:mt-0 shrink-0 text-white/30 hover:text-white transition-all disabled:opacity-80"
-                              title={isTaskCompleted ? 'Task completed' : 'Click to complete task'}
+                              title={
+                                isTaskCompleted
+                                  ? 'Task completed'
+                                  : isTaskLocked
+                                  ? `Complete Task ${tIdx} first to unlock`
+                                  : 'Click to complete task'
+                              }
                             >
                               {isTaskUpdating ? (
                                 <Loader2 className="w-5 h-5 animate-spin text-[#FF7A00]" />
                               ) : isTaskCompleted ? (
                                 <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                              ) : isTaskLocked ? (
+                                <Lock className="w-4 h-4 text-white/30" />
                               ) : (
                                 <Circle className="w-5 h-5 text-white/30 hover:text-[#FF7A00]" />
                               )}
@@ -411,15 +431,23 @@ export default function ProjectMilestoneStepper({
                                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#FF7A00]">
                                   Task {task.sequence || tIdx + 1}
                                 </span>
-                                {isTaskCompleted && (
+                                {isTaskCompleted ? (
                                   <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400">
                                     Verified Complete
                                   </span>
-                                )}
+                                ) : isTaskLocked ? (
+                                  <span className="px-2 py-0.2 rounded-full text-[10px] font-medium bg-white/5 text-white/40 border border-white/10 flex items-center gap-1">
+                                    <Lock className="w-2.5 h-2.5" /> Locked (Prerequisite required)
+                                  </span>
+                                ) : null}
                               </div>
                               <h4
                                 className={`text-sm sm:text-base font-bold leading-tight ${
-                                  isTaskCompleted ? 'text-white/70 line-through' : 'text-white'
+                                  isTaskCompleted
+                                    ? 'text-white/70 line-through'
+                                    : isTaskLocked
+                                    ? 'text-white/50'
+                                    : 'text-white'
                                 }`}
                               >
                                 {task.title}
@@ -431,9 +459,11 @@ export default function ProjectMilestoneStepper({
                             <span className="text-xs text-white/40 hidden sm:flex items-center gap-1 font-mono">
                               <Clock className="w-3 h-3" /> ~{task.estimated_minutes || 30}m
                             </span>
-                            <div className="text-white/40 p-1">
-                              {isTaskExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                            </div>
+                            {!isTaskLocked && (
+                              <div className="text-white/40 p-1">
+                                {isTaskExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                              </div>
+                            )}
                           </div>
                         </div>
 
