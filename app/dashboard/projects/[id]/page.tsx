@@ -23,6 +23,7 @@ import Link from 'next/link';
 import { apiClient } from '@/lib/api';
 import ProjectMilestoneStepper from '@/components/dashboard/ProjectMilestoneStepper';
 import ProjectLearningBlueprint from '@/components/dashboard/ProjectLearningBlueprint';
+import ProjectOverview from '@/components/dashboard/ProjectOverview';
 import ProjectSetupGuide from '@/components/dashboard/ProjectSetupGuide';
 import ProjectTestingGuide from '@/components/dashboard/ProjectTestingGuide';
 import ProjectDebuggingGuide from '@/components/dashboard/ProjectDebuggingGuide';
@@ -32,7 +33,7 @@ import ProjectEvidencePack from '@/components/dashboard/ProjectEvidencePack';
 import ProjectPlacementImpact from '@/components/dashboard/ProjectPlacementImpact';
 import ProjectDefenseModal from '@/components/dashboard/ProjectDefenseModal';
 import ProjectEvidenceDrawer from '@/components/dashboard/ProjectEvidenceDrawer';
-import { Layers, Brain, Wrench, FlaskConical, Bug, Rocket, PackageCheck, Target } from 'lucide-react';
+import { Layers, Brain, Wrench, FlaskConical, Bug, Rocket, PackageCheck, Target, Compass } from 'lucide-react';
 
 export default function ProjectWorkspacePage() {
   const params = useParams();
@@ -46,10 +47,12 @@ export default function ProjectWorkspacePage() {
   const [defenses, setDefenses] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // Tab & concept navigation state (8 Engineering Workspaces)
+  // Tab & concept navigation state (9 Engineering Workspaces)
   const [activeTab, setActiveTab] = useState<
-    'milestones' | 'learning' | 'setup' | 'testing' | 'debugging' | 'git_deploy' | 'evidence' | 'placement'
-  >('milestones');
+    'overview' | 'learning' | 'setup' | 'milestones' | 'testing' | 'debugging' | 'git_deploy' | 'evidence' | 'placement'
+  >('overview');
+  const [hasSetInitialTab, setHasSetInitialTab] = useState(false);
+  const [targetTaskId, setTargetTaskId] = useState<string | null>(null);
   const [activeConceptFilter, setActiveConceptFilter] = useState<string | null>(null);
 
   // Submission state
@@ -79,6 +82,16 @@ export default function ProjectWorkspacePage() {
           setDefenses(spRes.data.defenses || []);
           setGithubUrl(spRes.data.student_project?.github_repo || '');
           setLiveDemoUrl(spRes.data.student_project?.live_demo || '');
+          
+          // Initial tab selection: Returning students jump to execution; new students start on Overview
+          if (!hasSetInitialTab) {
+            const currentSp = spRes.data.student_project;
+            const spProgress = currentSp?.progress || 0;
+            const isReturning = spProgress > 0 || (currentSp?.status && !['AVAILABLE', 'STARTED'].includes(currentSp.status));
+            setActiveTab(isReturning ? 'milestones' : 'overview');
+            setHasSetInitialTab(true);
+          }
+
           setLoading(false);
           return;
         }
@@ -101,6 +114,14 @@ export default function ProjectWorkspacePage() {
           });
           setVerifications(spRes?.data?.verifications || []);
           setDefenses(spRes?.data?.defenses || []);
+
+          if (!hasSetInitialTab) {
+            const currentSp = spRes?.data?.student_project;
+            const spProgress = currentSp?.progress || 0;
+            const isReturning = spProgress > 0 || (currentSp?.status && !['AVAILABLE', 'STARTED'].includes(currentSp.status));
+            setActiveTab(isReturning ? 'milestones' : 'overview');
+            setHasSetInitialTab(true);
+          }
         }
       }
     } catch (err: any) {
@@ -367,16 +388,16 @@ export default function ProjectWorkspacePage() {
             </p>
           </div>
 
-          {/* 6-Stage Mini Beginner Workflow Roadmap */}
+          {/* 7-Stage Beginner Workflow Roadmap */}
           <div className="pt-2 border-t border-white/5 flex flex-wrap items-center gap-1 sm:gap-2 text-[11px] text-white/50">
             <span className="font-semibold text-white/30 text-[10px] uppercase tracking-wider mr-1">Roadmap:</span>
             <button
-              onClick={() => setActiveTab('setup')}
+              onClick={() => setActiveTab('overview')}
               className={`px-2 py-1 rounded-md transition-all ${
-                activeTab === 'setup' ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'hover:text-white'
+                activeTab === 'overview' ? 'bg-blue-500/20 text-blue-300 font-bold border border-blue-500/40' : 'hover:text-white'
               }`}
             >
-              1. Setup
+              1. Overview
             </button>
             <span>&rarr;</span>
             <button
@@ -389,12 +410,21 @@ export default function ProjectWorkspacePage() {
             </button>
             <span>&rarr;</span>
             <button
+              onClick={() => setActiveTab('setup')}
+              className={`px-2 py-1 rounded-md transition-all ${
+                activeTab === 'setup' ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40' : 'hover:text-white'
+              }`}
+            >
+              3. Setup
+            </button>
+            <span>&rarr;</span>
+            <button
               onClick={() => setActiveTab('milestones')}
               className={`px-2 py-1 rounded-md transition-all ${
                 activeTab === 'milestones' ? 'bg-[#FF7A00]/20 text-[#FF7A00] font-bold border border-[#FF7A00]/40' : 'hover:text-white'
               }`}
             >
-              3. Build
+              4. Build
             </button>
             <span>&rarr;</span>
             <button
@@ -403,7 +433,7 @@ export default function ProjectWorkspacePage() {
                 activeTab === 'testing' || activeTab === 'debugging' ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40' : 'hover:text-white'
               }`}
             >
-              4. Test &amp; QA
+              5. QA &amp; Test
             </button>
             <span>&rarr;</span>
             <button
@@ -412,7 +442,7 @@ export default function ProjectWorkspacePage() {
                 activeTab === 'git_deploy' ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40' : 'hover:text-white'
               }`}
             >
-              5. Deploy
+              6. Deploy
             </button>
             <span>&rarr;</span>
             <button
@@ -421,27 +451,27 @@ export default function ProjectWorkspacePage() {
                 activeTab === 'evidence' || activeTab === 'placement' ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/40' : 'hover:text-white'
               }`}
             >
-              6. Prove &amp; Defend
+              7. Prove &amp; Defend
             </button>
           </div>
         </div>
       )}
 
-      {/* Workspace Navigation Switcher (8 Engineering Workspaces) */}
+      {/* Workspace Navigation Switcher (9 Engineering Workspaces) */}
       <div className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
           <div className="flex flex-wrap items-center gap-2">
-            {/* 1. Build / Execution */}
+            {/* 1. Overview */}
             <button
-              onClick={() => setActiveTab('milestones')}
+              onClick={() => setActiveTab('overview')}
               className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
-                activeTab === 'milestones'
-                  ? 'bg-[#FF7A00] text-white shadow-lg shadow-[#FF7A00]/25'
+                activeTab === 'overview'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
                   : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
               }`}
             >
-              <Layers className="w-3.5 h-3.5" />
-              <span>Execution ({milestones.length})</span>
+              <Compass className="w-3.5 h-3.5" />
+              <span>Overview</span>
             </button>
 
             {/* 2. Learn / Blueprint */}
@@ -470,7 +500,20 @@ export default function ProjectWorkspacePage() {
               <span>Setup</span>
             </button>
 
-            {/* 4. QA & Testing */}
+            {/* 4. Build / Execution */}
+            <button
+              onClick={() => setActiveTab('milestones')}
+              className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
+                activeTab === 'milestones'
+                  ? 'bg-[#FF7A00] text-white shadow-lg shadow-[#FF7A00]/25'
+                  : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Execution ({milestones.length})</span>
+            </button>
+
+            {/* 5. QA & Testing */}
             <button
               onClick={() => setActiveTab('testing')}
               className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
@@ -483,7 +526,7 @@ export default function ProjectWorkspacePage() {
               <span>QA &amp; Testing</span>
             </button>
 
-            {/* 5. Troubleshooting & Diagnostics */}
+            {/* 6. Troubleshooting & Diagnostics */}
             <button
               onClick={() => setActiveTab('debugging')}
               className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
@@ -496,7 +539,7 @@ export default function ProjectWorkspacePage() {
               <span>Troubleshooting</span>
             </button>
 
-            {/* 6. Git & Deploy */}
+            {/* 7. Git & Deploy */}
             <button
               onClick={() => setActiveTab('git_deploy')}
               className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
@@ -509,7 +552,7 @@ export default function ProjectWorkspacePage() {
               <span>Git &amp; Deploy</span>
             </button>
 
-            {/* 7. Evidence Pack */}
+            {/* 8. Evidence Pack */}
             <button
               onClick={() => setActiveTab('evidence')}
               className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
@@ -522,7 +565,7 @@ export default function ProjectWorkspacePage() {
               <span>Evidence Pack</span>
             </button>
 
-            {/* 8. Placement Impact */}
+            {/* 9. Placement Impact */}
             <button
               onClick={() => setActiveTab('placement')}
               className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs transition-all flex items-center gap-1.5 ${
@@ -537,12 +580,14 @@ export default function ProjectWorkspacePage() {
           </div>
 
           <span className="text-xs text-white/40 font-mono hidden lg:inline">
-            {activeTab === 'milestones'
-              ? 'Execute tasks sequentially'
+            {activeTab === 'overview'
+              ? 'System architecture & mission briefing'
               : activeTab === 'learning'
               ? 'Master foundational mental models'
               : activeTab === 'setup'
               ? 'Scaffold environment & toolchain'
+              : activeTab === 'milestones'
+              ? 'Execute tasks sequentially'
               : activeTab === 'testing'
               ? 'Systematic QA test scenarios'
               : activeTab === 'debugging'
@@ -555,6 +600,19 @@ export default function ProjectWorkspacePage() {
           </span>
         </div>
 
+        {/* Tab: Overview & System Architecture Briefing */}
+        {activeTab === 'overview' && (
+          <div className="space-y-4">
+            <ProjectOverview
+              projectData={projectData}
+              studentProject={studentProject}
+              onGoToBlueprint={() => setActiveTab('learning')}
+              onGoToSetup={() => setActiveTab('setup')}
+              onGoToExecution={() => setActiveTab('milestones')}
+            />
+          </div>
+        )}
+
         {/* Tab 1: Engineering Execution Stepper */}
         {activeTab === 'milestones' && (
           <div className="space-y-4">
@@ -566,6 +624,7 @@ export default function ProjectWorkspacePage() {
                 setActiveConceptFilter(concept);
                 setActiveTab('learning');
               }}
+              targetTaskId={targetTaskId}
             />
           </div>
         )}
@@ -579,6 +638,11 @@ export default function ProjectWorkspacePage() {
               activeConceptFilter={activeConceptFilter}
               onClearFilter={() => setActiveConceptFilter(null)}
               onGoToExecution={() => setActiveTab('milestones')}
+              milestones={milestones}
+              onSelectTask={(taskId) => {
+                setTargetTaskId(taskId);
+                setActiveTab('milestones');
+              }}
             />
           </div>
         )}

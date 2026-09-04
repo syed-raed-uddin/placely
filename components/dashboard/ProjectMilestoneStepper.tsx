@@ -88,13 +88,15 @@ interface ProjectMilestoneStepperProps {
   milestones: Milestone[];
   onStateUpdated: () => void;
   onSelectConcept?: (concept: string) => void;
+  targetTaskId?: string | null;
 }
 
 export default function ProjectMilestoneStepper({
   studentProjectId,
   milestones = [],
   onStateUpdated,
-  onSelectConcept
+  onSelectConcept,
+  targetTaskId
 }: ProjectMilestoneStepperProps) {
   // Find first active milestone to expand by default
   const defaultOpenMilestoneId =
@@ -120,6 +122,19 @@ export default function ProjectMilestoneStepper({
   const [completingMilestoneId, setCompletingMilestoneId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [copiedCodeKey, setCopiedCodeKey] = useState<string | null>(null);
+
+  // If navigated from Blueprint to a specific task, expand its milestone and task
+  useEffect(() => {
+    if (targetTaskId && milestones.length > 0) {
+      for (const m of milestones) {
+        if (m.tasks?.some((t) => t.id === targetTaskId)) {
+          setExpandedMilestones((prev) => ({ ...prev, [m.id]: true }));
+          setExpandedTaskId(targetTaskId);
+          break;
+        }
+      }
+    }
+  }, [targetTaskId, milestones]);
 
   // Auto-expand first uncompleted task in active milestone on initial load
   useEffect(() => {
@@ -470,21 +485,35 @@ export default function ProjectMilestoneStepper({
                         {/* Deep Task Execution Panel */}
                         {isTaskExpanded && (
                           <div className="p-4 sm:p-6 pt-0 border-t border-white/5 space-y-6 animate-in fade-in duration-200">
-                            {/* 1. Task Instruction & Concept Tags */}
-                            <div className="space-y-2 mt-4">
-                              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 space-y-2">
-                                <span className="text-[10px] uppercase font-extrabold text-white/40 tracking-wider flex items-center gap-1.5">
-                                  <Compass className="w-3.5 h-3.5 text-[#FF7A00]" /> Engineering Directive
-                                </span>
-                                <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-sans">
-                                  {task.instruction}
-                                </p>
+                            {/* 1. Explicit Task Architecture: What to Build & Why This Matters */}
+                            <div className="space-y-3 mt-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {/* What to Build */}
+                                <div className="p-4 rounded-xl bg-black/40 border border-[#FF7A00]/30 space-y-1.5">
+                                  <span className="text-[10px] uppercase font-extrabold text-[#FF7A00] tracking-wider flex items-center gap-1.5">
+                                    <Compass className="w-3.5 h-3.5" /> What to Build
+                                  </span>
+                                  <p className="text-xs sm:text-sm text-white/90 leading-relaxed font-sans font-medium">
+                                    {task.instruction}
+                                  </p>
+                                </div>
+
+                                {/* Why This Matters */}
+                                <div className="p-4 rounded-xl bg-black/40 border border-purple-500/30 space-y-1.5">
+                                  <span className="text-[10px] uppercase font-extrabold text-purple-300 tracking-wider flex items-center gap-1.5">
+                                    <Lightbulb className="w-3.5 h-3.5 text-amber-400" /> Why This Matters
+                                  </span>
+                                  <p className="text-xs sm:text-sm text-white/75 leading-relaxed font-sans">
+                                    {task.why_this_task ||
+                                      'Enforces clean architectural boundaries, handles state synchronization reliably, and creates verifiable evidence for senior technical interviews.'}
+                                  </p>
+                                </div>
                               </div>
 
-                              {/* Clickable Concept Tags (Connecting to Phase 2 Learning Blueprint) */}
+                              {/* Clickable Concept Tags (Connecting to Learning Blueprint) */}
                               {task.concepts && task.concepts.length > 0 && (
-                                <div className="flex flex-wrap items-center gap-2 pt-1">
-                                  <span className="text-[11px] text-white/40 font-medium">Related Concepts:</span>
+                                <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                                  <span className="text-[11px] text-white/40 font-medium">Related Blueprint Concepts:</span>
                                   {task.concepts.map((concept, cIdx) => (
                                     <button
                                       key={cIdx}
@@ -500,12 +529,12 @@ export default function ProjectMilestoneStepper({
                               )}
                             </div>
 
-                            {/* 2. Implementation Steps Roadmap (How To Do This) */}
+                            {/* 2. Implementation Steps Roadmap (How to Do It) */}
                             {normalizedSteps.length > 0 && (
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between">
                                   <h5 className="text-xs font-bold uppercase tracking-wider text-white/50 flex items-center gap-1.5">
-                                    <Code2 className="w-3.5 h-3.5 text-[#FF7A00]" /> Implementation Steps (How To Do This)
+                                    <Code2 className="w-3.5 h-3.5 text-[#FF7A00]" /> How to Do It (Step-by-Step Implementation)
                                   </h5>
                                   <span className="text-[11px] text-white/40 font-mono">
                                     {checkedStepsCount}/{totalSteps} Steps Checked (Self-Reported)
@@ -593,12 +622,12 @@ export default function ProjectMilestoneStepper({
                               </div>
                             )}
 
-                            {/* 3. Acceptance Criteria Checklist */}
+                            {/* 3. Verification / Completion Criteria */}
                             {rawCrits.length > 0 && (
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between">
                                   <h5 className="text-xs font-bold uppercase tracking-wider text-white/50 flex items-center gap-1.5">
-                                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Acceptance Criteria Self-Check
+                                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Verification / Completion Criteria
                                   </h5>
                                   <span className="text-[11px] text-white/40 font-mono">
                                     {checkedCritsCount}/{totalCrits} Criteria Checked
@@ -606,6 +635,9 @@ export default function ProjectMilestoneStepper({
                                 </div>
 
                                 <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-2.5">
+                                  <p className="text-[11px] text-white/50 pb-1.5 border-b border-white/5">
+                                    Verify each completion condition below before marking this task complete on the server:
+                                  </p>
                                   {rawCrits.map((crit, cIdx) => {
                                     const isChecked = !!taskCritsState[cIdx];
                                     return (

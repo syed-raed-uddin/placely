@@ -17,7 +17,9 @@ import {
   Eye,
   EyeOff,
   RotateCcw,
-  Check
+  Check,
+  Layers,
+  ArrowRight
 } from 'lucide-react';
 
 export interface PracticeExercise {
@@ -51,6 +53,8 @@ interface ProjectLearningBlueprintProps {
   activeConceptFilter?: string | null;
   onClearFilter?: () => void;
   onGoToExecution?: () => void;
+  milestones?: any[];
+  onSelectTask?: (taskId: string, milestoneId?: string) => void;
 }
 
 export default function ProjectLearningBlueprint({
@@ -58,7 +62,9 @@ export default function ProjectLearningBlueprint({
   topics = [],
   activeConceptFilter,
   onClearFilter,
-  onGoToExecution
+  onGoToExecution,
+  milestones = [],
+  onSelectTask
 }: ProjectLearningBlueprintProps) {
   const [expandedTopicIdx, setExpandedTopicIdx] = useState<number | null>(0);
   const [reviewedTopics, setReviewedTopics] = useState<Record<number, boolean>>({});
@@ -204,6 +210,42 @@ export default function ProjectLearningBlueprint({
           const hasMasteryChecks = topic.mastery_check && topic.mastery_check.length > 0;
           const hasPractice = topic.how_to_practice && topic.how_to_practice.length > 0;
 
+          // Compute matching execution tasks for bidirectional linking
+          const topicTitleLower = (topic.topic || '').toLowerCase();
+          const matchingTasks: Array<{ id: string; milestoneId: string; milestoneOrder: number; milestoneTitle: string; sequence: number; title: string }> = [];
+          (milestones || []).forEach((m: any) => {
+            (m.tasks || []).forEach((t: any) => {
+              const conceptMatches = (t.concepts || []).some((c: string) => {
+                const cl = (c || '').toLowerCase();
+                return cl.includes(topicTitleLower) || topicTitleLower.includes(cl);
+              });
+              const titleMatches = (t.title || '').toLowerCase().includes(topicTitleLower);
+              if (conceptMatches || titleMatches) {
+                matchingTasks.push({
+                  id: t.id,
+                  milestoneId: m.id,
+                  milestoneOrder: m.display_order || 1,
+                  milestoneTitle: m.title || `Milestone ${m.display_order || 1}`,
+                  sequence: t.sequence || 1,
+                  title: t.title
+                });
+              }
+            });
+          });
+
+          // Fallback: If no direct concept match, link to corresponding milestone sprint
+          if (matchingTasks.length === 0 && milestones[idx]?.tasks?.[0]) {
+            const fallbackTask = milestones[idx].tasks[0];
+            matchingTasks.push({
+              id: fallbackTask.id,
+              milestoneId: milestones[idx].id,
+              milestoneOrder: milestones[idx].display_order || idx + 1,
+              milestoneTitle: milestones[idx].title || `Milestone ${idx + 1}`,
+              sequence: fallbackTask.sequence || 1,
+              title: fallbackTask.title
+            });
+          }
+
           return (
             <div
               key={idx}
@@ -321,6 +363,47 @@ export default function ProjectLearningBlueprint({
                       </div>
                     )}
                   </div>
+
+                  {/* Connected Execution Tasks (Bidirectional Linking: Concept -> Task) */}
+                  {matchingTasks.length > 0 && (
+                    <div className="p-5 rounded-2xl bg-black/40 border border-purple-500/20 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-purple-300 flex items-center gap-2">
+                          <Layers className="w-3.5 h-3.5 text-[#FF7A00]" />
+                          Execution Tasks Applying This Concept
+                        </span>
+                        <span className="text-[11px] text-white/40 font-mono">
+                          {matchingTasks.length} Connected Task{matchingTasks.length > 1 ? 's' : ''}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        {matchingTasks.map((taskItem, tIdx) => (
+                          <button
+                            key={tIdx}
+                            onClick={() => {
+                              if (onSelectTask) {
+                                onSelectTask(taskItem.id, taskItem.milestoneId);
+                              } else if (onGoToExecution) {
+                                onGoToExecution();
+                              }
+                            }}
+                            className="p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-[#FF7A00]/40 text-left transition-all flex items-center justify-between group"
+                            title={`Jump to ${taskItem.title} in Execution`}
+                          >
+                            <div className="space-y-0.5 truncate pr-2">
+                              <span className="text-[10px] font-bold text-[#FF7A00] uppercase tracking-wider block">
+                                {taskItem.milestoneTitle} • Task {taskItem.sequence}
+                              </span>
+                              <span className="text-xs font-semibold text-white/90 group-hover:text-white truncate block">
+                                {taskItem.title}
+                              </span>
+                            </div>
+                            <ArrowRight className="w-3.5 h-3.5 text-white/40 group-hover:text-[#FF7A00] group-hover:translate-x-0.5 transition-all shrink-0" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* 3. What You Need to Learn (Core Concept Checklist) */}
                   {topic.what_to_learn && topic.what_to_learn.length > 0 && (
